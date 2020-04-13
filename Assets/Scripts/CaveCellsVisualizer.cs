@@ -86,7 +86,7 @@ public class CaveCellsVisualizer : MonoBehaviour
 		GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
 
 		cube.transform.parent = transform;
-		cube.transform.position = position;
+		cube.transform.localPosition = position;
 		cube.transform.localScale = size;
 		cube.GetComponent<MeshRenderer>().material.color = color;
 
