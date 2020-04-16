@@ -371,6 +371,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1612153362}
   - component: {fileID: 1612153363}
+  - component: {fileID: 1612153364}
   m_Layer: 0
   m_Name: Caves
   m_TagString: Untagged
@@ -406,12 +407,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Settings:
     TerrainCubicSize: {x: 50, y: 50}
-    RandomActiveCellsPercent: 0.5
+    RandomHollowCellsPercent: 0.477
     Seed: 666
   CubeSize: 10
   CubeSpacing: 10
-  ActiveColor: {r: 1, g: 1, b: 1, a: 1}
-  InactiveColor: {r: 0.54509807, g: 0.27058825, b: 0.07450981, a: 1}
+  HollowColor: {r: 1, g: 1, b: 1, a: 1}
+  WallColor: {r: 1, g: 0.39526987, b: 0, a: 1}
+--- !u!114 &1612153364
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1612153361}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4b0075ed4bb87e4482846699c9778ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1966757483
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -423,6 +436,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: vThirdPersonCamera_LITE
+      objectReference: {fileID: 0}
+    - target: {fileID: 2700874171910072504, guid: 330efb0e9eed825408809c121441b8a5,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2700874171910072505, guid: 330efb0e9eed825408809c121441b8a5,
         type: 3}
@@ -483,6 +501,11 @@ PrefabInstance:
         type: 3}
       propertyPath: height
       value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 2700874171910072509, guid: 330efb0e9eed825408809c121441b8a5,
+        type: 3}
+      propertyPath: far clip plane
+      value: 30000
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 330efb0e9eed825408809c121441b8a5, type: 3}
@@ -581,7 +604,17 @@ PrefabInstance:
     - target: {fileID: 4425428723088313503, guid: fc9b148a2950aaf4cba8422632222c5d,
         type: 3}
       propertyPath: jumpHeight
-      value: 20
+      value: 40
+      objectReference: {fileID: 0}
+    - target: {fileID: 4425428723088313503, guid: fc9b148a2950aaf4cba8422632222c5d,
+        type: 3}
+      propertyPath: jumpTimer
+      value: 0.01
+      objectReference: {fileID: 0}
+    - target: {fileID: 4425428723088313503, guid: fc9b148a2950aaf4cba8422632222c5d,
+        type: 3}
+      propertyPath: freeSpeed.sprintSpeed
+      value: 60
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fc9b148a2950aaf4cba8422632222c5d, type: 3}

@@ -1,31 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class CaveCellsVisualizer : MonoBehaviour
 {
 	public CaveCellsGenerator.CaveSettings Settings;
 	public float CubeSize;
 	public float CubeSpacing;
-	public Color ActiveColor;
-	public Color InactiveColor;
+	public Color HollowColor;
+	public Color WallColor;
 
-	private int[,] _initialState;
-	private int[,] _simulatedState;
+	private CellType[,] _initialState;
+	private CellType[,] _simulatedState;
 
-	private int[,] _currentDrawnCells;
+	private CellType[,] _currentDrawnCells;
 
 	private List<GameObject> _instantiatedCubes = new List<GameObject>();
 
 	private void Start()
 	{
 		ShowSimulatedState();
+
+		CaveCellsGenerator.GenerateCaveChunk(Settings);
 	}
 
 	public void GenerateCave()
 	{
 		_initialState = CaveCellsGenerator.GetInitialState(Settings);
-		_simulatedState = CaveCellsGenerator.GetSimulatedCaves(_initialState);
+		_simulatedState = CaveCellsGenerator.GetSimulatedCells(_initialState);
 	}
 
 	public void ShowInitialState()
@@ -42,7 +45,7 @@ public class CaveCellsVisualizer : MonoBehaviour
 		DrawCells(_simulatedState);
 	}
 
-	private void DrawCells(int[,] cells)
+	private void DrawCells(CellType[,] cells)
 	{
 		_currentDrawnCells = cells;
 
@@ -66,12 +69,12 @@ public class CaveCellsVisualizer : MonoBehaviour
 		{
 			for (int j = 0; j < width; j++)
 			{
-				int cell = _currentDrawnCells[i, j];
-				bool isCellActive = CaveCellsGenerator.IsCellActive(cell);
+				CellType cell = _currentDrawnCells[i, j];
+				bool isHollowCell = CaveCellsGenerator.IsHollowCell(cell);
 
-				Vector3 cellPosition = new Vector3(startingPosition.x + (i - height / 2) * CubeSpacing, startingPosition.y + (j - width / 2) * CubeSpacing, isCellActive ? CubeSpacing : 0);
+				Vector3 cellPosition = new Vector3(startingPosition.x + (i - height / 2) * CubeSpacing, startingPosition.y + (j - width / 2) * CubeSpacing, isHollowCell ? CubeSpacing : 0);
 
-				Color cubeColor = isCellActive ? ActiveColor : InactiveColor;
+				Color cubeColor = isHollowCell ? HollowColor : WallColor;
 
 				Gizmos.color = cubeColor;
 
