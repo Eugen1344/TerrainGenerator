@@ -11,15 +11,13 @@ public class CaveMeshGenerator : MonoBehaviour
 
 			for (int i = 0; i < group.CellChunkCoordinates.Count; i++)
 			{
-				Vector2Int coordinate = group.CellChunkCoordinates[i];
-				vertices[i] = new Vector3(coordinate.x, coordinate.y, 0);
+				//Vector2Int coordinate = group.CellChunkCoordinates[i];
+				//dvertices[i] = new Vector3(coordinate.x, coordinate.y, 0);
 			}
 		}
 
-		Triangulator
 
 		Mesh mesh = new Mesh();
-		mesh.tri
 		return mesh;
 	}
 }

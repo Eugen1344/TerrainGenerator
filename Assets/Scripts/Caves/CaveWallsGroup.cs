@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class CaveWallsGroup : CaveGroup
 {
-	public CaveWallsGroup(List<Vector2Int> cellChunkCoordinates) : base(cellChunkCoordinates)
+	public CaveWallsGroup(List<Vector3Int> cellChunkCoordinates) : base(cellChunkCoordinates)
 	{
 	}
 }

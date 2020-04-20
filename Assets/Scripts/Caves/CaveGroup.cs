@@ -4,15 +4,15 @@ using UnityEngine;
 
 public abstract class CaveGroup
 {
-	public List<Vector2Int> CellChunkCoordinates = new List<Vector2Int>();
+	public List<Vector3Int> CellChunkCoordinates = new List<Vector3Int>();
 	public int CellCount => CellChunkCoordinates.Count;
 
-	protected CaveGroup(List<Vector2Int> cellChunkCoordinates)
+	protected CaveGroup(List<Vector3Int> cellChunkCoordinates)
 	{
 		CellChunkCoordinates = cellChunkCoordinates;
 	}
 
-	public static CaveGroup GetCaveGroup(CellType cellType, List<Vector2Int> cellChunkCoordinates)
+	public static CaveGroup GetCaveGroup(CellType cellType, List<Vector3Int> cellChunkCoordinates)
 	{
 		switch (cellType)
 		{

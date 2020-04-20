@@ -230,7 +230,7 @@ Light:
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
   m_Shadows:
-    m_Type: 2
+    m_Type: 0
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -407,12 +407,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Settings:
     TerrainCubicSize: {x: 50, y: 50}
-    RandomHollowCellsPercent: 0.477
-    Seed: 666
+    SwitchToHollowThreshold: 4
+    SwitchToWallThreshold: 5
+    RandomHollowCellsPercent: 0.4
+    IterationCount: 3
+    Seed: 0
   CubeSize: 10
   CubeSpacing: 10
-  HollowColor: {r: 1, g: 1, b: 1, a: 1}
-  WallColor: {r: 1, g: 0.39526987, b: 0, a: 1}
+  HollowColor: {r: 1, g: 1, b: 0, a: 1}
+  WallColor: {r: 0.21026167, g: 0.3301887, b: 0.3301887, a: 1}
 --- !u!114 &1612153364
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -436,11 +439,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: vThirdPersonCamera_LITE
-      objectReference: {fileID: 0}
-    - target: {fileID: 2700874171910072504, guid: 330efb0e9eed825408809c121441b8a5,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2700874171910072505, guid: 330efb0e9eed825408809c121441b8a5,
         type: 3}
@@ -496,16 +494,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2700874171910072507, guid: 330efb0e9eed825408809c121441b8a5,
-        type: 3}
-      propertyPath: height
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 2700874171910072509, guid: 330efb0e9eed825408809c121441b8a5,
-        type: 3}
-      propertyPath: far clip plane
-      value: 30000
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 330efb0e9eed825408809c121441b8a5, type: 3}

@@ -11,7 +11,10 @@ public partial class CaveCellsGenerator
 	public struct CaveSettings
 	{
 		public Vector2Int TerrainCubicSize;
+		public int SwitchToHollowThreshold;
+		public int SwitchToWallThreshold;
 		[Range(0, 1)] public float RandomHollowCellsPercent;
+		public int IterationCount;
 		public int Seed;
 	}
 
@@ -19,11 +22,11 @@ public partial class CaveCellsGenerator
 	{
 		CellType[,] cells = GetInitialState(settings);
 		cells = GetSimulatedCells(cells);
-
+		cells.
 		return GetCaveChunk(cells);
 	}
 
-	private static CaveChunk GetCaveChunk(CellType[,] cells)
+	private static CaveChunk GetCaveChunk(CellType[,,] cells)
 	{
 		List<CaveHollowGroup> hollows = GetCellGroups<CaveHollowGroup>(cells, CellType.Hollow).ToList();
 		List<CaveWallsGroup> walls = GetCellGroups<CaveWallsGroup>(cells, CellType.Wall).ToList();
@@ -31,59 +34,69 @@ public partial class CaveCellsGenerator
 		return new CaveChunk(hollows, walls);
 	}
 
-	private static List<T> GetCellGroups<T>(CellType[,] cells, CellType searchedCellType) where T : CaveGroup
+	private static List<T> GetCellGroups<T>(CellType[,,] cells, CellType searchedCellType) where T : CaveGroup
 	{
-		int height = cells.GetLength(0);
+		int length = cells.GetLength(0);
 		int width = cells.GetLength(1);
+		int height = cells.GetLength(2);
 
 		List<T> result = new List<T>();
 
-		bool[,] markedCells = new bool[height, width];
+		bool[,,] markedCells = new bool[length, width, height];
 
-		Queue<Vector2Int> cellsToSearch = new Queue<Vector2Int>();
+		Queue<Vector3Int> cellsToSearch = new Queue<Vector3Int>();
 
-		for (int i = 0; i < height; i++)
+		for (int i = 0; i < length; i++)
 		{
 			for (int j = 0; j < width; j++)
 			{
-				if (cells[i, j] == searchedCellType && !markedCells[i, j])
+				for (int k = 0; k < height; k++)
 				{
-					List<Vector2Int> foundCells = new List<Vector2Int>();
-
-					cellsToSearch.Enqueue(new Vector2Int(i, j));
-					markedCells[i, j] = true;
-
-					while (cellsToSearch.Count != 0)
+					if (cells[i, j, k] == searchedCellType && !markedCells[i, j, k])
 					{
-						Vector2Int searchCoreCell = cellsToSearch.Dequeue();
+						List<Vector3Int> foundCells = new List<Vector3Int>();
 
-						foundCells.Add(searchCoreCell);
+						cellsToSearch.Enqueue(new Vector3Int(i, j, k));
+						markedCells[i, j, k] = true;
 
-						int startI = searchCoreCell.x - 1 < 0 ? 0 : searchCoreCell.x - 1;
-						int startJ = searchCoreCell.y - 1 < 0 ? 0 : searchCoreCell.y - 1;
-						int endI = searchCoreCell.x + 1 >= height ? height - 1 : searchCoreCell.x + 1;
-						int endJ = searchCoreCell.y + 1 >= width ? width - 1 : searchCoreCell.y + 1;
-
-						for (int i1 = startI; i1 <= endI; i1++)
+						while (cellsToSearch.Count != 0)
 						{
-							for (int j1 = startJ; j1 <= endJ; j1++)
+							Vector3Int searchCoreCell = cellsToSearch.Dequeue();
+
+							foundCells.Add(searchCoreCell);
+
+							int startI = searchCoreCell.x - 1 < 0 ? 0 : searchCoreCell.x - 1;
+							int startJ = searchCoreCell.y - 1 < 0 ? 0 : searchCoreCell.y - 1;
+							int endI = searchCoreCell.x + 1 >= length ? length - 1 : searchCoreCell.x + 1;
+							int endJ = searchCoreCell.y + 1 >= width ? width - 1 : searchCoreCell.y + 1;
+							int startK = searchCoreCell.z - 1 < 0 ? 0 : searchCoreCell.z - 1;
+							int endK = searchCoreCell.z + 1 >= height ? height - 1 : searchCoreCell.z + 1;
+
+							for (int i1 = startI; i1 <= endI; i1++)
 							{
-								if (i1 == searchCoreCell.x && j1 == searchCoreCell.y || (i1 != searchCoreCell.x && j1 != searchCoreCell.y))
-									continue;
-
-								if (cells[i1, j1] == searchedCellType && !markedCells[i1, j1])
+								for (int j1 = startJ; j1 <= endJ; j1++)
 								{
-									Vector2Int newSearchCoreCell = new Vector2Int(i1, j1);
+									for (int k1 = startK; k1 <= endK; k1++)
+									{
+										if ((i1 == searchCoreCell.x && j1 == searchCoreCell.y && k1 == searchCoreCell.z) ||
+											(i1 != searchCoreCell.x && j1 != searchCoreCell.y && k1 != searchCoreCell.z))
+											continue;
 
-									cellsToSearch.Enqueue(newSearchCoreCell);
-									markedCells[i1, j1] = true;
+										if (cells[i1, j1, k1] == searchedCellType && !markedCells[i1, j1, k1])
+										{
+											Vector3Int newSearchCoreCell = new Vector3Int(i1, j1, k1);
+
+											cellsToSearch.Enqueue(newSearchCoreCell);
+											markedCells[i1, j1, k1] = true;
+										}
+									}
 								}
 							}
 						}
-					}
 
-					CaveGroup newGroup = CaveGroup.GetCaveGroup(searchedCellType, foundCells);
-					result.Add((T)newGroup);
+						CaveGroup newGroup = CaveGroup.GetCaveGroup(searchedCellType, foundCells);
+						result.Add((T)newGroup);
+					}
 				}
 			}
 		}
@@ -116,24 +129,31 @@ public partial class CaveCellsGenerator
 		return result;
 	}
 
-	public static CellType[,] GetSimulatedCells(CellType[,] initialState)
+	public static CellType[,] GetSimulatedCells(CellType[,] initialState, CaveSettings settings)
 	{
 		int height = initialState.GetLength(0);
 		int width = initialState.GetLength(1);
 
-		CellType[,] result = (CellType[,])initialState.Clone();
+		CellType[,] result = initialState;
 
-		for (int i = 0; i < height; i++)
+		for (int iteration = 0; iteration < settings.IterationCount; iteration++)
 		{
-			for (int j = 0; j < width; j++)
-			{
-				int nearbyWallCellCount = GetNearbyWallCellCount(result, i, j);
+			result = (CellType[,])initialState.Clone();
 
-				if (nearbyWallCellCount > 4)
-					result[i, j] = CellType.Wall;
-				else if (nearbyWallCellCount < 4)
-					result[i, j] = CellType.Hollow;
+			for (int i = 0; i < height; i++)
+			{
+				for (int j = 0; j < width; j++)
+				{
+					int nearbyWallCellCount = GetNearbyWallCellCount(initialState, i, j);
+
+					if (nearbyWallCellCount > settings.SwitchToWallThreshold)
+						result[i, j] = CellType.Wall;
+					else if (nearbyWallCellCount < settings.SwitchToHollowThreshold)
+						result[i, j] = CellType.Hollow;
+				}
 			}
+
+			initialState = result;
 		}
 
 		return result;

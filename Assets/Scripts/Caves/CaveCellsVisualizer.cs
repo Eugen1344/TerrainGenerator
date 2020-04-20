@@ -28,7 +28,7 @@ public class CaveCellsVisualizer : MonoBehaviour
 	public void GenerateCave()
 	{
 		_initialState = CaveCellsGenerator.GetInitialState(Settings);
-		_simulatedState = CaveCellsGenerator.GetSimulatedCells(_initialState);
+		_simulatedState = CaveCellsGenerator.GetSimulatedCells(_initialState, Settings);
 	}
 
 	public void ShowInitialState()
