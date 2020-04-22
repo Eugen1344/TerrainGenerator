@@ -5,49 +5,39 @@ using UnityEngine.Serialization;
 
 public class CaveCellsVisualizer : MonoBehaviour
 {
-	public CaveCellsGenerator.CaveSettings Settings;
+	public CaveSettings Settings;
 	public float CubeSize;
 	public float CubeSpacing;
 	public Color HollowColor;
 	public Color WallColor;
+	public GameObject CubePrefab;
 
-	private CellType[,] _initialState;
-	private CellType[,] _simulatedState;
+	private CaveChunk _currentCaveChunk;
 
-	private CellType[,] _currentDrawnCells;
+	private CellType[,,] _currentDrawnCells;
 
 	private List<GameObject> _instantiatedCubes = new List<GameObject>();
 
 	private void Start()
 	{
 		ShowSimulatedState();
-
-		CaveCellsGenerator.GenerateCaveChunk(Settings);
 	}
 
 	public void GenerateCave()
 	{
-		_initialState = CaveCellsGenerator.GetInitialState(Settings);
-		_simulatedState = CaveCellsGenerator.GetSimulatedCells(_initialState, Settings);
-	}
-
-	public void ShowInitialState()
-	{
-		GenerateCave();
-
-		DrawCells(_initialState);
+		_currentCaveChunk = CaveCellsGenerator.GenerateCaveChunk(Settings);
 	}
 
 	public void ShowSimulatedState()
 	{
 		GenerateCave();
 
-		DrawCells(_simulatedState);
+		DrawCells();
 	}
 
-	private void DrawCells(CellType[,] cells)
+	private void DrawCells()
 	{
-		_currentDrawnCells = cells;
+		_currentDrawnCells = _currentCaveChunk.Cells;
 
 		PlaceCubes();
 	}
@@ -62,31 +52,38 @@ public class CaveCellsVisualizer : MonoBehaviour
 		Vector3 startingPosition = transform.position;
 		Vector3 cubeSize = new Vector3(CubeSize, CubeSize, CubeSize);
 
-		int height = _currentDrawnCells.GetLength(0);
+		int length = _currentDrawnCells.GetLength(0);
 		int width = _currentDrawnCells.GetLength(1);
+		int height = _currentDrawnCells.GetLength(2);
 
-		for (int i = 0; i < height; i++)
+		for (int i = 0; i < length; i++)
 		{
 			for (int j = 0; j < width; j++)
 			{
-				CellType cell = _currentDrawnCells[i, j];
-				bool isHollowCell = CaveCellsGenerator.IsHollowCell(cell);
+				for (int k = 0; k < height; k++)
+				{
+					CellType cell = _currentDrawnCells[i, j, k];
+					bool isHollowCell = CaveCellsGenerator.IsHollowCell(cell);
 
-				Vector3 cellPosition = new Vector3(startingPosition.x + (i - height / 2) * CubeSpacing, startingPosition.y + (j - width / 2) * CubeSpacing, isHollowCell ? CubeSpacing : 0);
+					if (isHollowCell)
+						continue;
 
-				Color cubeColor = isHollowCell ? HollowColor : WallColor;
+					Vector3 cellPosition = new Vector3(startingPosition.x + (i / 2f) * CubeSpacing, startingPosition.z + (k / 2f) * CubeSpacing, startingPosition.y + (j / 2f) * CubeSpacing);
 
-				Gizmos.color = cubeColor;
+					Color cubeColor = WallColor;
 
-				//Gizmos.DrawCube(cellPosition, cubeSize);
-				CreateAndPlaceCube(cellPosition, cubeSize, cubeColor);
+					Gizmos.color = cubeColor;
+
+					//Gizmos.DrawCube(cellPosition, cubeSize);
+					CreateAndPlaceCube(cellPosition, cubeSize, cubeColor);
+				}
 			}
 		}
 	}
 
 	private void CreateAndPlaceCube(Vector3 position, Vector3 size, Color color)
 	{
-		GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+		GameObject cube = Instantiate(CubePrefab);
 
 		cube.transform.parent = transform;
 		cube.transform.localPosition = position;

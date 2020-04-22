@@ -10,10 +10,6 @@ public class CaveCellsVisualizerEditor : Editor
 
 		CaveCellsVisualizer cellsVisualizer = (CaveCellsVisualizer)target;
 
-		if (Application.isPlaying && GUILayout.Button("Show initial state"))
-		{
-			cellsVisualizer.ShowInitialState();
-		}
 		if (Application.isPlaying && GUILayout.Button("Show simulated state"))
 		{
 			cellsVisualizer.ShowSimulatedState();
