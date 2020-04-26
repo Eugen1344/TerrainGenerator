@@ -10,6 +10,7 @@ public struct CaveSettings
 	[Range(0, 1)] public float RandomHollowCellsPercent;
 	[Range(0, 1)] public float RandomHollowCellsPercentDecreasePerLevel;
 	public int IterationCount;
+	public int MinHollowGroupCubicSize;
 	public bool RandomSeed;
 	public int Seed;
 

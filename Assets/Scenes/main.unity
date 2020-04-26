@@ -622,16 +622,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Settings:
-    TerrainCubicSize: {x: 50, y: 50, z: 10}
-    SwitchToHollowThreshold: 4
-    SwitchToWallThreshold: 5
-    RandomHollowCellsPercent: 0.45
+    TerrainCubicSize: {x: 50, y: 50, z: 1}
+    SwitchToHollowThreshold: 3
+    SwitchToWallThreshold: 4
+    RandomHollowCellsPercent: 0.5
     RandomHollowCellsPercentDecreasePerLevel: 0.03
-    IterationCount: 3
+    IterationCount: 5
+    MinHollowGroupCubicSize: 20
     RandomSeed: 0
     Seed: 13
   CubeSize: 10
-  CubeSpacing: 10
+  CubeSpacing: 20
   HollowColor: {r: 1, g: 1, b: 0, a: 1}
   WallColor: {r: 0.21026167, g: 0.3301887, b: 0.3301887, a: 1}
   CubePrefab: {fileID: 3110822623855740755, guid: f35db977aa9f27745ab384092cb2e87f,
