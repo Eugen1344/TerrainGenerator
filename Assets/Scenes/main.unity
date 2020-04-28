@@ -623,14 +623,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Settings:
     TerrainCubicSize: {x: 50, y: 50, z: 1}
+    RandomSeed: 0
+    Seed: 13
     SwitchToHollowThreshold: 3
     SwitchToWallThreshold: 4
     RandomHollowCellsPercent: 0.5
     RandomHollowCellsPercentDecreasePerLevel: 0.03
     IterationCount: 5
     MinHollowGroupCubicSize: 20
-    RandomSeed: 0
-    Seed: 13
+    TunnelHeight: 1
   CubeSize: 10
   CubeSpacing: 20
   HollowColor: {r: 1, g: 1, b: 0, a: 1}

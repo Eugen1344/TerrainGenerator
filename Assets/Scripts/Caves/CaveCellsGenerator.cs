@@ -25,14 +25,16 @@ public class CaveCellsGenerator
 			CellType[,] cells = GetInitialState(levelSettings);
 			cells = GetSimulatedCells(cells, levelSettings);
 
-			AppendCellsToGrid(resultCells, cells, i);
+			AppendCellsToGrid(ref resultCells, cells, i);
 		}
-		
-		List<CaveHollowGroup> hollows = GetCellGroups<CaveHollowGroup>(resultCells, CellType.Hollow).ToList();
 
+		List<CaveHollowGroup> hollows = GetCellGroups<CaveHollowGroup>(resultCells, CellType.Hollow).ToList();
 		FilterHollowGroups(resultCells, hollows, settings.MinHollowGroupCubicSize);
 
 		hollows = GetCellGroups<CaveHollowGroup>(resultCells, CellType.Hollow).ToList();
+
+		List<CaveTunnel> tunnels = CaveConnector.ConnectCaves(ref resultCells, hollows, settings);
+		
 		List<CaveWallsGroup> walls = GetCellGroups<CaveWallsGroup>(resultCells, CellType.Wall).ToList();
 
 		return new CaveChunk(hollows, walls);
@@ -122,7 +124,7 @@ public class CaveCellsGenerator
 		}
 	}
 
-	private static void AppendCellsToGrid(CellType[,,] grid, CellType[,] cells, int level)
+	private static void AppendCellsToGrid(ref CellType[,,] grid, CellType[,] cells, int level)
 	{
 		int length = grid.GetLength(0);
 		int width = grid.GetLength(1);
