@@ -28,16 +28,16 @@ public class CaveCellsGenerator
 			AppendCellsToGrid(ref resultCells, cells, i);
 		}
 
-		List<CaveHollowGroup> hollows = GetCellGroups<CaveHollowGroup>(resultCells, CellType.Hollow).ToList();
+		List<CaveHollowGroup> hollows = GetCellGroups<CaveHollowGroup>(resultCells, CellType.Hollow);
 		FilterHollowGroups(resultCells, hollows, settings.MinHollowGroupCubicSize);
 
-		hollows = GetCellGroups<CaveHollowGroup>(resultCells, CellType.Hollow).ToList();
+		hollows = GetCellGroups<CaveHollowGroup>(resultCells, CellType.Hollow);
 
 		List<CaveTunnel> tunnels = CaveConnector.ConnectCaves(ref resultCells, hollows, settings);
-		
-		List<CaveWallsGroup> walls = GetCellGroups<CaveWallsGroup>(resultCells, CellType.Wall).ToList();
 
-		return new CaveChunk(hollows, walls);
+		List<CaveWallsGroup> walls = GetCellGroups<CaveWallsGroup>(resultCells, CellType.Wall);
+
+		return new CaveChunk(hollows, walls, tunnels);
 	}
 
 	private static List<T> GetCellGroups<T>(CellType[,,] cells, CellType searchedCellType) where T : CaveGroup
@@ -85,7 +85,7 @@ public class CaveCellsGenerator
 									for (int k1 = startK; k1 <= endK; k1++)
 									{
 										if ((i1 == searchCoreCell.x && j1 == searchCoreCell.y && k1 == searchCoreCell.z) ||
-											(i1 != searchCoreCell.x && j1 != searchCoreCell.y && k1 != searchCoreCell.z))
+											(i1 != searchCoreCell.x && j1 != searchCoreCell.y))
 											continue;
 
 										if (cells[i1, j1, k1] == searchedCellType && !markedCells[i1, j1, k1])
@@ -99,6 +99,8 @@ public class CaveCellsGenerator
 								}
 							}
 						}
+
+						//int markedCount = markedCells.Cast<bool>().Count(b => b);
 
 						CaveGroup newGroup = CaveGroup.GetCaveGroup(searchedCellType, foundCells);
 						result.Add((T)newGroup);

@@ -4,17 +4,17 @@ using UnityEngine;
 public class CaveTunnel
 {
 	public List<Vector3Int> CellChunkCoordinates;
-	public CaveHollowGroup PreviousCave;
-	public CaveHollowGroup NextCave;
-	public Vector3Int PreviousCaveConnectionPoint;
-	public Vector3Int NextCaveConnectionPoint;
+	public CaveHollowGroup FirstCave;
+	public CaveHollowGroup SecondCave;
+	public Vector3Int FirstCaveConnectionPoint;
+	public Vector3Int SecondCaveConnectionPoint;
 
 	public CaveTunnel(List<Vector3Int> cellChunkCoordinates, CaveHollowGroup firstCave, CaveHollowGroup secondCave, Vector3Int firstCaveConnectionPoint, Vector3Int secondCaveConnectionPoint)
 	{
 		CellChunkCoordinates = cellChunkCoordinates;
-		PreviousCave = firstCave;
-		NextCave = secondCave;
-		PreviousCaveConnectionPoint = firstCaveConnectionPoint;
-		NextCaveConnectionPoint = secondCaveConnectionPoint;
+		FirstCave = firstCave;
+		SecondCave = secondCave;
+		FirstCaveConnectionPoint = firstCaveConnectionPoint;
+		SecondCaveConnectionPoint = secondCaveConnectionPoint;
 	}
 }

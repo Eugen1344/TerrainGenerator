@@ -5,19 +5,20 @@ public class CaveConnector
 {
 	public static List<CaveTunnel> ConnectCaves(ref CellType[,,] cells, List<CaveHollowGroup> hollows, CaveSettings settings)
 	{
-		LinkedList<CaveHollowGroup> connectedCaves = new LinkedList<CaveHollowGroup>();
-
+		List<CaveHollowGroup> alreadyConnectedCaves = new List<CaveHollowGroup>();
 		List<CaveTunnel> tunnels = new List<CaveTunnel>();
 
-		foreach (CaveHollowGroup hollow in hollows)
+		foreach (CaveHollowGroup firstHollow in hollows)
 		{
-			(CaveHollowGroup cave, Vector3Int firstPoint, Vector3Int secondPoint) = ClosestHollow(hollow, hollows);
+			(CaveHollowGroup secondHollow, Vector3Int firstPoint, Vector3Int secondPoint) = ClosestHollow(firstHollow, hollows, alreadyConnectedCaves);
 
 			int firstX = firstPoint.x < secondPoint.x ? firstPoint.x : secondPoint.x;
 			int secondX = secondPoint.x > firstPoint.x ? secondPoint.x : firstPoint.x;
 
-			if(firstPoint.x == secondPoint.x) //TODO temp
+			if (firstPoint.x == secondPoint.x) //TODO temp
 				continue;
+
+			List<Vector3Int> tunnelCells = new List<Vector3Int>();
 
 			for (int x = firstX; x <= secondX; x++)
 			{
@@ -25,21 +26,29 @@ public class CaveConnector
 
 				int minY = (int)Mathf.Floor(y);
 				int maxY = (int)Mathf.Ceil(y);
-				 
+
 				int maxHeight = Mathf.Min(settings.TunnelHeight, settings.TerrainCubicSize.z);
 
 				for (int k = 0; k < maxHeight; k++)
 				{
-					cells[x, minY, k] = CellType.Hollow;
-					cells[x, maxY, k] = CellType.Hollow;
+					//cells[x, minY, k] = CellType.Hollow;
+					//cells[x, maxY, k] = CellType.Hollow;
+
+					tunnelCells.Add(new Vector3Int(x, minY, k));
+					tunnelCells.Add(new Vector3Int(x, maxY, k));
 				}
+
+				CaveTunnel tunnel = new CaveTunnel(tunnelCells, firstHollow, secondHollow, firstPoint, secondPoint);
+				tunnels.Add(tunnel);
+
+				alreadyConnectedCaves.Add(secondHollow);
 			}
 		}
 
 		return tunnels;
 	}
 
-	private static (CaveHollowGroup hollow, Vector3Int firstPoint, Vector3Int secondPoint) ClosestHollow(CaveHollowGroup hollow, List<CaveHollowGroup> hollows)
+	private static (CaveHollowGroup hollow, Vector3Int firstPoint, Vector3Int secondPoint) ClosestHollow(CaveHollowGroup hollow, List<CaveHollowGroup> hollows, List<CaveHollowGroup> alreadyConnectedCaves)
 	{
 		Vector3Int firstPoint = default;
 		Vector3Int secondPoint = default;
@@ -48,7 +57,7 @@ public class CaveConnector
 
 		foreach (CaveHollowGroup nextHollow in hollows)
 		{
-			if(nextHollow == hollow)
+			if (nextHollow == hollow || alreadyConnectedCaves.Contains(nextHollow))
 				continue;
 
 			foreach (Vector3Int firstCoordinate in hollow.CellChunkCoordinates)
