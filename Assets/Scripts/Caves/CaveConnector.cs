@@ -15,12 +15,9 @@ public class CaveConnector
 			int firstX = firstPoint.x < secondPoint.x ? firstPoint.x : secondPoint.x;
 			int secondX = secondPoint.x > firstPoint.x ? secondPoint.x : firstPoint.x;
 
-			if (firstPoint.x == secondPoint.x) //TODO temp
-				continue;
-
 			List<Vector3Int> tunnelCells = new List<Vector3Int>();
 
-			for (int x = firstX; x <= secondX; x++)
+			/*for (int x = firstX; x <= secondX; x++)
 			{
 				float y = (x - firstPoint.x) * (secondPoint.y - firstPoint.y) / (secondPoint.x - firstPoint.x) + firstPoint.y;
 
@@ -37,12 +34,12 @@ public class CaveConnector
 					tunnelCells.Add(new Vector3Int(x, minY, k));
 					tunnelCells.Add(new Vector3Int(x, maxY, k));
 				}
+			}*/
 
-				CaveTunnel tunnel = new CaveTunnel(tunnelCells, firstHollow, secondHollow, firstPoint, secondPoint);
-				tunnels.Add(tunnel);
+			CaveTunnel tunnel = new CaveTunnel(tunnelCells, firstHollow, secondHollow, firstPoint, secondPoint);
+			tunnels.Add(tunnel);
 
-				alreadyConnectedCaves.Add(secondHollow);
-			}
+			alreadyConnectedCaves.Add(secondHollow);
 		}
 
 		return tunnels;

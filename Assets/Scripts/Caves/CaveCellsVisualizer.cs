@@ -32,6 +32,9 @@ public class CaveCellsVisualizer : MonoBehaviour
 	{
 		GenerateCave();
 
+		if (_currentCaveChunk == null)
+			return;
+
 		DrawCells();
 		DrawTunnelLines();
 	}
@@ -43,9 +46,6 @@ public class CaveCellsVisualizer : MonoBehaviour
 
 	private void PlaceCubes()
 	{
-		if (_currentCaveChunk == null)
-			return;
-
 		DeletePreviousCubes();
 
 		Vector3 cubeSize = new Vector3(CubeSize, CubeSize, CubeSize);
@@ -91,7 +91,7 @@ public class CaveCellsVisualizer : MonoBehaviour
 
 	private void OnDrawGizmos()
 	{
-		if (!Application.isPlaying)
+		if (!Application.isPlaying || _currentCaveChunk == null)
 			return;
 
 		for (int i = 0; i < _currentCaveChunk.Hollows.Count; i++)
