@@ -3,50 +3,43 @@
   <Class Name="CaveChunkCellData" Collapsed="true">
     <Position X="0.5" Y="5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAoAAAAAAAAAACAAAAAAAACAAAA=</HashCode>
-      <FileName>Assets\Scripts\Caves\CaveChunkCellData.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="CaveCellsGenerator" Collapsed="true">
-    <Position X="5.25" Y="0.75" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>ECAAAAAAAAAAAABAAAEEAABAAAAAAAAACEAAAAACAAA=</HashCode>
-      <FileName>Assets\Scripts\Caves\CaveCellsGenerator.cs</FileName>
+      <HashCode>ECAAAAAAAAAAAABAAAsEAABAAAAAACAACEAAAACCAAA=</HashCode>
+      <FileName>Assets\Scripts\Caves\Cells\CaveChunkCellData.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="CaveCellsVisualizer" Collapsed="true">
     <Position X="7" Y="0.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>BAAMBIRAACAABAAAAABAAAAAgAAAAAAAgCIECAEAAiA=</HashCode>
-      <FileName>Assets\Scripts\Caves\CaveCellsVisualizer.cs</FileName>
+      <HashCode>BAAEBIRAACAABAAAAABAAQAAgAAAAAAAgCIECAEAAiA=</HashCode>
+      <FileName>Assets\Scripts\Caves\Cells\CaveCellsVisualizer.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="CaveCellsVisualizerEditor" Collapsed="true">
     <Position X="8.75" Y="0.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Assets\Scripts\Caves\CaveCellsVisualizerEditor.cs</FileName>
+      <FileName>Assets\Scripts\Caves\Cells\CaveCellsVisualizerEditor.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="CaveConnector" Collapsed="true">
     <Position X="5.25" Y="1.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAQAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Assets\Scripts\Caves\CaveConnector.cs</FileName>
+      <FileName>Assets\Scripts\Caves\Cells\CaveConnector.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="CaveGroup" Collapsed="true">
     <Position X="1.75" Y="0.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAEAAAAAAAAAAAAAAAAAAAAAAIAAAABAAAAAAAA=</HashCode>
-      <FileName>Assets\Scripts\Caves\CaveGroup.cs</FileName>
+      <FileName>Assets\Scripts\Caves\Cells\CaveGroup.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="CaveHollowGroup" Collapsed="true">
     <Position X="0.5" Y="2" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Assets\Scripts\Caves\CaveHollowGroup.cs</FileName>
+      <FileName>Assets\Scripts\Caves\Cells\CaveHollowGroup.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="CaveMeshGenerator" Collapsed="true">
@@ -60,14 +53,14 @@
     <Position X="8.75" Y="1.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AECACAAAAAAAAAAAAABAAAAAAAAAAIAAAAAAAAAAAAA=</HashCode>
-      <FileName>Assets\Scripts\Caves\CaveTunnel.cs</FileName>
+      <FileName>Assets\Scripts\Caves\Cells\CaveTunnel.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="CaveWallsGroup" Collapsed="true">
     <Position X="2.75" Y="2" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Assets\Scripts\Caves\CaveWallsGroup.cs</FileName>
+      <FileName>Assets\Scripts\Caves\Cells\CaveWallsGroup.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Chunk" Collapsed="true">
@@ -98,14 +91,14 @@
     </NestedTypes>
     <TypeIdentifier>
       <HashCode>AAAQAAEAAAAIAAAAAEAEAAAAACEAgAABAAAAQAAAQAA=</HashCode>
-      <FileName>Assets\Scripts\Caves\CaveSettings.cs</FileName>
+      <FileName>Assets\Scripts\Caves\Cells\CaveSettings.cs</FileName>
     </TypeIdentifier>
   </Struct>
   <Enum Name="CellType" Collapsed="true">
     <Position X="9" Y="4.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAABAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAA=</HashCode>
-      <FileName>Assets\Scripts\Caves\CellType.cs</FileName>
+      <FileName>Assets\Scripts\Caves\Cells\CellType.cs</FileName>
     </TypeIdentifier>
   </Enum>
   <Font Name="Segoe UI" Size="9" />

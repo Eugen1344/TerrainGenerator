@@ -1,11 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using Random = System.Random;
 
-public class CaveCellsGenerator
+public class CaveChunkCellData
 {
+	public CellType[,,] Cells; //TODO remake
+	public List<CaveHollowGroup> Hollows;
+	public List<CaveWallsGroup> Walls;
+	public List<CaveTunnel> Tunnels;
+
+	public CaveChunkCellData(List<CaveHollowGroup> hollows, List<CaveWallsGroup> walls, List<CaveTunnel> tunnels)
+	{
+		Hollows = hollows;
+		Walls = walls;
+		Tunnels = tunnels;
+	}
+
 	public static CaveChunkCellData GenerateCaveChunk(CaveSettings settings)
 	{
 		if (settings.RandomSeed)

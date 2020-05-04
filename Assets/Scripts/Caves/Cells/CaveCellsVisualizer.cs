@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.Serialization;
 using Random = System.Random;
 
-public class CaveCellsVisualizer : MonoBehaviour
+public class CaveCelledsVisualizer : MonoBehaviour
 {
 	public CaveSettings Settings;
 	public float CubeSize;
@@ -14,7 +12,7 @@ public class CaveCellsVisualizer : MonoBehaviour
 	public Color WallColor;
 	public GameObject CubePrefab;
 
-	private CaveChunkCellData _currentCaveChunkCellData;
+	private CaveChunkCellData _currentCaveCells;
 
 	private List<GameObject> _instantiatedCubes = new List<GameObject>();
 
@@ -25,14 +23,14 @@ public class CaveCellsVisualizer : MonoBehaviour
 
 	public void GenerateCave()
 	{
-		_currentCaveChunkCellData = CaveCellsGenerator.GenerateCaveChunk(Settings);
+		_currentCaveCells = CaveChunkCellData.GenerateCaveChunk(Settings);
 	}
 
 	public void ShowSimulatedState()
 	{
 		GenerateCave();
 
-		if (_currentCaveChunkCellData == null)
+		if (_currentCaveCells == null)
 			return;
 
 		DrawCells();
@@ -49,7 +47,7 @@ public class CaveCellsVisualizer : MonoBehaviour
 
 		Vector3 cubeSize = new Vector3(CubeSize, CubeSize, CubeSize);
 
-		foreach (CaveWallsGroup wallsGroup in _currentCaveChunkCellData.Walls)
+		foreach (CaveWallsGroup wallsGroup in _currentCaveCells.Walls)
 		{
 			foreach (Vector3Int cellCoordinates in wallsGroup.CellChunkCoordinates)
 			{
@@ -90,7 +88,7 @@ public class CaveCellsVisualizer : MonoBehaviour
 
 	private void OnDrawGizmos()
 	{
-		if (!Application.isPlaying || _currentCaveChunkCellData == null)
+		if (!Application.isPlaying || _currentCaveCells == null)
 			return;
 
 		DrawHollows();
@@ -106,9 +104,9 @@ public class CaveCellsVisualizer : MonoBehaviour
 
 	private void DrawHollows()
 	{
-		for (int i = 0; i < _currentCaveChunkCellData.Hollows.Count; i++)
+		for (int i = 0; i < _currentCaveCells.Hollows.Count; i++)
 		{
-			CaveHollowGroup hollow = _currentCaveChunkCellData.Hollows[i];
+			CaveHollowGroup hollow = _currentCaveCells.Hollows[i];
 			Vector3 textGlobalPoint = CellChunkCoordinatesToWorld(hollow.CellChunkCoordinates[0]);
 
 			GUIStyle textStyle = new GUIStyle();
@@ -128,7 +126,7 @@ public class CaveCellsVisualizer : MonoBehaviour
 
 	private void DrawTunnelLines()
 	{
-		foreach (CaveTunnel tunnel in _currentCaveChunkCellData.Tunnels)
+		foreach (CaveTunnel tunnel in _currentCaveCells.Tunnels)
 		{
 			Vector3 globalFirstPoint = CellChunkCoordinatesToWorld(tunnel.FirstCaveConnectionPoint);
 			Vector3 globalSecondPoint = CellChunkCoordinatesToWorld(tunnel.SecondCaveConnectionPoint);
