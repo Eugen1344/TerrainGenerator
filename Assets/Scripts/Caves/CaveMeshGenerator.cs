@@ -1,23 +1,26 @@
 ﻿using System.Collections.Generic;
+using Caves.Cells;
 using UnityEngine;
 
-public class CaveMeshGenerator : MonoBehaviour
+namespace Caves
 {
-	public Mesh GetMesh(List<CaveWallsGroup> walls)
+	public class CaveMeshGenerator : MonoBehaviour
 	{
-		foreach (CaveWallsGroup group in walls)
+		public Mesh GetMesh(List<CaveWallsGroup> walls)
 		{
-			Vector3[] vertices = new Vector3[group.CellCount];
-
-			for (int i = 0; i < group.CellChunkCoordinates.Count; i++)
+			foreach (CaveWallsGroup group in walls)
 			{
-				//Vector2Int coordinate = group.CellChunkCoordinates[i];
-				//dvertices[i] = new Vector3(coordinate.x, coordinate.y, 0);
+				Vector3[] vertices = new Vector3[group.CellCount];
+
+				for (int i = 0; i < group.CellChunkCoordinates.Count; i++)
+				{
+					//Vector2Int coordinate = group.CellChunkCoordinates[i];
+					//dvertices[i] = new Vector3(coordinate.x, coordinate.y, 0);
+				}
 			}
+
+			Mesh mesh = new Mesh();
+			return mesh;
 		}
-
-
-		Mesh mesh = new Mesh();
-		return mesh;
 	}
 }

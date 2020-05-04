@@ -1,5 +1,8 @@
-﻿public enum CellType
+﻿namespace Caves.Cells
 {
-	Wall = 0,
-	Hollow = 1
+	public enum CellType
+	{
+		Wall = 0,
+		Hollow = 1
+	}
 }

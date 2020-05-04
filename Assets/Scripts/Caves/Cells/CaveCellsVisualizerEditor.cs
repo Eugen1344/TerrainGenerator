@@ -1,18 +1,21 @@
 ﻿using UnityEditor;
 using UnityEngine;
 
-[CustomEditor(typeof(CaveCellsVisualizer))]
-public class CaveCellsVisualizerEditor : Editor
+namespace Caves.Cells
 {
-	public override void OnInspectorGUI()
+	[CustomEditor(typeof(CaveCellsVisualizer))]
+	public class CaveCellsVisualizerEditor : Editor
 	{
-		base.OnInspectorGUI();
-
-		CaveCellsVisualizer cellsVisualizer = (CaveCellsVisualizer)target;
-
-		if (Application.isPlaying && GUILayout.Button("Show simulated state"))
+		public override void OnInspectorGUI()
 		{
-			cellsVisualizer.ShowSimulatedState();
+			base.OnInspectorGUI();
+
+			CaveCellsVisualizer cellsVisualizer = (CaveCellsVisualizer)target;
+
+			if (Application.isPlaying && GUILayout.Button("Show simulated state"))
+			{
+				cellsVisualizer.ShowSimulatedState();
+			}
 		}
 	}
 }

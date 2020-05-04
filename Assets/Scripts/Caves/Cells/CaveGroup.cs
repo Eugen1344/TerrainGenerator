@@ -2,26 +2,29 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class CaveGroup
+namespace Caves.Cells
 {
-	public List<Vector3Int> CellChunkCoordinates = new List<Vector3Int>();
-	public int CellCount => CellChunkCoordinates.Count;
-
-	protected CaveGroup(List<Vector3Int> cellChunkCoordinates)
+	public abstract class CaveGroup
 	{
-		CellChunkCoordinates = cellChunkCoordinates;
-	}
+		public List<Vector3Int> CellChunkCoordinates = new List<Vector3Int>();
+		public int CellCount => CellChunkCoordinates.Count;
 
-	public static CaveGroup GetCaveGroup(CellType cellType, List<Vector3Int> cellChunkCoordinates)
-	{
-		switch (cellType)
+		protected CaveGroup(List<Vector3Int> cellChunkCoordinates)
 		{
-			case CellType.Wall:
-				return new CaveWallsGroup(cellChunkCoordinates);
-			case CellType.Hollow:
-				return new CaveHollowGroup(cellChunkCoordinates);
-			default:
-				throw new ArgumentOutOfRangeException(nameof(cellType), cellType, null);
+			CellChunkCoordinates = cellChunkCoordinates;
+		}
+
+		public static CaveGroup GetCaveGroup(CellType cellType, List<Vector3Int> cellChunkCoordinates)
+		{
+			switch (cellType)
+			{
+				case CellType.Wall:
+					return new CaveWallsGroup(cellChunkCoordinates);
+				case CellType.Hollow:
+					return new CaveHollowGroup(cellChunkCoordinates);
+				default:
+					throw new ArgumentOutOfRangeException(nameof(cellType), cellType, null);
+			}
 		}
 	}
 }

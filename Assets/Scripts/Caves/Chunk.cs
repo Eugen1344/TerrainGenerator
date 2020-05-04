@@ -1,3 +1,6 @@
-﻿public class Chunk
+﻿namespace Caves
 {
+	public class Chunk
+	{
+	}
 }

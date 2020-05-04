@@ -1,9 +1,12 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class CaveWallsGroup : CaveGroup
+namespace Caves.Cells
 {
-	public CaveWallsGroup(List<Vector3Int> cellChunkCoordinates) : base(cellChunkCoordinates)
+	public class CaveWallsGroup : CaveGroup
 	{
+		public CaveWallsGroup(List<Vector3Int> cellChunkCoordinates) : base(cellChunkCoordinates)
+		{
+		}
 	}
 }

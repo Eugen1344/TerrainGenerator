@@ -1,10 +1,12 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class ChunkGenerator : MonoBehaviour
+namespace Caves
 {
-	public void Awake()
+	public class ChunkGenerator : MonoBehaviour
 	{
+		public void Awake()
+		{
 		
+		}
 	}
 }
