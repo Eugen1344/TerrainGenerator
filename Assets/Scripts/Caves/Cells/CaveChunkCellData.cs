@@ -46,7 +46,7 @@ namespace Caves.Cells
 
 			hollows = GetCellGroups<CaveHollowGroup>(resultCells, CellType.Hollow);
 
-			List<CaveTunnel> tunnels = CaveConnector.ConnectCaves(ref resultCells, hollows, settings);
+			List<CaveTunnel> tunnels = CaveTunnel.CreateTunnelsAndConnectCaves(ref resultCells, hollows, settings);
 
 			List<CaveWallsGroup> walls = GetCellGroups<CaveWallsGroup>(resultCells, CellType.Wall);
 
@@ -98,7 +98,7 @@ namespace Caves.Cells
 										for (int k1 = startK; k1 <= endK; k1++)
 										{
 											if ((i1 == searchCoreCell.x && j1 == searchCoreCell.y && k1 == searchCoreCell.z) ||
-											    (i1 != searchCoreCell.x && j1 != searchCoreCell.y))
+												(i1 != searchCoreCell.x && j1 != searchCoreCell.y))
 												continue;
 
 											if (cells[i1, j1, k1] == searchedCellType && !markedCells[i1, j1, k1])
