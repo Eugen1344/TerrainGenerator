@@ -6,7 +6,7 @@ using Random = System.Random;
 
 public class CaveCellsGenerator
 {
-	public static CaveCellChunk GenerateCaveChunk(CaveSettings settings)
+	public static CaveChunkCellData GenerateCaveChunk(CaveSettings settings)
 	{
 		if (settings.RandomSeed)
 			settings.Seed = Environment.TickCount;
@@ -37,7 +37,7 @@ public class CaveCellsGenerator
 
 		List<CaveWallsGroup> walls = GetCellGroups<CaveWallsGroup>(resultCells, CellType.Wall);
 
-		return new CaveCellChunk(hollows, walls, tunnels);
+		return new CaveChunkCellData(hollows, walls, tunnels);
 	}
 
 	private static List<T> GetCellGroups<T>(CellType[,,] cells, CellType searchedCellType) where T : CaveGroup

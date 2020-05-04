@@ -14,7 +14,7 @@ public class CaveCellsVisualizer : MonoBehaviour
 	public Color WallColor;
 	public GameObject CubePrefab;
 
-	private CaveCellChunk _currentCaveCellChunk;
+	private CaveChunkCellData _currentCaveChunkCellData;
 
 	private List<GameObject> _instantiatedCubes = new List<GameObject>();
 
@@ -25,14 +25,14 @@ public class CaveCellsVisualizer : MonoBehaviour
 
 	public void GenerateCave()
 	{
-		_currentCaveCellChunk = CaveCellsGenerator.GenerateCaveChunk(Settings);
+		_currentCaveChunkCellData = CaveCellsGenerator.GenerateCaveChunk(Settings);
 	}
 
 	public void ShowSimulatedState()
 	{
 		GenerateCave();
 
-		if (_currentCaveCellChunk == null)
+		if (_currentCaveChunkCellData == null)
 			return;
 
 		DrawCells();
@@ -49,7 +49,7 @@ public class CaveCellsVisualizer : MonoBehaviour
 
 		Vector3 cubeSize = new Vector3(CubeSize, CubeSize, CubeSize);
 
-		foreach (CaveWallsGroup wallsGroup in _currentCaveCellChunk.Walls)
+		foreach (CaveWallsGroup wallsGroup in _currentCaveChunkCellData.Walls)
 		{
 			foreach (Vector3Int cellCoordinates in wallsGroup.CellChunkCoordinates)
 			{
@@ -90,7 +90,7 @@ public class CaveCellsVisualizer : MonoBehaviour
 
 	private void OnDrawGizmos()
 	{
-		if (!Application.isPlaying || _currentCaveCellChunk == null)
+		if (!Application.isPlaying || _currentCaveChunkCellData == null)
 			return;
 
 		DrawHollows();
@@ -106,9 +106,9 @@ public class CaveCellsVisualizer : MonoBehaviour
 
 	private void DrawHollows()
 	{
-		for (int i = 0; i < _currentCaveCellChunk.Hollows.Count; i++)
+		for (int i = 0; i < _currentCaveChunkCellData.Hollows.Count; i++)
 		{
-			CaveHollowGroup hollow = _currentCaveCellChunk.Hollows[i];
+			CaveHollowGroup hollow = _currentCaveChunkCellData.Hollows[i];
 			Vector3 textGlobalPoint = CellChunkCoordinatesToWorld(hollow.CellChunkCoordinates[0]);
 
 			GUIStyle textStyle = new GUIStyle();
@@ -128,7 +128,7 @@ public class CaveCellsVisualizer : MonoBehaviour
 
 	private void DrawTunnelLines()
 	{
-		foreach (CaveTunnel tunnel in _currentCaveCellChunk.Tunnels)
+		foreach (CaveTunnel tunnel in _currentCaveChunkCellData.Tunnels)
 		{
 			Vector3 globalFirstPoint = CellChunkCoordinatesToWorld(tunnel.FirstCaveConnectionPoint);
 			Vector3 globalSecondPoint = CellChunkCoordinatesToWorld(tunnel.SecondCaveConnectionPoint);
