@@ -14,7 +14,7 @@ public class CaveCellsVisualizer : MonoBehaviour
 	public Color WallColor;
 	public GameObject CubePrefab;
 
-	private CaveChunk _currentCaveChunk;
+	private CaveCellChunk _currentCaveCellChunk;
 
 	private List<GameObject> _instantiatedCubes = new List<GameObject>();
 
@@ -25,18 +25,17 @@ public class CaveCellsVisualizer : MonoBehaviour
 
 	public void GenerateCave()
 	{
-		_currentCaveChunk = CaveCellsGenerator.GenerateCaveChunk(Settings);
+		_currentCaveCellChunk = CaveCellsGenerator.GenerateCaveChunk(Settings);
 	}
 
 	public void ShowSimulatedState()
 	{
 		GenerateCave();
 
-		if (_currentCaveChunk == null)
+		if (_currentCaveCellChunk == null)
 			return;
 
 		DrawCells();
-		DrawTunnelLines();
 	}
 
 	private void DrawCells()
@@ -50,7 +49,7 @@ public class CaveCellsVisualizer : MonoBehaviour
 
 		Vector3 cubeSize = new Vector3(CubeSize, CubeSize, CubeSize);
 
-		foreach (CaveWallsGroup wallsGroup in _currentCaveChunk.Walls)
+		foreach (CaveWallsGroup wallsGroup in _currentCaveCellChunk.Walls)
 		{
 			foreach (Vector3Int cellCoordinates in wallsGroup.CellChunkCoordinates)
 			{
@@ -91,12 +90,25 @@ public class CaveCellsVisualizer : MonoBehaviour
 
 	private void OnDrawGizmos()
 	{
-		if (!Application.isPlaying || _currentCaveChunk == null)
+		if (!Application.isPlaying || _currentCaveCellChunk == null)
 			return;
 
-		for (int i = 0; i < _currentCaveChunk.Hollows.Count; i++)
+		DrawHollows();
+		DrawTunnelLines();
+	}
+
+	private Color GetRandomColor(int i)
+	{
+		Random rand = new Random(Settings.Seed + i);
+
+		return new Color((float)rand.NextDouble(), (float)rand.NextDouble(), (float)rand.NextDouble());
+	}
+
+	private void DrawHollows()
+	{
+		for (int i = 0; i < _currentCaveCellChunk.Hollows.Count; i++)
 		{
-			CaveHollowGroup hollow = _currentCaveChunk.Hollows[i];
+			CaveHollowGroup hollow = _currentCaveCellChunk.Hollows[i];
 			Vector3 textGlobalPoint = CellChunkCoordinatesToWorld(hollow.CellChunkCoordinates[0]);
 
 			GUIStyle textStyle = new GUIStyle();
@@ -114,21 +126,15 @@ public class CaveCellsVisualizer : MonoBehaviour
 		}
 	}
 
-	private Color GetRandomColor(int i)
-	{
-		Random rand = new Random(i);
-
-		return new Color((float)rand.NextDouble(), (float)rand.NextDouble(), (float)rand.NextDouble());
-	}
-
 	private void DrawTunnelLines()
 	{
-		foreach (CaveTunnel tunnel in _currentCaveChunk.Tunnels)
+		foreach (CaveTunnel tunnel in _currentCaveCellChunk.Tunnels)
 		{
 			Vector3 globalFirstPoint = CellChunkCoordinatesToWorld(tunnel.FirstCaveConnectionPoint);
 			Vector3 globalSecondPoint = CellChunkCoordinatesToWorld(tunnel.SecondCaveConnectionPoint);
 
-			Debug.DrawLine(globalFirstPoint, globalSecondPoint, Color.cyan, 1000000000);
+			Gizmos.color = Color.cyan;
+			Gizmos.DrawLine(globalFirstPoint, globalSecondPoint);
 		}
 	}
 

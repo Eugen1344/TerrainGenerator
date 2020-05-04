@@ -14,6 +14,7 @@ public struct CaveSettings
 	public int IterationCount;
 	public int MinHollowGroupCubicSize;
 	public int TunnelHeight;
+	public int TunnelWidth;
 
 	public class InvalidCaveSettingsException : Exception
 	{

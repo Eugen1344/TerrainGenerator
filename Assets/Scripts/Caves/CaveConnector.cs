@@ -14,32 +14,36 @@ public class CaveConnector
 
 			int firstX = firstPoint.x < secondPoint.x ? firstPoint.x : secondPoint.x;
 			int secondX = secondPoint.x > firstPoint.x ? secondPoint.x : firstPoint.x;
+			int firstY = firstPoint.y < secondPoint.y ? firstPoint.y : secondPoint.y;
+			int secondY = secondPoint.y > firstPoint.y ? secondPoint.y : firstPoint.y;
 
 			List<Vector3Int> tunnelCells = new List<Vector3Int>();
 
-			/*for (int x = firstX; x <= secondX; x++)
+			for (int x = firstX; x <= secondX; x++)
 			{
-				float y = (x - firstPoint.x) * (secondPoint.y - firstPoint.y) / (secondPoint.x - firstPoint.x) + firstPoint.y;
-
-				int minY = (int)Mathf.Floor(y);
-				int maxY = (int)Mathf.Ceil(y);
-
-				int maxHeight = Mathf.Min(settings.TunnelHeight, settings.TerrainCubicSize.z);
-
-				for (int k = 0; k < maxHeight; k++)
+				for (int y = firstY; y <= secondY; y++)
 				{
-					//cells[x, minY, k] = CellType.Hollow;
-					//cells[x, maxY, k] = CellType.Hollow;
+					float distance = Mathf.Abs((secondPoint.y - firstPoint.y) * x - (secondPoint.x - firstPoint.x) * y + secondPoint.x * firstPoint.y - secondPoint.y * firstPoint.x) /
+									 Mathf.Sqrt(Mathf.Pow(secondPoint.x - firstPoint.x, 2) + Mathf.Pow(secondPoint.y - firstPoint.y, 2));
 
-					tunnelCells.Add(new Vector3Int(x, minY, k));
-					tunnelCells.Add(new Vector3Int(x, maxY, k));
+					if (distance > settings.TunnelWidth)
+						continue;
+
+					int maxHeight = Mathf.Min(settings.TunnelHeight, settings.TerrainCubicSize.z);
+
+					for (int z = 0; z < maxHeight; z++)
+					{
+						cells[x, y, z] = CellType.Hollow;
+
+						tunnelCells.Add(new Vector3Int(x, y, z));
+					}
 				}
-			}*/
+			}
 
 			CaveTunnel tunnel = new CaveTunnel(tunnelCells, firstHollow, secondHollow, firstPoint, secondPoint);
 			tunnels.Add(tunnel);
 
-			alreadyConnectedCaves.Add(secondHollow);
+			alreadyConnectedCaves.Add(firstHollow);
 		}
 
 		return tunnels;

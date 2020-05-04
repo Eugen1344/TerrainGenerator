@@ -632,6 +632,7 @@ MonoBehaviour:
     IterationCount: 5
     MinHollowGroupCubicSize: 20
     TunnelHeight: 1
+    TunnelWidth: 1
   CubeSize: 10
   CubeSpacing: 20
   HollowColor: {r: 1, g: 1, b: 0, a: 1}
