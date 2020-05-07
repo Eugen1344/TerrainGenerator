@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Caves.Cells;
 using UnityEngine;
 
@@ -13,59 +14,48 @@ namespace Caves.CaveMesh
 			Mesh = mesh;
 		}
 
-		public static CaveWallsMesh GenerateWallMesh(List<CaveWallsGroup> walls)
+		public static CaveWallsMesh GenerateWallMesh(List<CaveWallsGroup> walls, CaveMeshSettings settings)
 		{
-			Mesh mesh = GetMesh(walls);
+			Mesh mesh = GetMesh(walls, settings);
 
 			return new CaveWallsMesh(mesh);
 		}
 
-		private static Mesh GetMesh(List<CaveWallsGroup> walls)
+		private static Mesh GetMesh(List<CaveWallsGroup> walls, CaveMeshSettings settings)
 		{
+			List<Vector3> vertices = new List<Vector3>();
+			List<int> triangles = new List<int>();
+
 			foreach (CaveWallsGroup wall in walls)
 			{
-				CellType[,,] cellMatrix = GetCellMatrixAlligned4X4X4(wall);
+				CellType[,,] cellMatrix = GetAlignedCellMatrix(wall, out Vector3Int matrixSize);
 
-				int length = cellMatrix.GetLength(0);
-				int width = cellMatrix.GetLength(1);
-				int height = cellMatrix.GetLength(2);
-
-				for (int i = 0; i < length; i++)
+				for (int i = 0; i < matrixSize.x; i++)
 				{
-					for (int j = 0; j < width; j++)
+					for (int j = 0; j < matrixSize.y; j++)
 					{
-						for (int k = 0; k < height; k++)
+						for (int k = 0; k < matrixSize.z; k++)
 						{
-							int nodeConfiguration = GetNodeConfiguration(cellMatrix, i, j, k);
+							int nodeConfiguration = CaveMeshData.GetNodeConfiguration(cellMatrix, i, j, k);
 
-							Cave
+							foreach (Vector3 vertex in CaveMeshData.GetVertices(nodeConfiguration))
+							{
+								vertices.Add(vertex);
+
+								triangles.Add(vertices.Count - 1);
+							}
 						}
 					}
 				}
 			}
 
 			Mesh mesh = new Mesh();
-			//mesh.vertices
+			mesh.vertices = vertices.ToArray();
+			mesh.triangles = triangles.ToArray();
 			return mesh;
 		}
 
-		private static int GetNodeConfiguration(CellType[,,] alignedMatrix, int i0, int j0, int k0)
-		{
-			int node0 = alignedMatrix[i0, j0, k0] == CellType.Wall ? 1 : 0;
-			int node1 = alignedMatrix[i0 + 1, j0, k0] == CellType.Wall ? 1 : 0;
-			int node2 = alignedMatrix[i0 + 1, j0 + 1, k0] == CellType.Wall ? 1 : 0;
-			int node3 = alignedMatrix[i0, j0 + 1, k0] == CellType.Wall ? 1 : 0;
-
-			int node4 = alignedMatrix[i0, j0, k0 + 1] == CellType.Wall ? 1 : 0;
-			int node5 = alignedMatrix[i0 + 1, j0, k0 + 1] == CellType.Wall ? 1 : 0;
-			int node6 = alignedMatrix[i0 + 1, j0 + 1, k0 + 1] == CellType.Wall ? 1 : 0;
-			int node7 = alignedMatrix[i0, j0 + 1, k0 + 1] == CellType.Wall ? 1 : 0;
-
-			return node0 | (node1 << 1) | (node2 << 2) | (node3 << 3) |
-				   (node4 << 4) | (node5 << 5) | (node6 << 6) | (node7 << 7);
-		}
-
-		private static CellType[,,] GetCellMatrixAligned2(CaveWallsGroup wall)
+		private static CellType[,,] GetAlignedCellMatrix(CaveWallsGroup wall, out Vector3Int physicalMatrixSize)
 		{
 			Vector3Int minCoordinate = wall.CellChunkCoordinates[0];
 			Vector3Int maxCoordinate = wall.CellChunkCoordinates[0];
@@ -88,22 +78,11 @@ namespace Caves.CaveMesh
 					maxCoordinate.z = cell.z;
 			}
 
-			Vector3Int matrixSize = maxCoordinate - minCoordinate + Vector3Int.one;
+			physicalMatrixSize = maxCoordinate - minCoordinate + Vector3Int.one;
 
-			if (matrixSize.x % 2 != 0) //TODO do better solution
-			{
-				matrixSize.x += 1;
-			}
-			if (matrixSize.y % 2 != 0)
-			{
-				matrixSize.y += 1;
-			}
-			if (matrixSize.z % 2 != 0)
-			{
-				matrixSize.z += 1;
-			}
+			Vector3Int actualMatrixSize = physicalMatrixSize + Vector3Int.one;
 
-			CellType[,,] cells = new CellType[matrixSize.x, matrixSize.y, matrixSize.z];
+			CellType[,,] cells = new CellType[actualMatrixSize.x, actualMatrixSize.y, actualMatrixSize.z];
 
 			foreach (Vector3Int coordinate in wall.CellChunkCoordinates)
 			{

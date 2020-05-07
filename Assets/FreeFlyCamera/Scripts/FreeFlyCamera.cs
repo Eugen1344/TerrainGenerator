@@ -14,7 +14,7 @@ public class FreeFlyCamera : MonoBehaviour
 	[Space]
 
 	[SerializeField]
-	private CursorLockMode _cursorMode;
+	private CursorLockMode _cursorMode = CursorLockMode.Locked;
 
 	[Space]
 
