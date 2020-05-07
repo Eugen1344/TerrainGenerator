@@ -1,6 +1,8 @@
-﻿namespace Caves
+﻿using UnityEngine;
+
+namespace Caves
 {
-	public class Chunk
+	public class Chunk : MonoBehaviour
 	{
 	}
 }

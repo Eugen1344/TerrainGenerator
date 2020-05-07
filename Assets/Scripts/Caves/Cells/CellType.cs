@@ -2,7 +2,7 @@
 {
 	public enum CellType
 	{
-		Wall = 0,
-		Hollow = 1
+		Hollow = 0,
+		Wall = 1,
 	}
 }
