@@ -7,7 +7,7 @@ namespace Caves.Cells
 {
 	public class CaveCellsVisualizer : MonoBehaviour
 	{
-		public CaveSettings Settings;
+		public CaveCellSettings Settings;
 		public float CubeSize;
 		public float CubeSpacing;
 		public Color HollowColor;

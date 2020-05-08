@@ -24,11 +24,12 @@ namespace Caves.CaveMesh
 		private static Mesh GetMesh(List<CaveWallsGroup> walls, CaveMeshSettings settings)
 		{
 			List<Vector3> vertices = new List<Vector3>();
+			List<Vector3> normals = new List<Vector3>();
 			List<int> triangles = new List<int>();
 
 			foreach (CaveWallsGroup wall in walls)
 			{
-				CellType[,,] cellMatrix = GetAlignedCellMatrix(wall, out Vector3Int matrixSize);
+				CellType[,,] cellMatrix = GetAlignedCellMatrix(wall, out Vector3Int matrixSize, out Vector3Int minCoordinate);
 
 				for (int i = 0; i < matrixSize.x; i++)
 				{
@@ -40,9 +41,13 @@ namespace Caves.CaveMesh
 
 							foreach (Vector3 vertex in CaveMeshData.GetVertices(nodeConfiguration))
 							{
-								vertices.Add(vertex);
+								Vector3 vertexPosition = new Vector3((vertex.x + minCoordinate.x + i) * settings.CellSize.x, (vertex.y + minCoordinate.y + j) * settings.CellSize.y, (vertex.z + minCoordinate.z + k) * settings.CellSize.z);
+								vertices.Add(vertexPosition);
 
-								triangles.Add(vertices.Count - 1);
+								int triangleIndex = vertices.Count - 1;
+								triangles.Add(triangleIndex);
+
+								normals.Add(vertex);
 							}
 						}
 					}
@@ -52,12 +57,17 @@ namespace Caves.CaveMesh
 			Mesh mesh = new Mesh();
 			mesh.vertices = vertices.ToArray();
 			mesh.triangles = triangles.ToArray();
+			mesh.normals = normals.ToArray();
+			mesh.RecalculateNormals();
+			mesh.RecalculateBounds();
+			mesh.RecalculateTangents();
+
 			return mesh;
 		}
 
-		private static CellType[,,] GetAlignedCellMatrix(CaveWallsGroup wall, out Vector3Int physicalMatrixSize)
+		private static CellType[,,] GetAlignedCellMatrix(CaveWallsGroup wall, out Vector3Int physicalMatrixSize, out Vector3Int minCoordinate)
 		{
-			Vector3Int minCoordinate = wall.CellChunkCoordinates[0];
+			minCoordinate = wall.CellChunkCoordinates[0];
 			Vector3Int maxCoordinate = wall.CellChunkCoordinates[0];
 
 			foreach (Vector3Int cell in wall.CellChunkCoordinates)
@@ -78,7 +88,7 @@ namespace Caves.CaveMesh
 					maxCoordinate.z = cell.z;
 			}
 
-			physicalMatrixSize = maxCoordinate - minCoordinate + Vector3Int.one;
+			physicalMatrixSize = maxCoordinate - minCoordinate + new Vector3Int(2, 2, 2);
 
 			Vector3Int actualMatrixSize = physicalMatrixSize + Vector3Int.one;
 
@@ -86,7 +96,7 @@ namespace Caves.CaveMesh
 
 			foreach (Vector3Int coordinate in wall.CellChunkCoordinates)
 			{
-				Vector3Int matrixCoordinate = coordinate - minCoordinate;
+				Vector3Int matrixCoordinate = coordinate - minCoordinate + Vector3Int.one;
 
 				cells[matrixCoordinate.x, matrixCoordinate.y, matrixCoordinate.z] = CellType.Wall;
 			}
@@ -94,7 +104,7 @@ namespace Caves.CaveMesh
 			return cells;
 		}
 
-		/*private static CellType[,,] GetCellMatrixAlligned4x4x4(CaveWallsGroup wall, CaveSettings settings)
+		/*private static CellType[,,] GetCellMatrixAlligned4x4x4(CaveWallsGroup wall, CaveCellSettings settings)
 		{
 			CellType[,,] cells = new CellType[settings.TerrainCubicSize.x, settings.TerrainCubicSize.y, settings.TerrainCubicSize.z];
 

@@ -19,7 +19,7 @@ namespace Caves.Cells
 			Tunnels = tunnels;
 		}
 
-		public static CaveChunkCellData GenerateCaveChunk(CaveSettings settings)
+		public static CaveChunkCellData GenerateCaveChunk(CaveCellSettings settings)
 		{
 			if (settings.RandomSeed)
 				settings.Seed = Environment.TickCount;
@@ -31,7 +31,7 @@ namespace Caves.Cells
 
 			for (int i = 0; i < levelsCount; i++)
 			{
-				CaveSettings levelSettings = settings;
+				CaveCellSettings levelSettings = settings;
 
 				levelSettings.RandomHollowCellsPercent = settings.RandomHollowCellsPercent - i * settings.RandomHollowCellsPercentDecreasePerLevel;
 
@@ -42,7 +42,7 @@ namespace Caves.Cells
 			}
 
 			List<CaveHollowGroup> hollows = GetCellGroups<CaveHollowGroup>(resultCells, CellType.Hollow);
-			FilterHollowGroups(resultCells, hollows, settings.MinHollowGroupCubicSize);
+			FilterHollowGroupsByGroundSize(resultCells, hollows, settings.MinHollowGroupCubicSize);
 
 			hollows = GetCellGroups<CaveHollowGroup>(resultCells, CellType.Hollow);
 
@@ -125,6 +125,20 @@ namespace Caves.Cells
 			return result;
 		}
 
+		private static void FilterHollowGroupsByGroundSize(CellType[,,] resultCells, List<CaveHollowGroup> hollows, int minHollowGroupGroundSize)
+		{
+			foreach (CaveHollowGroup group in hollows)
+			{
+				if (group.GroundCellCount < minHollowGroupGroundSize)
+				{
+					foreach (Vector3Int cell in group.CellChunkCoordinates)
+					{
+						resultCells[cell.x, cell.y, cell.z] = CellType.Wall;
+					}
+				}
+			}
+		}
+
 		private static void FilterHollowGroups(CellType[,,] resultCells, List<CaveHollowGroup> hollows, int minHollowGroupSize)
 		{
 			foreach (CaveHollowGroup group in hollows)
@@ -153,7 +167,7 @@ namespace Caves.Cells
 			}
 		}
 
-		public static CellType[,] GetInitialState(CaveSettings settings)
+		public static CellType[,] GetInitialState(CaveCellSettings settings)
 		{
 			Random rand = new Random(settings.Seed);
 
@@ -173,7 +187,7 @@ namespace Caves.Cells
 			return result;
 		}
 
-		public static CellType[,] GetSimulatedCells(CellType[,] initialState, CaveSettings settings)
+		public static CellType[,] GetSimulatedCells(CellType[,] initialState, CaveCellSettings settings)
 		{
 			int height = initialState.GetLength(0);
 			int width = initialState.GetLength(1);

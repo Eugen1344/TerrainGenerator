@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Caves.Cells
 {
 	[Serializable]
-	public struct CaveSettings
+	public struct CaveCellSettings
 	{
 		public Vector3Int TerrainCubicSize;
 		public bool RandomSeed;
@@ -18,9 +18,9 @@ namespace Caves.Cells
 		public int TunnelHeight;
 		public int TunnelWidth;
 
-		public class InvalidCaveSettingsException : Exception
+		public class InvalidCaveCellSettingsException : Exception
 		{
-			public InvalidCaveSettingsException(string message) : base(message)
+			public InvalidCaveCellSettingsException(string message) : base(message)
 			{
 			}
 		}

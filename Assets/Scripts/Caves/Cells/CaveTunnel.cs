@@ -20,7 +20,7 @@ namespace Caves.Cells
 			SecondCaveConnectionPoint = secondCaveConnectionPoint;
 		}
 
-		public static List<CaveTunnel> CreateTunnelsAndConnectCaves(ref CellType[,,] cells, List<CaveHollowGroup> hollows, CaveSettings settings)
+		public static List<CaveTunnel> CreateTunnelsAndConnectCaves(ref CellType[,,] cells, List<CaveHollowGroup> hollows, CaveCellSettings settings)
 		{
 			List<CaveHollowGroup> alreadyConnectedCaves = new List<CaveHollowGroup>();
 			List<CaveTunnel> tunnels = new List<CaveTunnel>();
@@ -80,8 +80,14 @@ namespace Caves.Cells
 
 				foreach (Vector3Int firstCoordinate in hollow.CellChunkCoordinates)
 				{
+					if (firstCoordinate.z != 0)
+						continue;
+
 					foreach (Vector3Int secondCoordinate in nextHollow.CellChunkCoordinates)
 					{
+						if (secondCoordinate.z != 0)
+							continue;
+
 						float distance = Vector3Int.Distance(firstCoordinate, secondCoordinate);
 
 						if (distance < minDistance || closestHollow == null)
