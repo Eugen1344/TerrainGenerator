@@ -801,16 +801,16 @@ MonoBehaviour:
     CellSize: {x: 10, y: 10, z: 10}
     CellSpacing: {x: 0, y: 0, z: 0}
   Settings:
-    TerrainCubicSize: {x: 50, y: 50, z: 10}
+    TerrainCubicSize: {x: 58, y: 100, z: 2}
     RandomSeed: 0
-    Seed: 13
+    Seed: 1121
     SwitchToHollowThreshold: 3
     SwitchToWallThreshold: 4
     RandomHollowCellsPercent: 0.5
     RandomHollowCellsPercentDecreasePerLevel: 0
     IterationCount: 5
     MinHollowGroupCubicSize: 20
-    TunnelHeight: 10
+    TunnelHeight: 3
     TunnelWidth: 1
   TestMesh: {fileID: 501200124}
   TestCollider: {fileID: 501200127}
@@ -1154,7 +1154,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Settings:
-    TerrainCubicSize: {x: 50, y: 50, z: 2}
+    TerrainCubicSize: {x: 55, y: 50, z: 2}
     RandomSeed: 0
     Seed: 13
     SwitchToHollowThreshold: 3
@@ -1373,6 +1373,16 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2700874171910072507, guid: 330efb0e9eed825408809c121441b8a5,
+        type: 3}
+      propertyPath: height
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 2700874171910072507, guid: 330efb0e9eed825408809c121441b8a5,
+        type: 3}
+      propertyPath: defaultDistance
+      value: 6
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 330efb0e9eed825408809c121441b8a5, type: 3}
 --- !u!1 &2005131462
@@ -1539,17 +1549,17 @@ PrefabInstance:
     - target: {fileID: 4425428723088313501, guid: fc9b148a2950aaf4cba8422632222c5d,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 5
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 4425428723088313501, guid: fc9b148a2950aaf4cba8422632222c5d,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 5
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 4425428723088313501, guid: fc9b148a2950aaf4cba8422632222c5d,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 5
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 4425428723088313503, guid: fc9b148a2950aaf4cba8422632222c5d,
         type: 3}

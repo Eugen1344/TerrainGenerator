@@ -57,7 +57,7 @@ namespace Caves.CaveMesh
 			Mesh mesh = new Mesh();
 			mesh.vertices = vertices.ToArray();
 			mesh.triangles = triangles.ToArray();
-			mesh.normals = normals.ToArray();
+			//mesh.normals = normals.ToArray();
 			mesh.RecalculateNormals();
 			mesh.RecalculateBounds();
 			mesh.RecalculateTangents();
