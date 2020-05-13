@@ -24,22 +24,7 @@ namespace Caves.Cells
 			if (settings.RandomSeed)
 				settings.Seed = Environment.TickCount;
 
-			int levelsCount = settings.TerrainCubicSize.z;
-			//float randomHollowCellsPercentDecreasePerLevel = levelsCount == 1 ? 0 : settings.RandomHollowCellsPercent / (levelsCount - 1);
-
-			CellType[,,] resultCells = new CellType[settings.TerrainCubicSize.x, settings.TerrainCubicSize.y, settings.TerrainCubicSize.z];
-
-			for (int i = 0; i < levelsCount; i++)
-			{
-				CaveCellSettings levelSettings = settings;
-
-				levelSettings.RandomHollowCellsPercent = settings.RandomHollowCellsPercent - i * settings.RandomHollowCellsPercentDecreasePerLevel;
-
-				CellType[,] cells = GetInitialState(levelSettings);
-				cells = GetSimulatedCells(cells, levelSettings);
-
-				AppendCellsToGrid(ref resultCells, cells, i);
-			}
+			CellType[,,] resultCells = GenerateInitialCaves(settings);
 
 			List<CaveHollowGroup> hollows = GetCellGroups<CaveHollowGroup>(resultCells, CellType.Hollow);
 			FilterHollowGroupsByGroundSize(resultCells, hollows, settings.MinHollowGroupCubicSize);
@@ -51,6 +36,28 @@ namespace Caves.Cells
 			List<CaveWallsGroup> walls = GetCellGroups<CaveWallsGroup>(resultCells, CellType.Wall);
 
 			return new CaveChunkCellData(hollows, walls, tunnels);
+		}
+
+		private static CellType[,,] GenerateInitialCaves(CaveCellSettings settings)
+		{
+			CellType[,,] resultCells = new CellType[settings.TerrainCubicSize.x, settings.TerrainCubicSize.y, settings.TerrainCubicSize.z];
+
+			int levelsCount = settings.TerrainCubicSize.z;
+
+			for (int i = 0; i < levelsCount; i++)
+			{
+				CaveCellSettings levelSettings = settings;
+
+				if (i >= settings.MinCaveHeight)
+					levelSettings.RandomHollowCellsPercent = settings.RandomHollowCellsPercent - (i - settings.MinCaveHeight + 1) * settings.RandomHollowCellsPercentDecreasePerLevel;
+
+				CellType[,] cells = GetInitialState(levelSettings);
+				cells = GetSimulatedCells(cells, levelSettings);
+
+				AppendCellsToGrid(ref resultCells, cells, i);
+			}
+
+			return resultCells;
 		}
 
 		private static List<T> GetCellGroups<T>(CellType[,,] cells, CellType searchedCellType) where T : CaveGroup
@@ -129,7 +136,7 @@ namespace Caves.Cells
 		{
 			foreach (CaveHollowGroup group in hollows)
 			{
-				if (group.GroundCellCount < minHollowGroupGroundSize)
+				if (group.GroundCells.Count < minHollowGroupGroundSize)
 				{
 					foreach (Vector3Int cell in group.CellChunkCoordinates)
 					{

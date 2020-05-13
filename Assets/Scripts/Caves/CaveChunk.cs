@@ -1,4 +1,5 @@
-﻿using Caves.CaveMesh;
+﻿using System;
+using Caves.CaveMesh;
 using Caves.Cells;
 using UnityEngine;
 
@@ -21,6 +22,12 @@ namespace Caves
 
 			TestMesh.sharedMesh = WallsMesh.Mesh;
 			TestCollider.sharedMesh = WallsMesh.Mesh;
+		}
+
+		public Vector3 GetWorldPosition(Vector3Int cellPosition)
+		{
+			Vector3 localPosition = new Vector3(cellPosition.x * WallMeshSettings.CellSize.x, cellPosition.y * WallMeshSettings.CellSize.y, cellPosition.z * WallMeshSettings.CellSize.z);
+			return transform.TransformPoint(localPosition); //TODO spacing
 		}
 	}
 }

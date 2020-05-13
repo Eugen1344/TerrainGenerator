@@ -114,7 +114,9 @@ namespace Caves.Cells
 				GUIStyle textStyle = new GUIStyle();
 				textStyle.fontSize = 20;
 
+#if UNITY_EDITOR
 				Handles.Label(textGlobalPoint, i.ToString(), textStyle);
+#endif
 
 				foreach (Vector3Int cell in hollow.CellChunkCoordinates)
 				{

@@ -2,6 +2,7 @@
 using System.Linq;
 using Caves.Cells;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace Caves.CaveMesh
 {
@@ -24,7 +25,7 @@ namespace Caves.CaveMesh
 		private static Mesh GetMesh(List<CaveWallsGroup> walls, CaveMeshSettings settings)
 		{
 			List<Vector3> vertices = new List<Vector3>();
-			List<Vector3> normals = new List<Vector3>();
+			//List<Vector3> normals = new List<Vector3>();
 			List<int> triangles = new List<int>();
 
 			foreach (CaveWallsGroup wall in walls)
@@ -47,7 +48,7 @@ namespace Caves.CaveMesh
 								int triangleIndex = vertices.Count - 1;
 								triangles.Add(triangleIndex);
 
-								normals.Add(vertex);
+								//normals.Add(vertex);
 							}
 						}
 					}
@@ -55,12 +56,14 @@ namespace Caves.CaveMesh
 			}
 
 			Mesh mesh = new Mesh();
+			mesh.indexFormat = IndexFormat.UInt32; //TODO maybe optimization will fix this
 			mesh.vertices = vertices.ToArray();
 			mesh.triangles = triangles.ToArray();
 			//mesh.normals = normals.ToArray();
 			mesh.RecalculateNormals();
 			mesh.RecalculateBounds();
 			mesh.RecalculateTangents();
+			mesh.Optimize();
 
 			return mesh;
 		}
@@ -100,6 +103,8 @@ namespace Caves.CaveMesh
 
 				cells[matrixCoordinate.x, matrixCoordinate.y, matrixCoordinate.z] = CellType.Wall;
 			}
+
+			minCoordinate -= Vector3Int.one; //TODO hack
 
 			return cells;
 		}

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Caves.Cells
@@ -34,14 +35,18 @@ namespace Caves.Cells
 				int firstY = firstPoint.y < secondPoint.y ? firstPoint.y : secondPoint.y;
 				int secondY = secondPoint.y > firstPoint.y ? secondPoint.y : firstPoint.y;
 
+				firstX = firstX - settings.TunnelWidth < 0 ? 0 : firstX - settings.TunnelWidth;
+				secondX = secondX + settings.TunnelWidth >= settings.TerrainCubicSize.x ? secondX : secondX + settings.TunnelWidth;
+				firstY = firstY - settings.TunnelWidth < 0 ? 0 : firstY - settings.TunnelWidth;
+				secondY = secondY + settings.TunnelWidth >= settings.TerrainCubicSize.x ? secondY : secondY + settings.TunnelWidth;
+
 				List<Vector3Int> tunnelCells = new List<Vector3Int>();
 
 				for (int x = firstX; x <= secondX; x++)
 				{
 					for (int y = firstY; y <= secondY; y++)
 					{
-						float distance = Mathf.Abs((secondPoint.y - firstPoint.y) * x - (secondPoint.x - firstPoint.x) * y + secondPoint.x * firstPoint.y - secondPoint.y * firstPoint.x) /
-										 Mathf.Sqrt(Mathf.Pow(secondPoint.x - firstPoint.x, 2) + Mathf.Pow(secondPoint.y - firstPoint.y, 2));
+						float distance = DistanceFromPointToLine(firstPoint, secondPoint, x, y);
 
 						if (distance > settings.TunnelWidth)
 							continue;
@@ -64,6 +69,18 @@ namespace Caves.Cells
 			}
 
 			return tunnels;
+		}
+
+		private static float DistanceFromPointToLine(Vector3Int lineFirstPoint, Vector3Int lineSecondPoint, int x, int y)
+		{
+			if (lineFirstPoint.x == lineSecondPoint.x)
+				return Mathf.Abs(lineFirstPoint.x - x);
+
+			if (lineFirstPoint.y == lineSecondPoint.y)
+				return Mathf.Abs(lineFirstPoint.y - y);
+
+			return Mathf.Abs((lineSecondPoint.y - lineFirstPoint.y) * x - (lineSecondPoint.x - lineFirstPoint.x) * y + lineSecondPoint.x * lineFirstPoint.y - lineSecondPoint.y * lineFirstPoint.x) /
+				   Mathf.Sqrt(Mathf.Pow(lineSecondPoint.x - lineFirstPoint.x, 2) + Mathf.Pow(lineSecondPoint.y - lineFirstPoint.y, 2));
 		}
 
 		private static (CaveHollowGroup hollow, Vector3Int firstPoint, Vector3Int secondPoint) ClosestHollow(CaveHollowGroup hollow, List<CaveHollowGroup> hollows, List<CaveHollowGroup> alreadyConnectedCaves)

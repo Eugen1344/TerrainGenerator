@@ -7,6 +7,7 @@ namespace Caves.Cells
 	public struct CaveCellSettings
 	{
 		public Vector3Int TerrainCubicSize;
+		public int MinCaveHeight;
 		public bool RandomSeed;
 		public int Seed;
 		public int SwitchToHollowThreshold;
