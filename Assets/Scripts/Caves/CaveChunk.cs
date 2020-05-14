@@ -15,13 +15,27 @@ namespace Caves
 		public MeshFilter TestMesh;
 		public MeshCollider TestCollider;
 
-		private void Awake()
+		[ContextMenu("Generate chunk")]
+		public void GenerateChunk()
 		{
+			CheckSeed();
+			
 			CellData = CaveChunkCellData.GenerateCaveChunk(Settings);
 			WallsMesh = CaveWallsMesh.GenerateWallMesh(CellData.Walls, WallMeshSettings);
 
 			TestMesh.sharedMesh = WallsMesh.Mesh;
 			TestCollider.sharedMesh = WallsMesh.Mesh;
+		}
+
+		private void Awake()
+		{
+			GenerateChunk();
+		}
+
+		private void CheckSeed()
+		{
+			if (Settings.RandomSeed)
+				Settings.Seed = Environment.TickCount;
 		}
 
 		public Vector3 GetWorldPosition(Vector3Int cellPosition)

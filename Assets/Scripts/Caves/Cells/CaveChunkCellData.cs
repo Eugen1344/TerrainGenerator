@@ -21,9 +21,6 @@ namespace Caves.Cells
 
 		public static CaveChunkCellData GenerateCaveChunk(CaveCellSettings settings)
 		{
-			if (settings.RandomSeed)
-				settings.Seed = Environment.TickCount;
-
 			CellType[,,] resultCells = GenerateInitialCaves(settings);
 
 			List<CaveHollowGroup> hollows = GetCellGroups<CaveHollowGroup>(resultCells, CellType.Hollow);
