@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Caves.Cells;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -57,15 +58,31 @@ namespace Caves.CaveMesh
 
 			Mesh mesh = new Mesh();
 			mesh.indexFormat = IndexFormat.UInt32; //TODO maybe optimization will fix this
-			mesh.vertices = vertices.ToArray();
+			Vector3[] verticesArray = vertices.ToArray();
+			mesh.vertices = verticesArray;
 			mesh.triangles = triangles.ToArray();
 			//mesh.normals = normals.ToArray();
 			mesh.RecalculateNormals();
 			mesh.RecalculateBounds();
 			mesh.RecalculateTangents();
 			mesh.Optimize();
+			mesh.uv = Unwrapping.GeneratePerTriangleUV(mesh);
 
 			return mesh;
+		}
+
+		private static Vector2[] CalculateUVs(Vector3[] vertices, Vector3 size)
+		{
+			Vector2[] uvs = new Vector2[vertices.Length];
+
+			for (int i = 0; i < vertices.Length; i++)
+			{
+				Vector3 vertex = vertices[i];
+
+				uvs[i] = new Vector2(vertex.x / size.x, vertex.z / size.z);
+			}
+
+			return uvs;
 		}
 
 		private static CellType[,,] GetAlignedCellMatrix(CaveWallsGroup wall, out Vector3Int physicalMatrixSize, out Vector3Int minCoordinate)

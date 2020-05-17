@@ -19,6 +19,12 @@ namespace Caves.Cells
 		public int TunnelHeight;
 		public int TunnelWidth;
 
+		public void GenerateSeedIfNeeded()
+		{
+			if (RandomSeed)
+				Seed = Environment.TickCount;
+		}
+
 		public class InvalidCaveCellSettingsException : Exception
 		{
 			public InvalidCaveCellSettingsException(string message) : base(message)

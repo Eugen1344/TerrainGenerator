@@ -18,8 +18,8 @@ namespace Caves
 		[ContextMenu("Generate chunk")]
 		public void GenerateChunk()
 		{
-			CheckSeed();
-			
+			Settings.GenerateSeedIfNeeded();
+
 			CellData = CaveChunkCellData.GenerateCaveChunk(Settings);
 			WallsMesh = CaveWallsMesh.GenerateWallMesh(CellData.Walls, WallMeshSettings);
 
@@ -30,12 +30,6 @@ namespace Caves
 		private void Awake()
 		{
 			GenerateChunk();
-		}
-
-		private void CheckSeed()
-		{
-			if (Settings.RandomSeed)
-				Settings.Seed = Environment.TickCount;
 		}
 
 		public Vector3 GetWorldPosition(Vector3Int cellPosition)
