@@ -6,9 +6,9 @@ public class Placer : MonoBehaviour
 {
 	public CaveChunk DestinationChunk;
 
-	public void PlaceInRandomHollowGroup()
+	public void PlaceInRandomCave()
 	{
-		int randomCaveIndex = Random.Range(0, DestinationChunk.CellData.Hollows.Count);
+		int randomCaveIndex = Random.Range(0, DestinationChunk.CellData.Hollows.Count - 1);
 		PlaceInCave(randomCaveIndex);
 	}
 

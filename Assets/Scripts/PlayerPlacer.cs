@@ -6,7 +6,7 @@
 	private void Start()
 	{
 		if (SpawnInRandomCave)
-			PlaceInRandomHollowGroup();
+			PlaceInRandomCave();
 		else
 			PlaceInCave(CaveIndexToSpawn);
 	}

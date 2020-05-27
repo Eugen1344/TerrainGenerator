@@ -1302,8 +1302,9 @@ MonoBehaviour:
     SwitchToWallThreshold: 4
     RandomHollowCellsPercent: 0.5
     RandomHollowCellsPercentDecreasePerLevel: 0
-    IterationCount: 5
-    MinHollowGroupCubicSize: 20
+    IterationCount: 0
+    MinHollowGroupCubicSize: 0
+    GenerateTunnels: 0
     TunnelHeight: 3
     TunnelWidth: 2
   TestMesh: {fileID: 501200124}
@@ -1812,16 +1813,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Settings:
-    TerrainCubicSize: {x: 100, y: 100, z: 13}
+    TerrainCubicSize: {x: 100, y: 100, z: 1}
     MinCaveHeight: 0
     RandomSeed: 0
     Seed: 24573984
     SwitchToHollowThreshold: 3
     SwitchToWallThreshold: 4
     RandomHollowCellsPercent: 0.5
-    RandomHollowCellsPercentDecreasePerLevel: 0.03
-    IterationCount: 5
-    MinHollowGroupCubicSize: 20
+    RandomHollowCellsPercentDecreasePerLevel: 0
+    IterationCount: 4
+    MinHollowGroupCubicSize: 0
+    GenerateTunnels: 0
     TunnelHeight: 2
     TunnelWidth: 2
   CubeSize: 5

@@ -7,7 +7,6 @@ namespace Caves.Cells
 {
 	public class CaveChunkCellData
 	{
-		public CellType[,,] Cells; //TODO remake
 		public List<CaveHollowGroup> Hollows;
 		public List<CaveWallsGroup> Walls;
 		public List<CaveTunnel> Tunnels;
@@ -28,7 +27,7 @@ namespace Caves.Cells
 
 			hollows = GetCellGroups<CaveHollowGroup>(resultCells, CellType.Hollow);
 
-			List<CaveTunnel> tunnels = CaveTunnel.CreateTunnelsAndConnectCaves(ref resultCells, hollows, settings);
+			List<CaveTunnel> tunnels = settings.GenerateTunnels ? CaveTunnel.CreateTunnelsAndConnectCaves(ref resultCells, hollows, settings) : new List<CaveTunnel>();
 
 			List<CaveWallsGroup> walls = GetCellGroups<CaveWallsGroup>(resultCells, CellType.Wall);
 
@@ -37,24 +36,12 @@ namespace Caves.Cells
 
 		private static CellType[,,] GenerateInitialCaves(CaveCellSettings settings)
 		{
-			CellType[,,] resultCells = new CellType[settings.TerrainCubicSize.x, settings.TerrainCubicSize.y, settings.TerrainCubicSize.z];
+			CellType[,,] cells = GetInitialState(settings);
+			cells = GetSimulatedCells(cells, settings);
 
-			int levelsCount = settings.TerrainCubicSize.z;
+			//AppendCellsToGrid(ref resultCells, cells, i);
 
-			for (int i = 0; i < levelsCount; i++)
-			{
-				CaveCellSettings levelSettings = settings;
-
-				if (i >= settings.MinCaveHeight)
-					levelSettings.RandomHollowCellsPercent = settings.RandomHollowCellsPercent - (i - settings.MinCaveHeight + 1) * settings.RandomHollowCellsPercentDecreasePerLevel;
-
-				CellType[,] cells = GetInitialState(levelSettings);
-				cells = GetSimulatedCells(cells, levelSettings);
-
-				AppendCellsToGrid(ref resultCells, cells, i);
-			}
-
-			return resultCells;
+			return cells;
 		}
 
 		private static List<T> GetCellGroups<T>(CellType[,,] cells, CellType searchedCellType) where T : CaveGroup
@@ -157,71 +144,74 @@ namespace Caves.Cells
 			}
 		}
 
-		private static void AppendCellsToGrid(ref CellType[,,] grid, CellType[,] cells, int level)
+		public static CellType[,,] GetInitialState(CaveCellSettings settings)
 		{
-			int length = grid.GetLength(0);
-			int width = grid.GetLength(1);
+			CellType[,,] result = new CellType[settings.TerrainCubicSize.x, settings.TerrainCubicSize.y, settings.TerrainCubicSize.z];
 
-			for (int i = 0; i < length; i++)
+			for (int k = 0; k < settings.TerrainCubicSize.z; k++)
 			{
-				for (int j = 0; j < width; j++)
+				float levelRandomHollowCellsPercent;
+
+				if (k >= settings.MinCaveHeight)
+					levelRandomHollowCellsPercent = settings.RandomHollowCellsPercent - (k - settings.MinCaveHeight + 1) * settings.RandomHollowCellsPercentDecreasePerLevel;
+				else
+					levelRandomHollowCellsPercent = settings.RandomHollowCellsPercent;
+
+				Random rand = new Random(settings.Seed);
+
+				for (int i = 0; i < settings.TerrainCubicSize.x; i++)
 				{
-					grid[i, j, level] = cells[i, j];
-				}
-			}
-		}
-
-		public static CellType[,] GetInitialState(CaveCellSettings settings)
-		{
-			Random rand = new Random(settings.Seed);
-
-			CellType[,] result = new CellType[settings.TerrainCubicSize.x, settings.TerrainCubicSize.y];
-
-			for (int i = 0; i < result.GetLength(0); i++)
-			{
-				for (int j = 0; j < result.GetLength(1); j++)
-				{
-					if (rand.NextDouble() <= settings.RandomHollowCellsPercent)
-						result[i, j] = CellType.Hollow;
-					else
-						result[i, j] = CellType.Wall;
+					for (int j = 0; j < settings.TerrainCubicSize.y; j++)
+					{
+						if (rand.NextDouble() <= levelRandomHollowCellsPercent)
+							result[i, j, k] = CellType.Hollow;
+						else
+							result[i, j, k] = CellType.Wall;
+					}
 				}
 			}
 
 			return result;
 		}
 
-		public static CellType[,] GetSimulatedCells(CellType[,] initialState, CaveCellSettings settings)
+		public static CellType[,,] GetSimulatedCells(CellType[,,] initialState, CaveCellSettings settings)
 		{
-			int height = initialState.GetLength(0);
-			int width = initialState.GetLength(1);
+			if (settings.IterationCount == 0)
+				return initialState;
 
-			CellType[,] result = initialState;
+			int length = initialState.GetLength(0);
+			int width = initialState.GetLength(1);
+			int height = initialState.GetLength(2);
+
+			CellType[,,] simulatedState = new CellType[length, width, height];
 
 			for (int iteration = 0; iteration < settings.IterationCount; iteration++)
 			{
-				result = (CellType[,])initialState.Clone();
-
-				for (int i = 0; i < height; i++)
+				for (int k = 0; k < height; k++)
 				{
-					for (int j = 0; j < width; j++)
+					for (int i = 0; i < length; i++)
 					{
-						int nearbyWallCellCount = GetNearbyWallCellCount(initialState, i, j);
+						for (int j = 0; j < width; j++)
+						{
+							int nearbyWallCellCount = GetNearbyWallCellCount(initialState, i, j, k);
 
-						if (nearbyWallCellCount > settings.SwitchToWallThreshold)
-							result[i, j] = CellType.Wall;
-						else if (nearbyWallCellCount < settings.SwitchToHollowThreshold)
-							result[i, j] = CellType.Hollow;
+							if (nearbyWallCellCount > settings.SwitchToWallThreshold)
+								simulatedState[i, j, k] = CellType.Wall;
+							else if (nearbyWallCellCount < settings.SwitchToHollowThreshold)
+								simulatedState[i, j, k] = CellType.Hollow;
+							else
+								simulatedState[i, j, k] = initialState[i, j, k];
+						}
 					}
 				}
 
-				initialState = result;
+				initialState = simulatedState;
 			}
 
-			return result;
+			return simulatedState;
 		}
 
-		private static int GetNearbyWallCellCount(CellType[,] cells, int i, int j, int radius = 1)
+		private static int GetNearbyWallCellCount(CellType[,,] cells, int i, int j, int k, int radius = 1)
 		{
 			int height = cells.GetLength(0);
 			int width = cells.GetLength(1);
@@ -240,7 +230,7 @@ namespace Caves.Cells
 					if (y == i && x == j)
 						continue;
 
-					if (IsWallCell(cells[y, x]))
+					if (IsWallCell(cells[y, x, k]))
 						count++;
 				}
 			}

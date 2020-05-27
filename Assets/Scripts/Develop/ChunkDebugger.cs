@@ -9,7 +9,7 @@ public class ChunkDebugger : MonoBehaviour
 
 	private void OnDrawGizmosSelected()
 	{
-		if (!Application.isPlaying)
+		if (!Application.isPlaying || !DrawCells)
 			return;
 
 		foreach (CaveWallsGroup wall in Chunk.CellData.Walls)

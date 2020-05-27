@@ -16,13 +16,18 @@ namespace Caves.Cells
 		[Range(0, 1)] public float RandomHollowCellsPercentDecreasePerLevel;
 		public int IterationCount;
 		public int MinHollowGroupCubicSize;
+		public bool GenerateTunnels;
 		public int TunnelHeight;
 		public int TunnelWidth;
 
-		public void GenerateSeedIfNeeded()
+		public void GenerateSeed(Vector2Int chunkPosition)
 		{
 			if (RandomSeed)
 				Seed = Environment.TickCount;
+
+			int chunkOffset = (chunkPosition.x << sizeof(short) * 8) | chunkPosition.y;
+
+			Seed += chunkOffset;
 		}
 
 		public class InvalidCaveCellSettingsException : Exception
