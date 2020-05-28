@@ -8,19 +8,25 @@ namespace Caves
 {
 	public class CaveChunk : Chunk
 	{
+		public CaveChunkManager ChunkManager;
 		public CaveChunkCellData CellData;
 		public CaveMeshSettings WallMeshSettings;
 		public CaveWallsMesh WallsMesh;
 		public CaveCellSettings Settings;
+		public Vector2Int ChunkCoordinate;
+		public int ChunkSeed;
 
 		public MeshFilter TestMesh;
 		public MeshCollider TestCollider;
 
-		public void GenerateChunk(Vector2Int chunkPosition)
+		public void GenerateChunk(Vector2Int chunkCoordinate)
 		{
-			Settings.GenerateSeed(chunkPosition);
+			ChunkCoordinate = chunkCoordinate;
 
-			CellData = CaveChunkCellData.GenerateCaveChunk(Settings);
+			ChunkSeed = Settings.GenerateSeed(Settings.Seed, chunkCoordinate);
+
+			CellData = new CaveChunkCellData(Settings, ChunkManager, chunkCoordinate);
+			CellData.Generate();
 			WallsMesh = CaveWallsMesh.GenerateWallMesh(CellData.Walls, WallMeshSettings);
 
 			TestMesh.sharedMesh = WallsMesh.Mesh;

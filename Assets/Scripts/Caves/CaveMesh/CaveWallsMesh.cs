@@ -66,7 +66,7 @@ namespace Caves.CaveMesh
 			mesh.RecalculateBounds();
 			mesh.RecalculateTangents();
 			mesh.Optimize();
-			mesh.uv = Unwrapping.GeneratePerTriangleUV(mesh);
+			//mesh.uv = Unwrapping.GeneratePerTriangleUV(mesh);
 
 			return mesh;
 		}

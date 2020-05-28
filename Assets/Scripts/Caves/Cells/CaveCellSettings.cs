@@ -20,14 +20,16 @@ namespace Caves.Cells
 		public int TunnelHeight;
 		public int TunnelWidth;
 
-		public void GenerateSeed(Vector2Int chunkPosition)
+		public int GenerateSeed(int baseSeed, Vector2Int chunkCoordinate)
 		{
 			if (RandomSeed)
-				Seed = Environment.TickCount;
+				return Environment.TickCount;
 
-			int chunkOffset = (chunkPosition.x << sizeof(short) * 8) | chunkPosition.y;
+			ushort chunkCoordinateX = (ushort)chunkCoordinate.x;
+			ushort chunkCoordinateY = (ushort)chunkCoordinate.y;
+			int chunkOffset = chunkCoordinateX << (sizeof(ushort) * 8) | chunkCoordinateY;
 
-			Seed += chunkOffset;
+			return baseSeed + chunkOffset;
 		}
 
 		public class InvalidCaveCellSettingsException : Exception

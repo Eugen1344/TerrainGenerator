@@ -1,10 +1,12 @@
 ﻿using Caves;
 using Caves.Cells;
+using UnityEditor;
 using UnityEngine;
 
 public class ChunkDebugger : MonoBehaviour
 {
 	public bool DrawCells;
+	public bool DrawCoordinates;
 	public CaveChunk Chunk;
 
 	private void OnDrawGizmosSelected()
@@ -20,6 +22,11 @@ public class ChunkDebugger : MonoBehaviour
 
 				Gizmos.color = Color.cyan;
 				Gizmos.DrawSphere(globalPosition, 3);
+
+				if (DrawCoordinates)
+				{
+					Handles.Label(globalPosition, coordinate.ToString());
+				}
 			}
 		}
 	}

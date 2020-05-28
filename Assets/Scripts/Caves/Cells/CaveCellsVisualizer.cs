@@ -7,6 +7,7 @@ namespace Caves.Cells
 {
 	public class CaveCellsVisualizer : MonoBehaviour
 	{
+		public CaveChunkManager ChunkManager;
 		public CaveCellSettings Settings;
 		public float CubeSize;
 		public float CubeSpacing;
@@ -14,7 +15,7 @@ namespace Caves.Cells
 		public Color WallColor;
 		public GameObject CubePrefab;
 
-		private CaveChunkCellData _currentCaveCells;
+		private CaveChunkCellData _currentCaveCells = null;
 
 		private List<GameObject> _instantiatedCubes = new List<GameObject>();
 
@@ -25,7 +26,7 @@ namespace Caves.Cells
 
 		public void GenerateCave()
 		{
-			_currentCaveCells = CaveChunkCellData.GenerateCaveChunk(Settings);
+			ChunkManager.GenerateAndAddChunk(Vector2Int.zero);
 		}
 
 		public void ShowSimulatedState()

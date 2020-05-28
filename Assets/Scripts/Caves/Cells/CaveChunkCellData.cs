@@ -1,54 +1,93 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using Random = System.Random;
 
 namespace Caves.Cells
 {
-	public class CaveChunkCellData
+	public class CaveChunkCellData : ChunkCellData
 	{
 		public List<CaveHollowGroup> Hollows;
 		public List<CaveWallsGroup> Walls;
 		public List<CaveTunnel> Tunnels;
 
-		public CaveChunkCellData(List<CaveHollowGroup> hollows, List<CaveWallsGroup> walls, List<CaveTunnel> tunnels)
+		public CaveChunkCellData(CaveCellSettings settings, CaveChunkManager chunkManager, Vector2Int chunkCoordinate) : base(settings, chunkManager, chunkCoordinate)
 		{
-			Hollows = hollows;
-			Walls = walls;
-			Tunnels = tunnels;
+
 		}
 
-		public static CaveChunkCellData GenerateCaveChunk(CaveCellSettings settings)
+		public void Generate()
 		{
-			CellType[,,] resultCells = GenerateInitialCaves(settings);
+			ChunkCellData[,] nearbyChunks = GetNearbyChunksOrGenerateGhostChunks(out List<GhostChunkCellData> ghostChunks);
 
-			List<CaveHollowGroup> hollows = GetCellGroups<CaveHollowGroup>(resultCells, CellType.Hollow);
-			FilterHollowGroupsByGroundSize(resultCells, hollows, settings.MinHollowGroupCubicSize);
+			foreach (GhostChunkCellData ghostChunk in ghostChunks)
+			{
+				ghostChunk.FindNearbyChunks(ghostChunks);
+			}
 
-			hollows = GetCellGroups<CaveHollowGroup>(resultCells, CellType.Hollow);
+			for (int i = 0; i < Settings.IterationCount; i++)
+			{
+				GenerateIterations(nearbyChunks, i);
 
-			List<CaveTunnel> tunnels = settings.GenerateTunnels ? CaveTunnel.CreateTunnelsAndConnectCaves(ref resultCells, hollows, settings) : new List<CaveTunnel>();
+				foreach (GhostChunkCellData ghostChunk in ghostChunks)
+				{
+					ghostChunk.GenerateIterations(ghostChunk.NearbyChunks, i);
+				}
+			}
 
-			List<CaveWallsGroup> walls = GetCellGroups<CaveWallsGroup>(resultCells, CellType.Wall);
+			FinalIteration = (CellType[,,])Iterations[Iterations.Count - 1].Clone();
 
-			return new CaveChunkCellData(hollows, walls, tunnels);
+			Hollows = GetCellGroups<CaveHollowGroup>(CellType.Hollow);
+			FilterHollowGroupsByGroundSize(Hollows, Settings.MinHollowGroupCubicSize);
+
+			Hollows = GetCellGroups<CaveHollowGroup>(CellType.Hollow);
+
+			Tunnels = Settings.GenerateTunnels ? CaveTunnel.CreateTunnelsAndConnectCaves(ref FinalIteration, Hollows, Settings) : new List<CaveTunnel>();
+
+			Walls = GetCellGroups<CaveWallsGroup>(CellType.Wall);
 		}
 
-		private static CellType[,,] GenerateInitialCaves(CaveCellSettings settings)
+		private ChunkCellData[,] GetNearbyChunksOrGenerateGhostChunks(out List<GhostChunkCellData> ghostChunks)
 		{
-			CellType[,,] cells = GetInitialState(settings);
-			cells = GetSimulatedCells(cells, settings);
+			ChunkCellData[,] chunks = new ChunkCellData[3, 3];
+			ghostChunks = new List<GhostChunkCellData>();
 
-			//AppendCellsToGrid(ref resultCells, cells, i);
+			for (int i = 0; i < 3; i++)
+			{
+				for (int j = 0; j < 3; j++)
+				{
+					if (i == 1 && j == 1)
+					{
+						chunks[i, j] = this;
 
-			return cells;
+						continue;
+					}
+
+					Vector2Int coordinate = new Vector2Int(ChunkCoordinate.x - 1 + i, ChunkCoordinate.y - 1 + j);
+
+					if (_chunkManager.GeneratedChunks.TryGetValue(coordinate, out CaveChunk chunk))
+					{
+						chunks[i, j] = chunk.CellData;
+					}
+					else
+					{
+						GhostChunkCellData ghostChunk = new GhostChunkCellData(Settings, _chunkManager, coordinate);
+						chunks[i, j] = ghostChunk;
+
+						ghostChunks.Add(ghostChunk);
+					}
+				}
+			}
+
+			return chunks;
 		}
 
-		private static List<T> GetCellGroups<T>(CellType[,,] cells, CellType searchedCellType) where T : CaveGroup
+		private List<T> GetCellGroups<T>(CellType searchedCellType) where T : CaveGroup
 		{
-			int length = cells.GetLength(0);
-			int width = cells.GetLength(1);
-			int height = cells.GetLength(2);
+			int length = FinalIteration.GetLength(0);
+			int width = FinalIteration.GetLength(1);
+			int height = FinalIteration.GetLength(2);
 
 			List<T> result = new List<T>();
 
@@ -62,7 +101,7 @@ namespace Caves.Cells
 				{
 					for (int k = 0; k < height; k++)
 					{
-						if (cells[i, j, k] == searchedCellType && !markedCells[i, j, k])
+						if (FinalIteration[i, j, k] == searchedCellType && !markedCells[i, j, k])
 						{
 							List<Vector3Int> foundCells = new List<Vector3Int>();
 
@@ -92,7 +131,7 @@ namespace Caves.Cells
 												(i1 != searchCoreCell.x && j1 != searchCoreCell.y))
 												continue;
 
-											if (cells[i1, j1, k1] == searchedCellType && !markedCells[i1, j1, k1])
+											if (FinalIteration[i1, j1, k1] == searchedCellType && !markedCells[i1, j1, k1])
 											{
 												Vector3Int newSearchCoreCell = new Vector3Int(i1, j1, k1);
 
@@ -104,8 +143,6 @@ namespace Caves.Cells
 								}
 							}
 
-							//int markedCount = markedCells.Cast<bool>().Count(b => b);
-
 							CaveGroup newGroup = CaveGroup.GetCaveGroup(searchedCellType, foundCells);
 							result.Add((T)newGroup);
 						}
@@ -116,7 +153,7 @@ namespace Caves.Cells
 			return result;
 		}
 
-		private static void FilterHollowGroupsByGroundSize(CellType[,,] resultCells, List<CaveHollowGroup> hollows, int minHollowGroupGroundSize)
+		private void FilterHollowGroupsByGroundSize(List<CaveHollowGroup> hollows, int minHollowGroupGroundSize)
 		{
 			foreach (CaveHollowGroup group in hollows)
 			{
@@ -124,13 +161,13 @@ namespace Caves.Cells
 				{
 					foreach (Vector3Int cell in group.CellChunkCoordinates)
 					{
-						resultCells[cell.x, cell.y, cell.z] = CellType.Wall;
+						FinalIteration[cell.x, cell.y, cell.z] = CellType.Wall;
 					}
 				}
 			}
 		}
 
-		private static void FilterHollowGroups(CellType[,,] resultCells, List<CaveHollowGroup> hollows, int minHollowGroupSize)
+		private void FilterHollowGroups(List<CaveHollowGroup> hollows, int minHollowGroupSize)
 		{
 			foreach (CaveHollowGroup group in hollows)
 			{
@@ -138,114 +175,10 @@ namespace Caves.Cells
 				{
 					foreach (Vector3Int cell in group.CellChunkCoordinates)
 					{
-						resultCells[cell.x, cell.y, cell.z] = CellType.Wall;
+						FinalIteration[cell.x, cell.y, cell.z] = CellType.Wall;
 					}
 				}
 			}
-		}
-
-		public static CellType[,,] GetInitialState(CaveCellSettings settings)
-		{
-			CellType[,,] result = new CellType[settings.TerrainCubicSize.x, settings.TerrainCubicSize.y, settings.TerrainCubicSize.z];
-
-			for (int k = 0; k < settings.TerrainCubicSize.z; k++)
-			{
-				float levelRandomHollowCellsPercent;
-
-				if (k >= settings.MinCaveHeight)
-					levelRandomHollowCellsPercent = settings.RandomHollowCellsPercent - (k - settings.MinCaveHeight + 1) * settings.RandomHollowCellsPercentDecreasePerLevel;
-				else
-					levelRandomHollowCellsPercent = settings.RandomHollowCellsPercent;
-
-				Random rand = new Random(settings.Seed);
-
-				for (int i = 0; i < settings.TerrainCubicSize.x; i++)
-				{
-					for (int j = 0; j < settings.TerrainCubicSize.y; j++)
-					{
-						if (rand.NextDouble() <= levelRandomHollowCellsPercent)
-							result[i, j, k] = CellType.Hollow;
-						else
-							result[i, j, k] = CellType.Wall;
-					}
-				}
-			}
-
-			return result;
-		}
-
-		public static CellType[,,] GetSimulatedCells(CellType[,,] initialState, CaveCellSettings settings)
-		{
-			if (settings.IterationCount == 0)
-				return initialState;
-
-			int length = initialState.GetLength(0);
-			int width = initialState.GetLength(1);
-			int height = initialState.GetLength(2);
-
-			CellType[,,] simulatedState = new CellType[length, width, height];
-
-			for (int iteration = 0; iteration < settings.IterationCount; iteration++)
-			{
-				for (int k = 0; k < height; k++)
-				{
-					for (int i = 0; i < length; i++)
-					{
-						for (int j = 0; j < width; j++)
-						{
-							int nearbyWallCellCount = GetNearbyWallCellCount(initialState, i, j, k);
-
-							if (nearbyWallCellCount > settings.SwitchToWallThreshold)
-								simulatedState[i, j, k] = CellType.Wall;
-							else if (nearbyWallCellCount < settings.SwitchToHollowThreshold)
-								simulatedState[i, j, k] = CellType.Hollow;
-							else
-								simulatedState[i, j, k] = initialState[i, j, k];
-						}
-					}
-				}
-
-				initialState = simulatedState;
-			}
-
-			return simulatedState;
-		}
-
-		private static int GetNearbyWallCellCount(CellType[,,] cells, int i, int j, int k, int radius = 1)
-		{
-			int height = cells.GetLength(0);
-			int width = cells.GetLength(1);
-
-			int startI = i - radius < 0 ? 0 : i - radius;
-			int startJ = j - radius < 0 ? 0 : j - radius;
-			int endI = i + radius >= height ? height - 1 : i + radius;
-			int endJ = j + radius >= width ? width - 1 : j + radius;
-
-			int count = 0;
-
-			for (int y = startI; y <= endI; y++)
-			{
-				for (int x = startJ; x <= endJ; x++)
-				{
-					if (y == i && x == j)
-						continue;
-
-					if (IsWallCell(cells[y, x, k]))
-						count++;
-				}
-			}
-
-			return count;
-		}
-
-		public static bool IsHollowCell(CellType cell)
-		{
-			return cell == CellType.Hollow;
-		}
-
-		public static bool IsWallCell(CellType cell)
-		{
-			return cell == CellType.Wall;
 		}
 	}
 }

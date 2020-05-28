@@ -4,17 +4,22 @@ using UnityEngine;
 
 public class Placer : MonoBehaviour
 {
-	public CaveChunk DestinationChunk;
+	public CaveChunkManager ChunkManager;
+	public Vector2Int DestinationChunkCoordinate;
 
 	public void PlaceInRandomCave()
 	{
-		int randomCaveIndex = Random.Range(0, DestinationChunk.CellData.Hollows.Count - 1);
+		CaveChunk destinationChunk = ChunkManager.GeneratedChunks[DestinationChunkCoordinate];
+
+		int randomCaveIndex = Random.Range(0, destinationChunk.CellData.Hollows.Count - 1);
 		PlaceInCave(randomCaveIndex);
 	}
 
 	public void PlaceInCave(int caveIndex)
 	{
-		PlaceInCave(DestinationChunk.CellData.Hollows[caveIndex]);
+		CaveChunk destinationChunk = ChunkManager.GeneratedChunks[DestinationChunkCoordinate];
+
+		PlaceInCave(destinationChunk.CellData.Hollows[caveIndex]);
 	}
 
 	public void PlaceInCave(CaveHollowGroup cave) //TODO different placements
@@ -22,7 +27,9 @@ public class Placer : MonoBehaviour
 		int randomPositionIndex = Random.Range(0, cave.GroundCells.Count);
 		Vector3Int chunkPosition = cave.GroundCells[randomPositionIndex];
 
-		Vector3 position = DestinationChunk.GetWorldPosition(chunkPosition);
+		CaveChunk destinationChunk = ChunkManager.GeneratedChunks[DestinationChunkCoordinate];
+
+		Vector3 position = destinationChunk.GetWorldPosition(chunkPosition);
 		transform.position = position;
 	}
 }
