@@ -26,7 +26,8 @@ namespace Caves.Cells
 
 		public void GenerateCave()
 		{
-			ChunkManager.GenerateAndAddChunk(Vector2Int.zero);
+			_currentCaveCells = new CaveChunkCellData(Settings, ChunkManager, Vector2Int.zero);
+			_currentCaveCells.Generate();
 		}
 
 		public void ShowSimulatedState()

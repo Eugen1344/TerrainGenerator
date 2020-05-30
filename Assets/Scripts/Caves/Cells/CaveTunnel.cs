@@ -28,39 +28,9 @@ namespace Caves.Cells
 
 			foreach (CaveHollowGroup firstHollow in hollows)
 			{
-				(CaveHollowGroup secondHollow, Vector3Int firstPoint, Vector3Int secondPoint) = ClosestHollow(firstHollow, hollows, alreadyConnectedCaves);
+				(CaveHollowGroup secondHollow, Vector3Int firstPoint, Vector3Int secondPoint) = ClosestNotConnectedHollow(firstHollow, hollows, alreadyConnectedCaves);
 
-				int firstX = firstPoint.x < secondPoint.x ? firstPoint.x : secondPoint.x;
-				int secondX = secondPoint.x > firstPoint.x ? secondPoint.x : firstPoint.x;
-				int firstY = firstPoint.y < secondPoint.y ? firstPoint.y : secondPoint.y;
-				int secondY = secondPoint.y > firstPoint.y ? secondPoint.y : firstPoint.y;
-
-				firstX = firstX - settings.TunnelWidth < 0 ? 0 : firstX - settings.TunnelWidth;
-				secondX = secondX + settings.TunnelWidth >= settings.TerrainCubicSize.x ? secondX : secondX + settings.TunnelWidth;
-				firstY = firstY - settings.TunnelWidth < 0 ? 0 : firstY - settings.TunnelWidth;
-				secondY = secondY + settings.TunnelWidth >= settings.TerrainCubicSize.x ? secondY : secondY + settings.TunnelWidth;
-
-				List<Vector3Int> tunnelCells = new List<Vector3Int>();
-
-				for (int x = firstX; x <= secondX; x++)
-				{
-					for (int y = firstY; y <= secondY; y++)
-					{
-						float distance = DistanceFromPointToLine(firstPoint, secondPoint, x, y);
-
-						if (distance > settings.TunnelWidth)
-							continue;
-
-						int maxHeight = Mathf.Min(settings.TunnelHeight, settings.TerrainCubicSize.z);
-
-						for (int z = 0; z < maxHeight; z++)
-						{
-							cells[x, y, z] = CellType.Hollow;
-
-							tunnelCells.Add(new Vector3Int(x, y, z));
-						}
-					}
-				}
+				List<Vector3Int> tunnelCells = GetTunnelCellsAndConnectCaves(ref cells, settings, firstPoint, secondPoint);
 
 				CaveTunnel tunnel = new CaveTunnel(tunnelCells, firstHollow, secondHollow, firstPoint, secondPoint);
 				tunnels.Add(tunnel);
@@ -69,6 +39,43 @@ namespace Caves.Cells
 			}
 
 			return tunnels;
+		}
+
+		private static List<Vector3Int> GetTunnelCellsAndConnectCaves(ref CellType[,,] cells, CaveCellSettings settings, Vector3Int firstPoint, Vector3Int secondPoint)
+		{
+			int firstX = Mathf.Min(firstPoint.x, secondPoint.x);
+			int secondX = Mathf.Max(firstPoint.x, secondPoint.x);
+			int firstY = Mathf.Min(firstPoint.y, secondPoint.y); //TODO test, may not work
+			int secondY = Mathf.Max(firstPoint.y, secondPoint.y);
+
+			firstX = Mathf.Max(firstX - settings.TunnelWidth, 0);
+			secondX = Mathf.Min(secondX + settings.TunnelWidth, settings.TerrainCubicSize.x - 1);
+			firstY = Mathf.Max(firstY - settings.TunnelWidth, 0);
+			secondY = Mathf.Min(secondY + settings.TunnelWidth, settings.TerrainCubicSize.y - 1);
+
+			List<Vector3Int> tunnelCells = new List<Vector3Int>();
+
+			for (int x = firstX; x <= secondX; x++)
+			{
+				for (int y = firstY; y <= secondY; y++)
+				{
+					float distance = DistanceFromPointToLine(firstPoint, secondPoint, x, y);
+
+					if (distance > settings.TunnelWidth)
+						continue;
+
+					int maxHeight = Mathf.Min(settings.TunnelHeight, settings.TerrainCubicSize.z);
+
+					for (int z = 0; z < maxHeight; z++)
+					{
+						cells[x, y, z] = CellType.Hollow;
+
+						tunnelCells.Add(new Vector3Int(x, y, z));
+					}
+				}
+			}
+
+			return tunnelCells;
 		}
 
 		private static float DistanceFromPointToLine(Vector3Int lineFirstPoint, Vector3Int lineSecondPoint, int x, int y)
@@ -83,7 +90,7 @@ namespace Caves.Cells
 				   Mathf.Sqrt(Mathf.Pow(lineSecondPoint.x - lineFirstPoint.x, 2) + Mathf.Pow(lineSecondPoint.y - lineFirstPoint.y, 2));
 		}
 
-		private static (CaveHollowGroup hollow, Vector3Int firstPoint, Vector3Int secondPoint) ClosestHollow(CaveHollowGroup hollow, List<CaveHollowGroup> hollows, List<CaveHollowGroup> alreadyConnectedCaves)
+		private static (CaveHollowGroup hollow, Vector3Int firstPoint, Vector3Int secondPoint) ClosestNotConnectedHollow(CaveHollowGroup hollow, List<CaveHollowGroup> hollows, List<CaveHollowGroup> alreadyConnectedCaves)
 		{
 			Vector3Int firstPoint = default;
 			Vector3Int secondPoint = default;
