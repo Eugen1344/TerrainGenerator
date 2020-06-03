@@ -125,17 +125,5 @@ namespace Caves.CaveMesh
 
 			return cells;
 		}
-
-		/*private static CellType[,,] GetCellMatrixAlligned4x4x4(CaveWallsGroup wall, CaveCellSettings settings)
-		{
-			CellType[,,] cells = new CellType[settings.TerrainCubicSize.x, settings.TerrainCubicSize.y, settings.TerrainCubicSize.z];
-
-			foreach (Vector3Int cell in wall.CellChunkCoordinates)
-			{
-				cells[cell.x, cell.y, cell.z] = CellType.Wall;
-			}
-
-			return cells;
-		}*/
 	}
 }

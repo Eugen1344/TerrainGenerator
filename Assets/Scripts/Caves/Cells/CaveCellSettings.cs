@@ -8,7 +8,6 @@ namespace Caves.Cells
 	{
 		public Vector3Int TerrainCubicSize;
 		public int MinCaveHeight;
-		public bool RandomSeed;
 		public int Seed;
 		public int SwitchToHollowThreshold;
 		public int SwitchToWallThreshold;
@@ -22,9 +21,6 @@ namespace Caves.Cells
 
 		public int GenerateSeed(int baseSeed, Vector2Int chunkCoordinate)
 		{
-			if (RandomSeed)
-				return Environment.TickCount;
-
 			ushort chunkCoordinateX = (ushort)chunkCoordinate.x;
 			ushort chunkCoordinateY = (ushort)chunkCoordinate.y;
 			int chunkOffset = chunkCoordinateX << (sizeof(ushort) * 8) | chunkCoordinateY;

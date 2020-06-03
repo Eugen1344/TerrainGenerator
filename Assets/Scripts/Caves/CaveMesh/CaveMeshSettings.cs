@@ -7,6 +7,5 @@ namespace Caves.CaveMesh
 	public struct CaveMeshSettings
 	{
 		public Vector3 CellSize;
-		public Vector3 CellSpacing;
 	}
 }

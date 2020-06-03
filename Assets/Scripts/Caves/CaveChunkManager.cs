@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Caves
@@ -8,11 +9,16 @@ namespace Caves
 		public Dictionary<Vector2Int, CaveChunk> GeneratedChunks = new Dictionary<Vector2Int, CaveChunk>();
 		public GameObject ChunkHolder;
 		public CaveChunk ChunkPrefab;
+		public bool RandomSeed;
+		public int Seed;
 
 		private Vector3 _chunkSize;
 
 		private void Awake()
 		{
+			if (RandomSeed)
+				Seed = Environment.TickCount;
+
 			_chunkSize = Vector3.Scale(ChunkPrefab.WallMeshSettings.CellSize, ChunkPrefab.Settings.TerrainCubicSize);
 		}
 
@@ -26,6 +32,7 @@ namespace Caves
 			newChunkObject.transform.localPosition = GetChunkWorldPosition(chunkCoordinate);
 
 			CaveChunk newChunk = newChunkObject.GetComponent<CaveChunk>();
+			newChunk.Settings.Seed = Seed; //TODO rewrite seed
 			newChunk.ChunkManager = this;
 
 			GeneratedChunks.Add(chunkCoordinate, newChunk);
