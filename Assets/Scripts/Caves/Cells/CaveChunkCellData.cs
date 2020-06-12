@@ -11,6 +11,7 @@ namespace Caves.Cells
 		public List<CaveHollowGroup> Hollows;
 		public List<CaveWallsGroup> Walls;
 		public List<CaveTunnel> Tunnels;
+		public bool IsFinalized = false;
 
 		public CaveChunkCellData(CaveCellSettings settings, CaveChunkManager chunkManager, Vector2Int chunkCoordinate) : base(settings, chunkManager, chunkCoordinate)
 		{
@@ -39,6 +40,10 @@ namespace Caves.Cells
 			FinalIteration = (CellType[,,])Iterations[Iterations.Count - 1].Clone();
 
 			Hollows = GetCellGroups<CaveHollowGroup>(CellType.Hollow);
+		}
+
+		public void FinalizeGeneration()
+		{
 			FilterHollowGroupsByGroundSize(Hollows, Settings.MinHollowGroupCubicSize);
 
 			Hollows = GetCellGroups<CaveHollowGroup>(CellType.Hollow);
@@ -46,6 +51,8 @@ namespace Caves.Cells
 			Tunnels = Settings.GenerateTunnels ? CaveTunnel.CreateTunnelsAndConnectCaves(ref FinalIteration, Hollows, Settings) : new List<CaveTunnel>();
 
 			Walls = GetCellGroups<CaveWallsGroup>(CellType.Wall);
+
+			IsFinalized = true;
 		}
 
 		private ChunkCellData[,] GetNearbyChunksOrGenerateGhostChunks(out List<GhostChunkCellData> ghostChunks)

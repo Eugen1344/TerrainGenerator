@@ -1,6 +1,4 @@
-﻿using System;
-using System.Runtime;
-using Caves.CaveMesh;
+﻿using Caves.CaveMesh;
 using Caves.Cells;
 using UnityEngine;
 
@@ -10,7 +8,7 @@ namespace Caves
 	{
 		public CaveChunkManager ChunkManager;
 		public CaveChunkCellData CellData;
-		public CaveMeshSettings WallMeshSettings;
+		public PolygonGeneratorSettings WallPolygonSettings;
 		public CaveWallsMesh WallsMesh;
 		public CaveCellSettings Settings;
 		public Vector2Int ChunkCoordinate;
@@ -19,7 +17,7 @@ namespace Caves
 		public MeshFilter TestMesh;
 		public MeshCollider TestCollider;
 
-		public void GenerateChunk(Vector2Int chunkCoordinate)
+		public void Generate(Vector2Int chunkCoordinate)
 		{
 			ChunkCoordinate = chunkCoordinate;
 
@@ -27,7 +25,13 @@ namespace Caves
 
 			CellData = new CaveChunkCellData(Settings, ChunkManager, chunkCoordinate);
 			CellData.Generate();
-			WallsMesh = CaveWallsMesh.GenerateWallMesh(CellData.Walls, WallMeshSettings);
+		}
+
+		public void FinalizeGeneration()
+		{
+			CellData.FinalizeGeneration();
+
+			WallsMesh = CaveWallsMesh.GenerateWallMesh(CellData.Walls, WallPolygonSettings);
 
 			TestMesh.sharedMesh = WallsMesh.Mesh;
 			TestCollider.sharedMesh = WallsMesh.Mesh;
@@ -35,7 +39,7 @@ namespace Caves
 
 		public Vector3 GetWorldPosition(Vector3Int cellPosition)
 		{
-			Vector3 localPosition = new Vector3(cellPosition.x * WallMeshSettings.CellSize.x, cellPosition.y * WallMeshSettings.CellSize.y, cellPosition.z * WallMeshSettings.CellSize.z);
+			Vector3 localPosition = new Vector3(cellPosition.x * WallPolygonSettings.CellSize.x, cellPosition.y * WallPolygonSettings.CellSize.y, cellPosition.z * WallPolygonSettings.CellSize.z);
 			return transform.TransformPoint(localPosition); //TODO spacing
 		}
 	}

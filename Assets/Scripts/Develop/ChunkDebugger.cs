@@ -3,43 +3,46 @@ using Caves.Cells;
 using UnityEditor;
 using UnityEngine;
 
-public class ChunkDebugger : MonoBehaviour
+namespace Develop
 {
-	public bool DrawCells;
-	public bool DrawCoordinates;
-	public bool DrawTunnels;
-	public CaveChunk Chunk;
-
-	private void OnDrawGizmosSelected()
+	public class ChunkDebugger : MonoBehaviour
 	{
-		if (!Application.isPlaying)
-			return;
+		public bool DrawCells;
+		public bool DrawCoordinates;
+		public bool DrawTunnels;
+		public CaveChunk Chunk;
 
-		if (DrawCells)
+		private void OnDrawGizmosSelected()
 		{
-			foreach (CaveWallsGroup wall in Chunk.CellData.Walls)
+			if (!Application.isPlaying)
+				return;
+
+			if (DrawCells)
 			{
-				foreach (Vector3Int coordinate in wall.CellChunkCoordinates)
+				foreach (CaveWallsGroup wall in Chunk.CellData.Walls)
 				{
-					Vector3 globalPosition = Chunk.GetWorldPosition(coordinate);
-
-					Gizmos.color = Color.black;
-					Gizmos.DrawSphere(globalPosition, 3);
-
-					if (DrawCoordinates)
+					foreach (Vector3Int coordinate in wall.CellChunkCoordinates)
 					{
-						Handles.Label(globalPosition, coordinate.ToString());
+						Vector3 globalPosition = Chunk.GetWorldPosition(coordinate);
+
+						Gizmos.color = Color.black;
+						Gizmos.DrawSphere(globalPosition, 3);
+
+						if (DrawCoordinates)
+						{
+							Handles.Label(globalPosition, coordinate.ToString());
+						}
 					}
 				}
 			}
-		}
 
-		if (DrawTunnels)
-		{
-			foreach (CaveTunnel tunnel in Chunk.CellData.Tunnels)
+			if (DrawTunnels)
 			{
-				Gizmos.color = Color.cyan;
-				Gizmos.DrawLine(Chunk.GetWorldPosition(tunnel.FirstCaveConnectionPoint), Chunk.GetWorldPosition(tunnel.SecondCaveConnectionPoint));
+				foreach (CaveTunnel tunnel in Chunk.CellData.Tunnels)
+				{
+					Gizmos.color = Color.cyan;
+					Gizmos.DrawLine(Chunk.GetWorldPosition(tunnel.FirstCaveConnectionPoint), Chunk.GetWorldPosition(tunnel.SecondCaveConnectionPoint));
+				}
 			}
 		}
 	}

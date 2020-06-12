@@ -1,5 +1,4 @@
-﻿using System;
-using Caves;
+﻿using Caves;
 using UnityEngine;
 
 public class PlayerChunkTracker : MonoBehaviour

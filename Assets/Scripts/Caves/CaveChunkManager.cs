@@ -19,7 +19,7 @@ namespace Caves
 			if (RandomSeed)
 				Seed = Environment.TickCount;
 
-			_chunkSize = Vector3.Scale(ChunkPrefab.WallMeshSettings.CellSize, ChunkPrefab.Settings.TerrainCubicSize);
+			_chunkSize = Vector3.Scale(ChunkPrefab.WallPolygonSettings.CellSize, ChunkPrefab.Settings.TerrainCubicSize);
 		}
 
 		public CaveChunk GenerateAndAddChunk(Vector2Int chunkCoordinate)
@@ -37,7 +37,7 @@ namespace Caves
 
 			GeneratedChunks.Add(chunkCoordinate, newChunk);
 
-			newChunk.GenerateChunk(chunkCoordinate);
+			newChunk.Generate(chunkCoordinate);
 
 			return newChunk;
 		}

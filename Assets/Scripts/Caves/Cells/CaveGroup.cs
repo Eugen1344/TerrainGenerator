@@ -10,6 +10,7 @@ namespace Caves.Cells
 		public List<Vector3Int> CellChunkCoordinates;
 		public int CellCount => CellChunkCoordinates.Count;
 		public List<Vector3Int> GroundCells; //TODO maybe break cells into layers (List<Vector2Int>[])
+		public List<CaveGroup> ConnectedGroups;
 
 		protected CaveGroup(List<Vector3Int> cellChunkCoordinates)
 		{

@@ -2,39 +2,39 @@
 using Caves.Cells;
 using UnityEngine;
 
-namespace Caves.CaveMesh
+namespace PolygonGenerators
 {
-	public static class CaveMeshData
+	public static class MarchingCubesData
 	{
-		private static CaveMeshPrimaryNode[] _primaryNodes =
+		private static MarchingCubesPrimaryNode[] _primaryNodes =
 		{
-			new CaveMeshPrimaryNode(new Vector3(0, 0, 0)),
-			new CaveMeshPrimaryNode(new Vector3(1, 0, 0)),
-			new CaveMeshPrimaryNode(new Vector3(1, 1, 0)),
-			new CaveMeshPrimaryNode(new Vector3(0, 1, 0)),
+			new MarchingCubesPrimaryNode(new Vector3(0, 0, 0)),
+			new MarchingCubesPrimaryNode(new Vector3(1, 0, 0)),
+			new MarchingCubesPrimaryNode(new Vector3(1, 1, 0)),
+			new MarchingCubesPrimaryNode(new Vector3(0, 1, 0)),
 
-			new CaveMeshPrimaryNode(new Vector3(0, 0, 1)),
-			new CaveMeshPrimaryNode(new Vector3(1, 0, 1)),
-			new CaveMeshPrimaryNode(new Vector3(1, 1, 1)),
-			new CaveMeshPrimaryNode(new Vector3(0, 1, 1)),
+			new MarchingCubesPrimaryNode(new Vector3(0, 0, 1)),
+			new MarchingCubesPrimaryNode(new Vector3(1, 0, 1)),
+			new MarchingCubesPrimaryNode(new Vector3(1, 1, 1)),
+			new MarchingCubesPrimaryNode(new Vector3(0, 1, 1)),
 		};
 
-		private static CaveMeshSecondaryNode[] _secondaryNodes =
+		private static MarchingCubesSecondaryNode[] _secondaryNodes =
 		{
-			new CaveMeshSecondaryNode(_primaryNodes[0], _primaryNodes[1]),
-			new CaveMeshSecondaryNode(_primaryNodes[1], _primaryNodes[2]),
-			new CaveMeshSecondaryNode(_primaryNodes[2], _primaryNodes[3]),
-			new CaveMeshSecondaryNode(_primaryNodes[0], _primaryNodes[3]),
+			new MarchingCubesSecondaryNode(_primaryNodes[0], _primaryNodes[1]),
+			new MarchingCubesSecondaryNode(_primaryNodes[1], _primaryNodes[2]),
+			new MarchingCubesSecondaryNode(_primaryNodes[2], _primaryNodes[3]),
+			new MarchingCubesSecondaryNode(_primaryNodes[0], _primaryNodes[3]),
 
-			new CaveMeshSecondaryNode(_primaryNodes[4], _primaryNodes[5]),
-			new CaveMeshSecondaryNode(_primaryNodes[5], _primaryNodes[6]),
-			new CaveMeshSecondaryNode(_primaryNodes[6], _primaryNodes[7]),
-			new CaveMeshSecondaryNode(_primaryNodes[4], _primaryNodes[7]),
+			new MarchingCubesSecondaryNode(_primaryNodes[4], _primaryNodes[5]),
+			new MarchingCubesSecondaryNode(_primaryNodes[5], _primaryNodes[6]),
+			new MarchingCubesSecondaryNode(_primaryNodes[6], _primaryNodes[7]),
+			new MarchingCubesSecondaryNode(_primaryNodes[4], _primaryNodes[7]),
 
-			new CaveMeshSecondaryNode(_primaryNodes[0], _primaryNodes[4]),
-			new CaveMeshSecondaryNode(_primaryNodes[1], _primaryNodes[5]),
-			new CaveMeshSecondaryNode(_primaryNodes[2], _primaryNodes[6]),
-			new CaveMeshSecondaryNode(_primaryNodes[3], _primaryNodes[7])
+			new MarchingCubesSecondaryNode(_primaryNodes[0], _primaryNodes[4]),
+			new MarchingCubesSecondaryNode(_primaryNodes[1], _primaryNodes[5]),
+			new MarchingCubesSecondaryNode(_primaryNodes[2], _primaryNodes[6]),
+			new MarchingCubesSecondaryNode(_primaryNodes[3], _primaryNodes[7])
 		};
 
 		private static byte[][] _triangles =
@@ -318,7 +318,7 @@ namespace Caves.CaveMesh
 
 			for (int i = 0; i < triangles.GetLength(0); i++)
 			{
-				CaveMeshSecondaryNode node = _secondaryNodes[triangles[i]];
+				MarchingCubesSecondaryNode node = _secondaryNodes[triangles[i]];
 
 				yield return node.InterpolatePosition(0.5f); //TODO interpolation
 			}

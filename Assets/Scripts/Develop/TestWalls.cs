@@ -2,13 +2,16 @@
 using Caves.Cells;
 using UnityEngine;
 
-public static class TestWalls
+namespace Develop
 {
-	public static CaveWallsGroup Wall2x2 = new CaveWallsGroup(new List<Vector3Int>
+	public static class TestWalls
 	{
-		new Vector3Int(0, 0, 0),
-		new Vector3Int(1, 0, 0),
-		new Vector3Int(0, 1, 0),
-		new Vector3Int(1, 1, 0),
-	});
+		public static CaveWallsGroup Wall2x2 = new CaveWallsGroup(new List<Vector3Int>
+		{
+			new Vector3Int(0, 0, 0),
+			new Vector3Int(1, 0, 0),
+			new Vector3Int(0, 1, 0),
+			new Vector3Int(1, 1, 0),
+		});
+	}
 }

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Caves.Cells;
+using PolygonGenerators;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -9,25 +10,26 @@ namespace Caves.CaveMesh
 {
 	public class CaveWallsMesh
 	{
+		public PolygonGenerator PolygonGenerator;
 		public Mesh Mesh;
 
-		public CaveWallsMesh(Mesh mesh)
+		public CaveWallsMesh(PolygonGenerator polygonGenerator)
 		{
-			Mesh = mesh;
+			PolygonGenerator = polygonGenerator;
 		}
 
-		public static CaveWallsMesh GenerateWallMesh(List<CaveWallsGroup> walls, CaveMeshSettings settings)
+		public void GenerateWallMesh(List<CaveWallsGroup> walls)
 		{
-			Mesh mesh = GetMesh(walls, settings);
-
-			return new CaveWallsMesh(mesh);
+			Mesh = GetMesh(walls);
 		}
 
-		private static Mesh GetMesh(List<CaveWallsGroup> walls, CaveMeshSettings settings)
+		private Mesh GetMesh(List<CaveWallsGroup> walls)
 		{
 			List<Vector3> vertices = new List<Vector3>();
 			//List<Vector3> normals = new List<Vector3>();
 			List<int> triangles = new List<int>();
+
+			Vector3 cellSize = PolygonGenerator.Settings.CellSize;
 
 			foreach (CaveWallsGroup wall in walls)
 			{
@@ -39,11 +41,11 @@ namespace Caves.CaveMesh
 					{
 						for (int k = 0; k < matrixSize.z; k++)
 						{
-							int nodeConfiguration = CaveMeshData.GetNodeConfiguration(cellMatrix, i, j, k);
+							int nodeConfiguration = MarchingCubesData.GetNodeConfiguration(cellMatrix, i, j, k);
 
-							foreach (Vector3 vertex in CaveMeshData.GetVertices(nodeConfiguration))
+							foreach (Vector3 vertex in MarchingCubesData.GetVertices(nodeConfiguration))
 							{
-								Vector3 vertexPosition = new Vector3((vertex.x + minCoordinate.x + i) * settings.CellSize.x, (vertex.y + minCoordinate.y + j) * settings.CellSize.y, (vertex.z + minCoordinate.z + k) * settings.CellSize.z);
+								Vector3 vertexPosition = new Vector3((vertex.x + minCoordinate.x + i) * cellSize.x, (vertex.y + minCoordinate.y + j) * cellSize.y, (vertex.z + minCoordinate.z + k) * cellSize.z);
 								vertices.Add(vertexPosition);
 
 								int triangleIndex = vertices.Count - 1;

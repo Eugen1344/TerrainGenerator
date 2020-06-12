@@ -82,7 +82,7 @@ MonoBehaviour:
   WallMeshSettings:
     CellSize: {x: 10, y: 10, z: 10}
   Settings:
-    TerrainCubicSize: {x: 100, y: 100, z: 1}
+    TerrainCubicSize: {x: 100, y: 100, z: 10}
     MinCaveHeight: 2
     Seed: 2457398
     SwitchToHollowThreshold: 3
@@ -91,7 +91,7 @@ MonoBehaviour:
     RandomHollowCellsPercentDecreasePerLevel: 0.03
     IterationCount: 4
     MinHollowGroupCubicSize: 0
-    GenerateTunnels: 0
+    GenerateTunnels: 1
     TunnelHeight: 3
     TunnelWidth: 2
   ChunkCoordinate: {x: 0, y: 0}
