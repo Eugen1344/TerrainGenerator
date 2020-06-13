@@ -1,5 +1,6 @@
 ﻿using Caves;
 using Caves.Cells;
+using Caves.Chunks;
 using UnityEngine;
 
 public class Placer : MonoBehaviour

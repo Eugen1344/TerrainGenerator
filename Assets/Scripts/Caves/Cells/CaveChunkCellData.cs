@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using Caves.Chunks;
 using UnityEngine;
 using Random = System.Random;
 

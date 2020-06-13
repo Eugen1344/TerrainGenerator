@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Caves.Chunks;
 using UnityEngine;
 
 namespace Caves.Cells

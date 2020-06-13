@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Caves
+namespace Caves.Chunks
 {
 	public class Chunk : MonoBehaviour
 	{

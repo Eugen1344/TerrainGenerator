@@ -1,4 +1,5 @@
 ﻿using Caves;
+using Caves.Chunks;
 using UnityEngine;
 
 public class PlayerChunkTracker : MonoBehaviour
@@ -31,7 +32,7 @@ public class PlayerChunkTracker : MonoBehaviour
 			{
 				Vector2Int newChunkCoordinate = new Vector2Int(i, j);
 
-				ChunkManager.GenerateAndAddChunk(newChunkCoordinate);
+				ChunkManager.CreateChunk(newChunkCoordinate);
 			}
 		}
 	}

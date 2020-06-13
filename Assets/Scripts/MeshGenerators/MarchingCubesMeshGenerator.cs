@@ -30,7 +30,7 @@ namespace MeshGenerators
 
 						foreach (Vector3 vertex in MarchingCubesData.GetVertices(nodeConfiguration))
 						{
-							Vector3 vertexPosition = new Vector3((vertex.x + i) * gridSize.x, (vertex.y + j) * gridSize.y, (vertex.z + k) * gridSize.z);
+							Vector3 vertexPosition = new Vector3((vertex.x + i - 1) * gridSize.x, (vertex.y + j - 1) * gridSize.y, (vertex.z + k - 1) * gridSize.z);
 							vertices.Add(vertexPosition);
 
 							int triangleIndex = vertices.Count - 1;

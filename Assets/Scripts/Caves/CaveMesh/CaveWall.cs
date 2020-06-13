@@ -1,5 +1,5 @@
-﻿using System;
-using Caves.Cells;
+﻿using Caves.Cells;
+using Caves.Chunks;
 using MeshGenerators;
 using UnityEngine;
 
@@ -56,7 +56,7 @@ namespace Caves.CaveMesh
 			return uvs;
 		}
 
-		private static int[,,] GetAlignedNodeMatrix(CaveWallGroup wall, out Vector3Int minCoordinate)
+		private int[,,] GetAlignedNodeMatrix(CaveWallGroup wall, out Vector3Int minCoordinate)
 		{
 			minCoordinate = wall.CellChunkCoordinates[0];
 			Vector3Int maxCoordinate = wall.CellChunkCoordinates[0];
@@ -82,6 +82,27 @@ namespace Caves.CaveMesh
 			Vector3Int actualMatrixSize = (maxCoordinate + Vector3Int.one) - minCoordinate + new Vector3Int(2, 2, 2);
 
 			int[,,] nodes = new int[actualMatrixSize.x, actualMatrixSize.y, actualMatrixSize.z];
+
+			for (int i = 0; i < actualMatrixSize.x; i++)
+			{
+				for (int j = 0; j < actualMatrixSize.y; j++)
+				{
+					for (int k = 1; k < actualMatrixSize.z - 1; k++)
+					{
+						if ((i == 0 || j == 0 || k == 0 ||
+							i == actualMatrixSize.x - 1 || j == actualMatrixSize.y - 1 || k == actualMatrixSize.z - 1))
+						{
+							Vector3Int matrixCoordinate = new Vector3Int(i, j, k);
+							Vector3Int coordinate = matrixCoordinate + minCoordinate - Vector3Int.one;
+
+							if (_chunk.IsInsideChunk(coordinate))
+								continue;
+
+							nodes[i, j, k] = _chunk.GetCellFromAllChunks(coordinate) == CellType.Wall ? 1 : 0;
+						}
+					}
+				}
+			}
 
 			foreach (Vector3Int coordinate in wall.CellChunkCoordinates)
 			{
