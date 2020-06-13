@@ -1,0 +1,112 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &5190200656677533890
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5190200656677533891}
+  m_Layer: 0
+  m_Name: TestCaveBox
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5190200656677533891
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5190200656677533890}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -10, y: 0, z: -5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 5190200657607983643}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &5190200657607983645
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5190200657607983643}
+  - component: {fileID: 5190200657607983642}
+  - component: {fileID: 5190200657607983640}
+  m_Layer: 0
+  m_Name: CaveChunk2D
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5190200657607983643
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5190200657607983645}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 5190200656677533891}
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5190200657607983642
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5190200657607983645}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9308123d59a64c0ab2a1e2a634309974, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CellSize: {x: 10, y: 10, z: 10}
+  ChunkManager: {fileID: 0}
+  WallPrefab: {fileID: 8652350943365143204, guid: 5204836ef8bb785419212c309e3aebc4,
+    type: 3}
+  Settings:
+    TerrainCubicSize: {x: 100, y: 100, z: 1}
+    MinCaveHeight: 2
+    Seed: 2457398
+    SwitchToHollowThreshold: 3
+    SwitchToWallThreshold: 4
+    RandomHollowCellsPercent: 0.5
+    RandomHollowCellsPercentDecreasePerLevel: 0.03
+    IterationCount: 4
+    MinHollowGroupCubicSize: 0
+    GenerateTunnels: 0
+    TunnelHeight: 3
+    TunnelWidth: 2
+  ChunkCoordinate: {x: 0, y: 0}
+  ChunkSeed: 0
+--- !u!114 &5190200657607983640
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5190200657607983645}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e6ec038e778c0842bbc7e1d7122278f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DrawCells: 1
+  DrawCoordinates: 0
+  DrawTunnels: 1
+  Chunk: {fileID: 5190200657607983642}

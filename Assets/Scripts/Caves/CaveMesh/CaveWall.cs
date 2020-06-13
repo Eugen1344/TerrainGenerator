@@ -1,39 +1,45 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System;
 using Caves.Cells;
-using PolygonGenerators;
-using UnityEditor;
+using MeshGenerators;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 namespace Caves.CaveMesh
 {
-	public class CaveWallsMesh
+	public class CaveWall : MonoBehaviour
 	{
-		public Mesh Mesh;
+		public MeshGeneratorSettings MeshSettings;
+		public MeshFilter MeshFilter;
+		public MeshCollider MeshCollider;
 
 		private MeshGenerator _meshGenerator;
+		private CaveWallGroup _wall;
+		private CaveChunk _chunk;
 
-		public CaveWallsMesh(MeshGenerator meshGenerator)
+		public void Generate(CaveWallGroup wall, CaveChunk chunk)
 		{
-			_meshGenerator = meshGenerator;
+			_wall = wall;
+			_chunk = chunk;
+
+			SetMarchingCubesMeshGenerator();
+
+			Mesh mesh = GenerateMesh(out Vector3Int minCoordinate);
+
+			transform.localPosition += minCoordinate * _chunk.CellSize;
+
+			MeshFilter.sharedMesh = mesh;
+			MeshCollider.sharedMesh = mesh;
 		}
 
-		public void GenerateWallMesh(List<CaveWallsGroup> walls)
+		private void SetMarchingCubesMeshGenerator() //TODO temp, move
 		{
-			Mesh = GetMesh(walls);
+			_meshGenerator = new MarchingCubesMeshGenerator(MeshSettings);
 		}
 
-		private Mesh GetMesh(List<CaveWallsGroup> walls)
+		private Mesh GenerateMesh(out Vector3Int minCoordinate)
 		{
-			foreach (CaveWallsGroup wall in walls)
-			{
-				int[,,] nodeMatrix = GetAlignedNodeMatrix(wall, out Vector3Int matrixSize, out Vector3Int minCoordinate);
+			int[,,] nodeMatrix = GetAlignedNodeMatrix(_wall, out minCoordinate);
 
-				_meshGenerator.Generate(nodeMatrix);
-			}
-
-			return mesh;
+			return _meshGenerator.Generate(nodeMatrix, _chunk.CellSize);
 		}
 
 		private static Vector2[] CalculateUVs(Vector3[] vertices, Vector3 size)
@@ -50,7 +56,7 @@ namespace Caves.CaveMesh
 			return uvs;
 		}
 
-		private static int[,,] GetAlignedNodeMatrix(CaveWallsGroup wall, out Vector3Int minCoordinate)
+		private static int[,,] GetAlignedNodeMatrix(CaveWallGroup wall, out Vector3Int minCoordinate)
 		{
 			minCoordinate = wall.CellChunkCoordinates[0];
 			Vector3Int maxCoordinate = wall.CellChunkCoordinates[0];
@@ -84,7 +90,7 @@ namespace Caves.CaveMesh
 				nodes[matrixCoordinate.x, matrixCoordinate.y, matrixCoordinate.z] = 1;
 			}
 
-			minCoordinate -= Vector3Int.one; //TODO hack
+			//minCoordinate -= Vector3Int.one; //TODO hack
 
 			return nodes;
 		}

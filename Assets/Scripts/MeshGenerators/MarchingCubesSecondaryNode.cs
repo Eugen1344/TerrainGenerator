@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace PolygonGenerators
+namespace MeshGenerators
 {
 	public class MarchingCubesSecondaryNode : MarchingCubesNode
 	{

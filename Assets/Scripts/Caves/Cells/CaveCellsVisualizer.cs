@@ -51,7 +51,7 @@ namespace Caves.Cells
 
 			Vector3 cubeSize = new Vector3(CubeSize, CubeSize, CubeSize);
 
-			foreach (CaveWallsGroup wallsGroup in _currentCaveCells.Walls)
+			foreach (CaveWallGroup wallsGroup in _currentCaveCells.Walls)
 			{
 				foreach (Vector3Int cellCoordinates in wallsGroup.CellChunkCoordinates)
 				{

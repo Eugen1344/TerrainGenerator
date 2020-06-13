@@ -1,39 +1,36 @@
 ﻿using System.Collections.Generic;
-using Caves.CaveMesh;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-namespace PolygonGenerators
+namespace MeshGenerators
 {
 	public class MarchingCubesMeshGenerator : MeshGenerator
 	{
-		public MarchingCubesMeshGenerator(PolygonGeneratorSettings settings) : base(settings)
+		public MarchingCubesMeshGenerator(MeshGeneratorSettings settings) : base(settings)
 		{
 		}
 
-		public override Mesh Generate(int[,,] nodeMatrix)
+		public override Mesh Generate(int[,,] nodeMatrix, Vector3Int gridSize)
 		{
 			List<Vector3> vertices = new List<Vector3>();
 			//List<Vector3> normals = new List<Vector3>();
 			List<int> triangles = new List<int>();
 
-			Vector3 cellSize = Settings.CellSize;
-
 			int length = nodeMatrix.GetLength(0);
 			int width = nodeMatrix.GetLength(1);
 			int height = nodeMatrix.GetLength(2);
 
-			for (int i = 0; i < length; i++)
+			for (int i = 0; i < length - 1; i++)
 			{
-				for (int j = 0; j < width; j++)
+				for (int j = 0; j < width - 1; j++)
 				{
-					for (int k = 0; k < height; k++)
+					for (int k = 0; k < height - 1; k++)
 					{
 						int nodeConfiguration = MarchingCubesData.GetNodeConfiguration(nodeMatrix, i, j, k);
 
 						foreach (Vector3 vertex in MarchingCubesData.GetVertices(nodeConfiguration))
 						{
-							Vector3 vertexPosition = new Vector3((vertex.x + i) * cellSize.x, (vertex.y + j) * cellSize.y, (vertex.z + k) * cellSize.z);
+							Vector3 vertexPosition = new Vector3((vertex.x + i) * gridSize.x, (vertex.y + j) * gridSize.y, (vertex.z + k) * gridSize.z);
 							vertices.Add(vertexPosition);
 
 							int triangleIndex = vertices.Count - 1;

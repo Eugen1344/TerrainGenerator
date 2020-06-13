@@ -28,7 +28,7 @@ namespace Caves.Cells
 			switch (cellType)
 			{
 				case CellType.Wall:
-					return new CaveWallsGroup(cellChunkCoordinates);
+					return new CaveWallGroup(cellChunkCoordinates);
 				case CellType.Hollow:
 					return new CaveHollowGroup(cellChunkCoordinates);
 				default:

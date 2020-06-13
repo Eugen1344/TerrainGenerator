@@ -1,21 +1,20 @@
-﻿using Caves.CaveMesh;
+﻿using System;
+using Caves.CaveMesh;
 using Caves.Cells;
+using MeshGenerators;
 using UnityEngine;
 
 namespace Caves
 {
 	public class CaveChunk : Chunk
 	{
-		public CaveChunkManager ChunkManager;
+		public Vector3Int CellSize;
 		public CaveChunkCellData CellData;
-		public PolygonGeneratorSettings WallPolygonSettings;
-		public CaveWallsMesh WallsMesh;
+		public CaveChunkManager ChunkManager;
+		public CaveWall WallPrefab;
 		public CaveCellSettings Settings;
 		public Vector2Int ChunkCoordinate;
 		public int ChunkSeed;
-
-		public MeshFilter TestMesh;
-		public MeshCollider TestCollider;
 
 		public void Generate(Vector2Int chunkCoordinate)
 		{
@@ -31,15 +30,29 @@ namespace Caves
 		{
 			CellData.FinalizeGeneration();
 
-			WallsMesh = CaveWallsMesh.GenerateWallMesh(CellData.Walls, WallPolygonSettings);
-
-			TestMesh.sharedMesh = WallsMesh.Mesh;
-			TestCollider.sharedMesh = WallsMesh.Mesh;
+			CreateAndPlaceWalls();
 		}
 
-		public Vector3 GetWorldPosition(Vector3Int cellPosition)
+		private void CreateAndPlaceWalls()
 		{
-			Vector3 localPosition = new Vector3(cellPosition.x * WallPolygonSettings.CellSize.x, cellPosition.y * WallPolygonSettings.CellSize.y, cellPosition.z * WallPolygonSettings.CellSize.z);
+			for (int i = 0; i < CellData.Walls.Count; i++)
+			{
+				PlaceWall(CellData.Walls[i], i);
+			}
+		}
+
+		private void PlaceWall(CaveWallGroup wallCells, int index)
+		{
+			GameObject wallObject = Instantiate(WallPrefab.gameObject, transform);
+			wallObject.name = index.ToString();
+			CaveWall wall = wallObject.GetComponent<CaveWall>();
+
+			wall.Generate(wallCells, this);
+		}
+
+		public Vector3 GetWorldPosition(Vector3Int cellCoordinate)
+		{
+			Vector3 localPosition = new Vector3(cellCoordinate.x * CellSize.x, cellCoordinate.y * CellSize.y, cellCoordinate.z * CellSize.z);
 			return transform.TransformPoint(localPosition); //TODO spacing
 		}
 	}

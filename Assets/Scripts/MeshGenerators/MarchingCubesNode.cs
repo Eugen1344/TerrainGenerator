@@ -1,4 +1,4 @@
-﻿namespace PolygonGenerators
+﻿namespace MeshGenerators
 {
 	public class MarchingCubesNode
 	{

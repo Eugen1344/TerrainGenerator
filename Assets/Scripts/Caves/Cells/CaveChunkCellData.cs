@@ -9,7 +9,7 @@ namespace Caves.Cells
 	public class CaveChunkCellData : ChunkCellData
 	{
 		public List<CaveHollowGroup> Hollows;
-		public List<CaveWallsGroup> Walls;
+		public List<CaveWallGroup> Walls;
 		public List<CaveTunnel> Tunnels;
 		public bool IsFinalized = false;
 
@@ -50,7 +50,7 @@ namespace Caves.Cells
 
 			Tunnels = Settings.GenerateTunnels ? CaveTunnel.CreateTunnelsAndConnectCaves(ref FinalIteration, Hollows, Settings) : new List<CaveTunnel>();
 
-			Walls = GetCellGroups<CaveWallsGroup>(CellType.Wall);
+			Walls = GetCellGroups<CaveWallGroup>(CellType.Wall);
 
 			IsFinalized = true;
 		}

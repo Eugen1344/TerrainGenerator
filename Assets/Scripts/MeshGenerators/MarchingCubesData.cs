@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
-using Caves.Cells;
 using UnityEngine;
 
-namespace PolygonGenerators
+namespace MeshGenerators
 {
 	public static class MarchingCubesData
 	{
