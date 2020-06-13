@@ -10,12 +10,13 @@ namespace Caves.CaveMesh
 {
 	public class CaveWallsMesh
 	{
-		public PolygonGenerator PolygonGenerator;
 		public Mesh Mesh;
 
-		public CaveWallsMesh(PolygonGenerator polygonGenerator)
+		private MeshGenerator _meshGenerator;
+
+		public CaveWallsMesh(MeshGenerator meshGenerator)
 		{
-			PolygonGenerator = polygonGenerator;
+			_meshGenerator = meshGenerator;
 		}
 
 		public void GenerateWallMesh(List<CaveWallsGroup> walls)
@@ -25,50 +26,12 @@ namespace Caves.CaveMesh
 
 		private Mesh GetMesh(List<CaveWallsGroup> walls)
 		{
-			List<Vector3> vertices = new List<Vector3>();
-			//List<Vector3> normals = new List<Vector3>();
-			List<int> triangles = new List<int>();
-
-			Vector3 cellSize = PolygonGenerator.Settings.CellSize;
-
 			foreach (CaveWallsGroup wall in walls)
 			{
-				CellType[,,] cellMatrix = GetAlignedCellMatrix(wall, out Vector3Int matrixSize, out Vector3Int minCoordinate);
+				int[,,] nodeMatrix = GetAlignedNodeMatrix(wall, out Vector3Int matrixSize, out Vector3Int minCoordinate);
 
-				for (int i = 0; i < matrixSize.x; i++)
-				{
-					for (int j = 0; j < matrixSize.y; j++)
-					{
-						for (int k = 0; k < matrixSize.z; k++)
-						{
-							int nodeConfiguration = MarchingCubesData.GetNodeConfiguration(cellMatrix, i, j, k);
-
-							foreach (Vector3 vertex in MarchingCubesData.GetVertices(nodeConfiguration))
-							{
-								Vector3 vertexPosition = new Vector3((vertex.x + minCoordinate.x + i) * cellSize.x, (vertex.y + minCoordinate.y + j) * cellSize.y, (vertex.z + minCoordinate.z + k) * cellSize.z);
-								vertices.Add(vertexPosition);
-
-								int triangleIndex = vertices.Count - 1;
-								triangles.Add(triangleIndex);
-
-								//normals.Add(vertex);
-							}
-						}
-					}
-				}
+				_meshGenerator.Generate(nodeMatrix);
 			}
-
-			Mesh mesh = new Mesh();
-			mesh.indexFormat = IndexFormat.UInt32; //TODO maybe optimization will fix this
-			Vector3[] verticesArray = vertices.ToArray();
-			mesh.vertices = verticesArray;
-			mesh.triangles = triangles.ToArray();
-			//mesh.normals = normals.ToArray();
-			mesh.RecalculateNormals();
-			mesh.RecalculateBounds();
-			mesh.RecalculateTangents();
-			mesh.Optimize();
-			//mesh.uv = Unwrapping.GeneratePerTriangleUV(mesh);
 
 			return mesh;
 		}
@@ -87,7 +50,7 @@ namespace Caves.CaveMesh
 			return uvs;
 		}
 
-		private static CellType[,,] GetAlignedCellMatrix(CaveWallsGroup wall, out Vector3Int physicalMatrixSize, out Vector3Int minCoordinate)
+		private static int[,,] GetAlignedNodeMatrix(CaveWallsGroup wall, out Vector3Int minCoordinate)
 		{
 			minCoordinate = wall.CellChunkCoordinates[0];
 			Vector3Int maxCoordinate = wall.CellChunkCoordinates[0];
@@ -110,22 +73,20 @@ namespace Caves.CaveMesh
 					maxCoordinate.z = cell.z;
 			}
 
-			physicalMatrixSize = maxCoordinate - minCoordinate + new Vector3Int(2, 2, 2);
+			Vector3Int actualMatrixSize = (maxCoordinate + Vector3Int.one) - minCoordinate + new Vector3Int(2, 2, 2);
 
-			Vector3Int actualMatrixSize = physicalMatrixSize + Vector3Int.one;
-
-			CellType[,,] cells = new CellType[actualMatrixSize.x, actualMatrixSize.y, actualMatrixSize.z];
+			int[,,] nodes = new int[actualMatrixSize.x, actualMatrixSize.y, actualMatrixSize.z];
 
 			foreach (Vector3Int coordinate in wall.CellChunkCoordinates)
 			{
 				Vector3Int matrixCoordinate = coordinate - minCoordinate + Vector3Int.one;
 
-				cells[matrixCoordinate.x, matrixCoordinate.y, matrixCoordinate.z] = CellType.Wall;
+				nodes[matrixCoordinate.x, matrixCoordinate.y, matrixCoordinate.z] = 1;
 			}
 
 			minCoordinate -= Vector3Int.one; //TODO hack
 
-			return cells;
+			return nodes;
 		}
 	}
 }

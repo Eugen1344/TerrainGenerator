@@ -296,17 +296,17 @@ namespace PolygonGenerators
 			new byte[] {3, 0, 8},
 			new byte[] {}};
 
-		public static int GetNodeConfiguration(CellType[,,] alignedMatrix, int i0, int j0, int k0)
+		public static int GetNodeConfiguration(int[,,] nodeMatrix, int i0, int j0, int k0)
 		{
-			int node0 = alignedMatrix[i0, j0, k0] == CellType.Wall ? 1 : 0;
-			int node1 = alignedMatrix[i0 + 1, j0, k0] == CellType.Wall ? 1 : 0;
-			int node2 = alignedMatrix[i0 + 1, j0 + 1, k0] == CellType.Wall ? 1 : 0;
-			int node3 = alignedMatrix[i0, j0 + 1, k0] == CellType.Wall ? 1 : 0;
+			int node0 = nodeMatrix[i0, j0, k0];
+			int node1 = nodeMatrix[i0 + 1, j0, k0];
+			int node2 = nodeMatrix[i0 + 1, j0 + 1, k0];
+			int node3 = nodeMatrix[i0, j0 + 1, k0];
 
-			int node4 = alignedMatrix[i0, j0, k0 + 1] == CellType.Wall ? 1 : 0;
-			int node5 = alignedMatrix[i0 + 1, j0, k0 + 1] == CellType.Wall ? 1 : 0;
-			int node6 = alignedMatrix[i0 + 1, j0 + 1, k0 + 1] == CellType.Wall ? 1 : 0;
-			int node7 = alignedMatrix[i0, j0 + 1, k0 + 1] == CellType.Wall ? 1 : 0;
+			int node4 = nodeMatrix[i0, j0, k0 + 1];
+			int node5 = nodeMatrix[i0 + 1, j0, k0 + 1];
+			int node6 = nodeMatrix[i0 + 1, j0 + 1, k0 + 1];
+			int node7 = nodeMatrix[i0, j0 + 1, k0 + 1];
 
 			return node0 | (node1 << 1) | (node2 << 2) | (node3 << 3) |
 				   (node4 << 4) | (node5 << 5) | (node6 << 6) | (node7 << 7);
