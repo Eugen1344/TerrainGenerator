@@ -30,7 +30,9 @@ namespace Develop
 
 						if (DrawCoordinates)
 						{
+#if UNITY_EDITOR
 							Handles.Label(globalPosition, coordinate.ToString());
+#endif
 						}
 					}
 				}

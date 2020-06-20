@@ -121,6 +121,100 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &17012900
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 17012902}
+  - component: {fileID: 17012901}
+  - component: {fileID: 17012904}
+  - component: {fileID: 17012903}
+  m_Layer: 0
+  m_Name: TestSphere
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &17012901
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 17012900}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7add87c826ed47d1984a78081c0fa31a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GridSize: {x: 5, y: 5, z: 5}
+  SphereRadius: 51
+--- !u!4 &17012902
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 17012900}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 11
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!23 &17012903
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 17012900}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 7f1300b5184c945438a795729cc34b07, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+--- !u!33 &17012904
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 17012900}
+  m_Mesh: {fileID: 0}
 --- !u!4 &393910653 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4425428723088313501, guid: fc9b148a2950aaf4cba8422632222c5d,
@@ -1087,10 +1181,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ChunkHolder: {fileID: 725878631}
-  ChunkPrefab: {fileID: 5190200657607983642, guid: 9d2b26d2e7253d242b0a380b93335ad2,
+  ChunkPrefab: {fileID: 5190200657607983642, guid: d8a6dc15a1eb9f14dabf66b0d8047211,
     type: 3}
   RandomSeed: 1
-  Seed: 1344
+  Seed: 666
 --- !u!1 &1250696389 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4425428723088313499, guid: fc9b148a2950aaf4cba8422632222c5d,
@@ -1451,13 +1545,14 @@ GameObject:
   m_Component:
   - component: {fileID: 1612153362}
   - component: {fileID: 1612153363}
+  - component: {fileID: 1612153364}
   m_Layer: 0
   m_Name: Caves
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1612153362
 Transform:
   m_ObjectHideFlags: 0
@@ -1479,12 +1574,12 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1612153361}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 045ca140422b35f4396c18a430c192c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ChunkManager: {fileID: 0}
+  ChunkManager: {fileID: 1612153364}
   Settings:
     TerrainCubicSize: {x: 100, y: 100, z: 1}
     MinCaveHeight: 0
@@ -1504,6 +1599,23 @@ MonoBehaviour:
   WallColor: {r: 0.3137255, g: 0.18431373, b: 0.09019608, a: 1}
   CubePrefab: {fileID: 3110822623855740755, guid: f35db977aa9f27745ab384092cb2e87f,
     type: 3}
+--- !u!114 &1612153364
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1612153361}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e762bbcf980d4dde9ec45de390bb5ca7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ChunkHolder: {fileID: 1612153361}
+  ChunkPrefab: {fileID: 5190200657607983642, guid: 9d2b26d2e7253d242b0a380b93335ad2,
+    type: 3}
+  RandomSeed: 0
+  Seed: 666
 --- !u!1 &1910692095
 GameObject:
   m_ObjectHideFlags: 0
