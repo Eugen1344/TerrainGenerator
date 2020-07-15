@@ -90,8 +90,8 @@ MonoBehaviour:
     RandomHollowCellsPercent: 0.5
     RandomHollowCellsPercentDecreasePerLevel: 0.03
     IterationCount: 4
-    MinHollowGroupCubicSize: 0
-    GenerateTunnels: 1
+    MinHollowGroupCubicSize: 20
+    GenerateTunnels: 0
     TunnelHeight: 3
     TunnelWidth: 1
   ChunkCoordinate: {x: 0, y: 0}
