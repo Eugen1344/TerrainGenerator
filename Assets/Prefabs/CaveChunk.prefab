@@ -82,7 +82,7 @@ MonoBehaviour:
   WallPrefab: {fileID: 8652350943365143204, guid: 5204836ef8bb785419212c309e3aebc4,
     type: 3}
   Settings:
-    TerrainCubicSize: {x: 100, y: 100, z: 8}
+    TerrainCubicSize: {x: 100, y: 100, z: 1}
     MinCaveHeight: 2
     Seed: 2457398
     SwitchToHollowThreshold: 3
@@ -91,7 +91,7 @@ MonoBehaviour:
     RandomHollowCellsPercentDecreasePerLevel: 0.03
     IterationCount: 4
     MinHollowGroupCubicSize: 20
-    GenerateTunnels: 0
+    GenerateTunnels: 1
     TunnelHeight: 3
     TunnelWidth: 1
   ChunkCoordinate: {x: 0, y: 0}
@@ -109,7 +109,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e6ec038e778c0842bbc7e1d7122278f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DrawCells: 1
+  DrawCells: 0
   DrawCoordinates: 0
   DrawTunnels: 1
   Chunk: {fileID: 5190200657607983642}

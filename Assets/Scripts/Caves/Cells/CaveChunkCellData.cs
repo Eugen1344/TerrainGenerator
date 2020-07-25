@@ -45,7 +45,7 @@ namespace Caves.Cells
 
 		public void FinalizeGeneration()
 		{
-			FilterHollowGroupsByGroundSize(Hollows, Settings.MinHollowGroupCubicSize);
+			RemoveSmallHollowGroupsByGroundSize(Hollows, Settings.MinHollowGroupCubicSize);
 
 			Hollows = GetCellGroups<CaveHollowGroup>(CellType.Hollow);
 
@@ -161,7 +161,7 @@ namespace Caves.Cells
 			return result;
 		}
 
-		private void FilterHollowGroupsByGroundSize(List<CaveHollowGroup> hollows, int minHollowGroupGroundSize)
+		private void RemoveSmallHollowGroupsByGroundSize(List<CaveHollowGroup> hollows, int minHollowGroupGroundSize)
 		{
 			foreach (CaveHollowGroup group in hollows)
 			{
