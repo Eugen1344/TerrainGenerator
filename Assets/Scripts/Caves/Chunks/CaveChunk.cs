@@ -32,12 +32,12 @@ namespace Caves.Chunks
 
 			CellData.FinalizeGeneration();
 
-			CreateAndPlaceWalls();
+			TestCreateAndPlaceWalls();
 
 			IsFinalized = true;
 		}
 
-		private void CreateAndPlaceWalls()
+		private void TestCreateAndPlaceWalls()
 		{
 			for (int i = 0; i < CellData.Walls.Count; i++)
 			{
