@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Caves.Cells
+namespace Caves.Cells.SimplexNoise
 {
 	[Serializable]
 	public struct CellSettings

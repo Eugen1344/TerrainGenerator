@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Caves.Cells.CellularAutomata;
 using UnityEngine;
 
 namespace Caves.Cells

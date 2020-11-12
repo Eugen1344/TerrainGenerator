@@ -3,7 +3,7 @@ using Caves.Chunks;
 using UnityEngine;
 using Random = System.Random;
 
-namespace Caves.Cells.CellularAutomata
+namespace Caves.Cells.SimplexNoise
 {
 	public abstract class ChunkCellData
 	{
@@ -12,7 +12,6 @@ namespace Caves.Cells.CellularAutomata
 		public readonly int ChunkSeed;
 
 		public List<CellType[,,]> Iterations = new List<CellType[,,]>();
-		public CellType[,,] FinalIteration;
 
 		protected CaveChunkManager _chunkManager;
 
