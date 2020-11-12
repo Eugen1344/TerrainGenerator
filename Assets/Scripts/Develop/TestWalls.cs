@@ -6,7 +6,7 @@ namespace Develop
 {
 	public static class TestWalls
 	{
-		public static CaveWallGroup Wall2x2 = new CaveWallGroup(new List<Vector3Int>
+		public static WallGroup Wall2x2 = new WallGroup(new List<Vector3Int>
 		{
 			new Vector3Int(0, 0, 0),
 			new Vector3Int(1, 0, 0),

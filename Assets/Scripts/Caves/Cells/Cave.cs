@@ -4,6 +4,6 @@ namespace Caves.Cells
 {
 	public class Cave
 	{
-		public List<CaveHollowGroup> Hollows;
+		public List<HollowGroup> Hollows;
 	}
 }

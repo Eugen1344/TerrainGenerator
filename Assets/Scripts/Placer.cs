@@ -23,7 +23,7 @@ public class Placer : MonoBehaviour
 		PlaceInCave(destinationChunk.CellData.Hollows[caveIndex]);
 	}
 
-	public void PlaceInCave(CaveHollowGroup cave) //TODO different placements
+	public void PlaceInCave(HollowGroup cave) //TODO different placements
 	{
 		int randomPositionIndex = Random.Range(0, cave.GroundCells.Count);
 		Vector3Int chunkPosition = cave.GroundCells[randomPositionIndex];

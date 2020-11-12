@@ -28,9 +28,9 @@ namespace Caves.Cells
 			switch (cellType)
 			{
 				case CellType.Wall:
-					return new CaveWallGroup(cellChunkCoordinates);
+					return new WallGroup(cellChunkCoordinates);
 				case CellType.Hollow:
-					return new CaveHollowGroup(cellChunkCoordinates);
+					return new HollowGroup(cellChunkCoordinates);
 				default:
 					throw new ArgumentOutOfRangeException(nameof(cellType), cellType, null);
 			}

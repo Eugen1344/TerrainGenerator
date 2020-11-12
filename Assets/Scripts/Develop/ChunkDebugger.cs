@@ -19,7 +19,7 @@ namespace Develop
 
 			if (DrawCells)
 			{
-				foreach (CaveWallGroup wall in Chunk.CellData.Walls)
+				foreach (WallGroup wall in Chunk.CellData.Walls)
 				{
 					foreach (Vector3Int coordinate in wall.CellChunkCoordinates)
 					{

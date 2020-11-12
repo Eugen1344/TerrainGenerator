@@ -12,10 +12,10 @@ namespace Caves.CaveMesh
 		public MeshCollider MeshCollider;
 
 		private MeshGenerator _meshGenerator;
-		private CaveWallGroup _wall;
+		private WallGroup _wall;
 		private CaveChunk _chunk;
 
-		public void Generate(CaveWallGroup wall, CaveChunk chunk)
+		public void Generate(WallGroup wall, CaveChunk chunk)
 		{
 			_wall = wall;
 			_chunk = chunk;
@@ -56,7 +56,7 @@ namespace Caves.CaveMesh
 			return uvs;
 		}
 
-		private int[,,] GetAlignedNodeMatrix(CaveWallGroup wall, out Vector3Int minCoordinate)
+		private int[,,] GetAlignedNodeMatrix(WallGroup wall, out Vector3Int minCoordinate)
 		{
 			minCoordinate = wall.CellChunkCoordinates[0];
 			Vector3Int maxCoordinate = wall.CellChunkCoordinates[0];

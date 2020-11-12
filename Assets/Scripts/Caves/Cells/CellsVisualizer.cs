@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Caves.Cells.CellularAutomata;
 using Caves.Chunks;
 using UnityEditor;
 using UnityEngine;
@@ -6,17 +7,17 @@ using Random = System.Random;
 
 namespace Caves.Cells
 {
-	public class CaveCellsVisualizer : MonoBehaviour
+	public class CellsVisualizer : MonoBehaviour
 	{
 		public CaveChunkManager ChunkManager;
-		public CaveCellSettings Settings;
+		public CellSettings Settings;
 		public float CubeSize;
 		public float CubeSpacing;
 		public Color HollowColor;
 		public Color WallColor;
 		public GameObject CubePrefab;
 
-		private CaveChunkCellData _currentCaveCells = null;
+		private GeneratedChunkCellData _currentCaveCells = null;
 
 		private List<GameObject> _instantiatedCubes = new List<GameObject>();
 
@@ -27,7 +28,7 @@ namespace Caves.Cells
 
 		public void GenerateCave()
 		{
-			_currentCaveCells = new CaveChunkCellData(Settings, ChunkManager, Vector2Int.zero);
+			_currentCaveCells = new GeneratedChunkCellData(Settings, ChunkManager, Vector2Int.zero);
 			_currentCaveCells.Generate();
 			_currentCaveCells.FinalizeGeneration();
 		}
@@ -53,7 +54,7 @@ namespace Caves.Cells
 
 			Vector3 cubeSize = new Vector3(CubeSize, CubeSize, CubeSize);
 
-			foreach (CaveWallGroup wallsGroup in _currentCaveCells.Walls)
+			foreach (WallGroup wallsGroup in _currentCaveCells.Walls)
 			{
 				foreach (Vector3Int cellCoordinates in wallsGroup.CellChunkCoordinates)
 				{
@@ -112,7 +113,7 @@ namespace Caves.Cells
 		{
 			for (int i = 0; i < _currentCaveCells.Hollows.Count; i++)
 			{
-				CaveHollowGroup hollow = _currentCaveCells.Hollows[i];
+				HollowGroup hollow = _currentCaveCells.Hollows[i];
 				Vector3 textGlobalPoint = CellChunkCoordinatesToWorld(hollow.CellChunkCoordinates[0]);
 
 				GUIStyle textStyle = new GUIStyle();

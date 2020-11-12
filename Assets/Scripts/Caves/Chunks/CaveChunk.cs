@@ -1,5 +1,6 @@
 ﻿using Caves.CaveMesh;
 using Caves.Cells;
+using Caves.Cells.CellularAutomata;
 using UnityEngine;
 
 namespace Caves.Chunks
@@ -7,10 +8,10 @@ namespace Caves.Chunks
 	public class CaveChunk : Chunk
 	{
 		public Vector3Int CellSize;
-		public CaveChunkCellData CellData;
+		public GeneratedChunkCellData CellData;
 		public CaveChunkManager ChunkManager;
 		public CaveWall WallPrefab;
-		public CaveCellSettings Settings;
+		public CellSettings Settings;
 		public Vector2Int ChunkCoordinate;
 		public int ChunkSeed;
 		public bool IsFinalized = false;
@@ -21,7 +22,7 @@ namespace Caves.Chunks
 
 			ChunkSeed = Settings.GenerateSeed(Settings.Seed, chunkCoordinate);
 
-			CellData = new CaveChunkCellData(Settings, ChunkManager, chunkCoordinate);
+			CellData = new GeneratedChunkCellData(Settings, ChunkManager, chunkCoordinate);
 			CellData.Generate();
 		}
 
@@ -45,7 +46,7 @@ namespace Caves.Chunks
 			}
 		}
 
-		private void PlaceWall(CaveWallGroup wallCells, int index)
+		private void PlaceWall(WallGroup wallCells, int index)
 		{
 			GameObject wallObject = Instantiate(WallPrefab.gameObject, transform);
 			wallObject.name = index.ToString();

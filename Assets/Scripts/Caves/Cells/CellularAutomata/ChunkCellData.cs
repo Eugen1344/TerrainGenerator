@@ -3,11 +3,11 @@ using Caves.Chunks;
 using UnityEngine;
 using Random = System.Random;
 
-namespace Caves.Cells
+namespace Caves.Cells.CellularAutomata
 {
 	public abstract class ChunkCellData
 	{
-		public CaveCellSettings Settings;
+		public CellSettings Settings;
 		public Vector2Int ChunkCoordinate;
 		public int ChunkSeed;
 
@@ -16,7 +16,7 @@ namespace Caves.Cells
 
 		protected CaveChunkManager _chunkManager;
 
-		protected ChunkCellData(CaveCellSettings settings, CaveChunkManager chunkManager, Vector2Int chunkCoordinate)
+		protected ChunkCellData(CellSettings settings, CaveChunkManager chunkManager, Vector2Int chunkCoordinate)
 		{
 			Debug.Log($"Created chunk {GetType()}");
 

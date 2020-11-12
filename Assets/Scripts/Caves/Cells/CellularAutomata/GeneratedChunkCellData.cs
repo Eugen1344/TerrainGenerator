@@ -1,20 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
+﻿using System.Collections.Generic;
 using Caves.Chunks;
 using UnityEngine;
-using Random = System.Random;
 
-namespace Caves.Cells
+namespace Caves.Cells.CellularAutomata
 {
-	public class CaveChunkCellData : ChunkCellData
+	public class GeneratedChunkCellData : ChunkCellData
 	{
-		public List<CaveHollowGroup> Hollows;
-		public List<CaveWallGroup> Walls;
+		public List<HollowGroup> Hollows;
+		public List<WallGroup> Walls;
 		public List<CaveTunnel> Tunnels;
 		public bool IsFinalized = false;
 
-		public CaveChunkCellData(CaveCellSettings settings, CaveChunkManager chunkManager, Vector2Int chunkCoordinate) : base(settings, chunkManager, chunkCoordinate)
+		public GeneratedChunkCellData(CellSettings settings, CaveChunkManager chunkManager, Vector2Int chunkCoordinate) : base(settings, chunkManager, chunkCoordinate)
 		{
 
 		}
@@ -40,18 +37,18 @@ namespace Caves.Cells
 
 			FinalIteration = (CellType[,,])Iterations[Iterations.Count - 1].Clone();
 
-			Hollows = GetCellGroups<CaveHollowGroup>(CellType.Hollow);
+			Hollows = GetCellGroups<HollowGroup>(CellType.Hollow);
 		}
 
 		public void FinalizeGeneration()
 		{
 			RemoveSmallHollowGroupsByGroundSize(Hollows, Settings.MinHollowGroupCubicSize);
 
-			Hollows = GetCellGroups<CaveHollowGroup>(CellType.Hollow);
+			Hollows = GetCellGroups<HollowGroup>(CellType.Hollow);
 
 			Tunnels = Settings.GenerateTunnels ? CaveTunnel.CreateTunnelsAndConnectCaves(ref FinalIteration, Hollows, Settings) : new List<CaveTunnel>();
 
-			Walls = GetCellGroups<CaveWallGroup>(CellType.Wall);
+			Walls = GetCellGroups<WallGroup>(CellType.Wall);
 
 			IsFinalized = true;
 		}
@@ -161,9 +158,9 @@ namespace Caves.Cells
 			return result;
 		}
 
-		private void RemoveSmallHollowGroupsByGroundSize(List<CaveHollowGroup> hollows, int minHollowGroupGroundSize)
+		private void RemoveSmallHollowGroupsByGroundSize(List<HollowGroup> hollows, int minHollowGroupGroundSize)
 		{
-			foreach (CaveHollowGroup group in hollows)
+			foreach (HollowGroup group in hollows)
 			{
 				if (group.GroundCells.Count < minHollowGroupGroundSize)
 				{
@@ -175,9 +172,9 @@ namespace Caves.Cells
 			}
 		}
 
-		private void FilterHollowGroups(List<CaveHollowGroup> hollows, int minHollowGroupSize)
+		private void FilterHollowGroups(List<HollowGroup> hollows, int minHollowGroupSize)
 		{
-			foreach (CaveHollowGroup group in hollows)
+			foreach (HollowGroup group in hollows)
 			{
 				if (group.CellCount < minHollowGroupSize)
 				{

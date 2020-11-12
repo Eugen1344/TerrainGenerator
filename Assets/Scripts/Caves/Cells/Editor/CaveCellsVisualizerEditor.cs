@@ -3,14 +3,14 @@ using UnityEngine;
 
 namespace Caves.Cells
 {
-	[CustomEditor(typeof(CaveCellsVisualizer))]
+	[CustomEditor(typeof(CellsVisualizer))]
 	public class CaveCellsVisualizerEditor : Editor
 	{
 		public override void OnInspectorGUI()
 		{
 			base.OnInspectorGUI();
 
-			CaveCellsVisualizer cellsVisualizer = (CaveCellsVisualizer)target;
+			CellsVisualizer cellsVisualizer = (CellsVisualizer)target;
 
 			if (Application.isPlaying && GUILayout.Button("Show simulated state"))
 			{

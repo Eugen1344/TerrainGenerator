@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Caves.Cells
 {
 	[Serializable]
-	public struct CaveCellSettings
+	public struct CellSettings
 	{
 		public Vector3Int TerrainCubicSize;
 		public int MinCaveHeight;

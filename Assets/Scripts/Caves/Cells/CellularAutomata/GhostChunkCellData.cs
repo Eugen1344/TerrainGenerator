@@ -2,13 +2,13 @@
 using Caves.Chunks;
 using UnityEngine;
 
-namespace Caves.Cells
+namespace Caves.Cells.CellularAutomata
 {
 	public class GhostChunkCellData : ChunkCellData
 	{
 		public ChunkCellData[,] NearbyChunks;
 
-		public GhostChunkCellData(CaveCellSettings settings, CaveChunkManager chunkManager, Vector2Int chunkCoordinate) : base(settings, chunkManager, chunkCoordinate)
+		public GhostChunkCellData(CellSettings settings, CaveChunkManager chunkManager, Vector2Int chunkCoordinate) : base(settings, chunkManager, chunkCoordinate)
 		{
 		}
 

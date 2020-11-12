@@ -7,28 +7,28 @@ namespace Caves.Cells
 	public class CaveTunnel
 	{
 		public List<Vector3Int> CellChunkCoordinates;
-		public CaveHollowGroup FirstCave;
-		public CaveHollowGroup SecondCave;
+		public HollowGroup _first;
+		public HollowGroup _second;
 		public Vector3Int FirstCaveConnectionPoint;
 		public Vector3Int SecondCaveConnectionPoint;
 
-		public CaveTunnel(List<Vector3Int> cellChunkCoordinates, CaveHollowGroup firstCave, CaveHollowGroup secondCave, Vector3Int firstCaveConnectionPoint, Vector3Int secondCaveConnectionPoint)
+		public CaveTunnel(List<Vector3Int> cellChunkCoordinates, HollowGroup first, HollowGroup second, Vector3Int firstCaveConnectionPoint, Vector3Int secondCaveConnectionPoint)
 		{
 			CellChunkCoordinates = cellChunkCoordinates;
-			FirstCave = firstCave;
-			SecondCave = secondCave;
+			_first = first;
+			_second = second;
 			FirstCaveConnectionPoint = firstCaveConnectionPoint;
 			SecondCaveConnectionPoint = secondCaveConnectionPoint;
 		}
 
-		public static List<CaveTunnel> CreateTunnelsAndConnectCaves(ref CellType[,,] cells, List<CaveHollowGroup> hollows, CaveCellSettings settings)
+		public static List<CaveTunnel> CreateTunnelsAndConnectCaves(ref CellType[,,] cells, List<HollowGroup> hollows, CellSettings settings)
 		{
-			List<CaveHollowGroup> alreadyConnectedCaves = new List<CaveHollowGroup>();
+			List<HollowGroup> alreadyConnectedCaves = new List<HollowGroup>();
 			List<CaveTunnel> tunnels = new List<CaveTunnel>();
 
-			foreach (CaveHollowGroup firstHollow in hollows)
+			foreach (HollowGroup firstHollow in hollows)
 			{
-				(CaveHollowGroup secondHollow, Vector3Int firstPoint, Vector3Int secondPoint) = ClosestNotConnectedHollow(firstHollow, hollows, alreadyConnectedCaves);
+				(HollowGroup secondHollow, Vector3Int firstPoint, Vector3Int secondPoint) = ClosestNotConnectedHollow(firstHollow, hollows, alreadyConnectedCaves);
 
 				List<Vector3Int> tunnelCells = GetTunnelCellsAndConnectCaves(ref cells, settings, firstPoint, secondPoint);
 
@@ -41,7 +41,7 @@ namespace Caves.Cells
 			return tunnels;
 		}
 
-		private static List<Vector3Int> GetTunnelCellsAndConnectCaves(ref CellType[,,] cells, CaveCellSettings settings, Vector3Int firstPoint, Vector3Int secondPoint)
+		private static List<Vector3Int> GetTunnelCellsAndConnectCaves(ref CellType[,,] cells, CellSettings settings, Vector3Int firstPoint, Vector3Int secondPoint)
 		{
 			int firstX = Mathf.Min(firstPoint.x, secondPoint.x);
 			int secondX = Mathf.Max(firstPoint.x, secondPoint.x);
@@ -90,14 +90,14 @@ namespace Caves.Cells
 				   Mathf.Sqrt(Mathf.Pow(lineSecondPoint.x - lineFirstPoint.x, 2) + Mathf.Pow(lineSecondPoint.y - lineFirstPoint.y, 2));
 		}
 
-		private static (CaveHollowGroup hollow, Vector3Int firstPoint, Vector3Int secondPoint) ClosestNotConnectedHollow(CaveHollowGroup hollow, List<CaveHollowGroup> hollows, List<CaveHollowGroup> alreadyConnectedCaves)
+		private static (HollowGroup hollow, Vector3Int firstPoint, Vector3Int secondPoint) ClosestNotConnectedHollow(HollowGroup hollow, List<HollowGroup> hollows, List<HollowGroup> alreadyConnectedCaves)
 		{
 			Vector3Int firstPoint = default;
 			Vector3Int secondPoint = default;
 			float minDistance = 0;
-			CaveHollowGroup closestHollow = null;
+			HollowGroup closestHollow = null;
 
-			foreach (CaveHollowGroup nextHollow in hollows)
+			foreach (HollowGroup nextHollow in hollows)
 			{
 				if (nextHollow == hollow || alreadyConnectedCaves.Contains(nextHollow))
 					continue;
