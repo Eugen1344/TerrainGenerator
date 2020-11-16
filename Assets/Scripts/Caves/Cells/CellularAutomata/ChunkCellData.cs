@@ -24,7 +24,7 @@ namespace Caves.Cells.CellularAutomata
 
 			Settings = settings;
 			ChunkCoordinate = chunkCoordinate;
-			ChunkSeed = Settings.GenerateSeed(Settings.Seed, chunkCoordinate); ;
+			ChunkSeed = Settings.GenerateSeed(Settings.Seed, chunkCoordinate);
 		}
 
 		public void GenerateIterations(ChunkCellData[,] nearbyChunks, int lastIteration)

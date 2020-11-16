@@ -7,14 +7,8 @@ namespace Caves.Cells.SimplexNoise
 	public struct CellSettings
 	{
 		public Vector3Int TerrainCubicSize;
-		public int MinCaveHeight;
 		public int Seed;
-		public int SwitchToHollowThreshold;
-		public int SwitchToWallThreshold;
 		[Range(0, 1)] public float RandomHollowCellsPercent;
-		[Range(0, 1)] public float RandomHollowCellsPercentDecreasePerLevel;
-		public int IterationCount;
-		public int MinHollowGroupCubicSize;
 		public bool GenerateTunnels;
 		public int TunnelHeight;
 		public int TunnelWidth;
