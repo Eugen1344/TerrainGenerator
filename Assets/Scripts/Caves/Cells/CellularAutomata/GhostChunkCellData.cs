@@ -31,7 +31,7 @@ namespace Caves.Cells.CellularAutomata
 
 					if (_chunkManager.GeneratedChunks.TryGetValue(coordinate, out CaveChunk chunk))
 					{
-						chunks[i, j] = chunk.CellData;
+						//chunks[i, j] = chunk.CellData;
 					}
 					else
 					{

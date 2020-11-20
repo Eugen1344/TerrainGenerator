@@ -3,4 +3,4 @@
 	url = https://git.universinet.org/bristar/command_bar.git
 [submodule "Assets/Submodules/SimplexNoise"]
 	path = Assets/Submodules/SimplexNoise
-	url = https://github.com/WardBenjamin/SimplexNoise.git
+url=https://github.com/Eugen1344/SimplexNoise.git

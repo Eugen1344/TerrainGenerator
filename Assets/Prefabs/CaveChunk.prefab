@@ -15,7 +15,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &5190200656677533891
 Transform:
   m_ObjectHideFlags: 0
@@ -82,15 +82,10 @@ MonoBehaviour:
   WallPrefab: {fileID: 8652350943365143204, guid: 5204836ef8bb785419212c309e3aebc4,
     type: 3}
   Settings:
-    TerrainCubicSize: {x: 100, y: 100, z: 1}
-    MinCaveHeight: 2
-    Seed: 2457398
-    SwitchToHollowThreshold: 3
-    SwitchToWallThreshold: 4
-    RandomHollowCellsPercent: 0.5
-    RandomHollowCellsPercentDecreasePerLevel: 0.03
-    IterationCount: 4
-    MinHollowGroupCubicSize: 20
+    TerrainCubicSize: {x: 100, y: 100, z: 10}
+    Seed: 1344
+    RandomHollowCellsPercent: 0.4
+    NoiseScale: 0.1
     GenerateTunnels: 1
     TunnelHeight: 3
     TunnelWidth: 1

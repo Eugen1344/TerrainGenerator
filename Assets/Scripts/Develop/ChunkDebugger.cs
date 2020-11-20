@@ -1,4 +1,5 @@
 ﻿using Caves.Cells;
+using Caves.Cells.SimplexNoise;
 using Caves.Chunks;
 using UnityEditor;
 using UnityEngine;
@@ -40,7 +41,7 @@ namespace Develop
 
 			if (DrawTunnels)
 			{
-				foreach (CaveTunnel tunnel in Chunk.CellData.Tunnels)
+				foreach (Tunnel tunnel in Chunk.CellData.Tunnels)
 				{
 					Gizmos.color = Color.cyan;
 					Gizmos.DrawLine(Chunk.GetWorldPosition(tunnel.FirstCaveConnectionPoint), Chunk.GetWorldPosition(tunnel.SecondCaveConnectionPoint));

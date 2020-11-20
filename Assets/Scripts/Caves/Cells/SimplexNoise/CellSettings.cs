@@ -9,6 +9,7 @@ namespace Caves.Cells.SimplexNoise
 		public Vector3Int TerrainCubicSize;
 		public int Seed;
 		[Range(0, 1)] public float RandomHollowCellsPercent;
+		public float NoiseScale;
 		public bool GenerateTunnels;
 		public int TunnelHeight;
 		public int TunnelWidth;

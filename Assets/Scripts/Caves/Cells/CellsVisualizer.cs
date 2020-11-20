@@ -135,7 +135,7 @@ namespace Caves.Cells
 
 		private void DrawTunnelLines()
 		{
-			foreach (CaveTunnel tunnel in _currentCaveCells.Tunnels)
+			foreach (Tunnel tunnel in _currentCaveCells.Tunnels)
 			{
 				Vector3 globalFirstPoint = CellChunkCoordinatesToWorld(tunnel.FirstCaveConnectionPoint);
 				Vector3 globalSecondPoint = CellChunkCoordinatesToWorld(tunnel.SecondCaveConnectionPoint);

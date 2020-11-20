@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Caves.Cells;
+using SimplexNoise;
 using UnityEngine;
 
 namespace Caves.Chunks

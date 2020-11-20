@@ -1,6 +1,6 @@
 ﻿using Caves.CaveMesh;
 using Caves.Cells;
-using Caves.Cells.CellularAutomata;
+using Caves.Cells.SimplexNoise;
 using UnityEngine;
 
 namespace Caves.Chunks
@@ -8,7 +8,7 @@ namespace Caves.Chunks
 	public class CaveChunk : Chunk
 	{
 		public Vector3Int CellSize;
-		public GeneratedChunkCellData CellData;
+		public ChunkCellData CellData;
 		public CaveChunkManager ChunkManager;
 		public CaveWall WallPrefab;
 		public CellSettings Settings;
@@ -22,7 +22,7 @@ namespace Caves.Chunks
 
 			ChunkSeed = Settings.GenerateSeed(Settings.Seed, chunkCoordinate);
 
-			CellData = new GeneratedChunkCellData(Settings, ChunkManager, chunkCoordinate);
+			CellData = new ChunkCellData(Settings, ChunkManager, chunkCoordinate);
 			CellData.Generate();
 		}
 
@@ -33,12 +33,12 @@ namespace Caves.Chunks
 
 			CellData.FinalizeGeneration();
 
-			TestCreateAndPlaceWalls();
+			CreateAndPlaceWalls();
 
 			IsFinalized = true;
 		}
 
-		private void TestCreateAndPlaceWalls()
+		private void CreateAndPlaceWalls()
 		{
 			for (int i = 0; i < CellData.Walls.Count; i++)
 			{
@@ -65,7 +65,7 @@ namespace Caves.Chunks
 		{
 			if (IsInsideChunk(localCellCoordinate))
 			{
-				return CellData.FinalIteration[localCellCoordinate.x, localCellCoordinate.y, localCellCoordinate.z];
+				return CellData.Cells[localCellCoordinate.x, localCellCoordinate.y, localCellCoordinate.z];
 			}
 
 			Vector3Int globalCellCoordinate = GetGlobalCoordinate(localCellCoordinate);
@@ -83,7 +83,7 @@ namespace Caves.Chunks
 		{
 			Vector3Int localCoordinate = GetLocalCoordinate(globalCoordinate);
 
-			return CellData.FinalIteration[localCoordinate.x, localCoordinate.y, localCoordinate.z];
+			return CellData.Cells[localCoordinate.x, localCoordinate.y, localCoordinate.z];
 		}
 
 		public Vector3Int GetLocalCoordinate(Vector3Int globalCoordinate)

@@ -2,21 +2,28 @@
 using Caves.Chunks;
 using SimplexNoise;
 using UnityEngine;
-using Random = System.Random;
 
 namespace Caves.Cells.SimplexNoise
 {
-	public abstract class ChunkCellData
+	public class ChunkCellData
 	{
 		public readonly CellSettings Settings;
 		public readonly Vector2Int ChunkCoordinate;
 		public readonly int ChunkSeed;
 
-		public List<CellType[,,]> Iterations = new List<CellType[,,]>();
-
 		protected CaveChunkManager _chunkManager;
 
-		protected ChunkCellData(CellSettings settings, CaveChunkManager chunkManager, Vector2Int chunkCoordinate)
+		public CellType[,,] Cells;
+
+		public List<HollowGroup> Hollows;
+		public List<WallGroup> Walls;
+		public List<Tunnel> Tunnels;
+
+		public bool IsFinalized = false;
+
+		private Noise _noise;
+
+		public ChunkCellData(CellSettings settings, CaveChunkManager chunkManager, Vector2Int chunkCoordinate)
 		{
 			Debug.Log($"Created chunk {GetType()}");
 
@@ -26,7 +33,124 @@ namespace Caves.Cells.SimplexNoise
 			ChunkCoordinate = chunkCoordinate;
 			ChunkSeed = Settings.GenerateSeed(Settings.Seed, chunkCoordinate);
 
-			Noise.Seed = ChunkSeed;
+			_noise = new Noise(ChunkSeed);
+		}
+
+		public void Generate()
+		{
+			float[,,] noise = _noise.Calc3D(Settings.TerrainCubicSize.x, Settings.TerrainCubicSize.y, Settings.TerrainCubicSize.z, Settings.NoiseScale);
+
+			Cells = GetCellsFromNoise(noise);
+		}
+
+		public void FinalizeGeneration()
+		{
+			//RemoveSmallHollowGroupsByGroundSize(Hollows, Settings.MinHollowGroupCubicSize);
+
+			Hollows = GetCellGroups<HollowGroup>(CellType.Hollow);
+
+			//Tunnels = Settings.GenerateTunnels ? Tunnel.CreateTunnelsAndConnectCaves(ref Cells, Hollows, Settings) : new List<Tunnel>();
+
+			Walls = GetCellGroups<WallGroup>(CellType.Wall);
+
+			IsFinalized = true;
+		}
+
+		private CellType[,,] GetCellsFromNoise(float[,,] noise)
+		{
+			int length = noise.GetLength(0);
+			int width = noise.GetLength(1);
+			int height = noise.GetLength(2);
+
+			CellType[,,] cells = new CellType[length, width, height];
+
+			for (int i = 0; i < length; i++)
+			{
+				for (int j = 0; j < width; j++)
+				{
+					for (int k = 0; k < height; k++)
+					{
+						float normalizedNoise = (noise[i, j, k] + 1f) / 2f;
+
+						if (normalizedNoise <= Settings.RandomHollowCellsPercent)
+							cells[i, j, k] = CellType.Hollow;
+						else
+							cells[i, j, k] = CellType.Wall;
+					}
+				}
+			}
+
+			return cells;
+		}
+
+		private List<T> GetCellGroups<T>(CellType searchedCellType) where T : CaveGroup
+		{
+			int length = Cells.GetLength(0);
+			int width = Cells.GetLength(1);
+			int height = Cells.GetLength(2);
+
+			List<T> result = new List<T>();
+
+			bool[,,] markedCells = new bool[length, width, height];
+
+			Queue<Vector3Int> cellsToSearch = new Queue<Vector3Int>();
+
+			for (int i = 0; i < length; i++)
+			{
+				for (int j = 0; j < width; j++)
+				{
+					for (int k = 0; k < height; k++)
+					{
+						if (Cells[i, j, k] == searchedCellType && !markedCells[i, j, k])
+						{
+							List<Vector3Int> foundCells = new List<Vector3Int>();
+
+							cellsToSearch.Enqueue(new Vector3Int(i, j, k));
+							markedCells[i, j, k] = true;
+
+							while (cellsToSearch.Count != 0)
+							{
+								Vector3Int searchCoreCell = cellsToSearch.Dequeue();
+
+								foundCells.Add(searchCoreCell);
+
+								int startI = searchCoreCell.x - 1 < 0 ? 0 : searchCoreCell.x - 1;
+								int startJ = searchCoreCell.y - 1 < 0 ? 0 : searchCoreCell.y - 1;
+								int endI = searchCoreCell.x + 1 >= length ? length - 1 : searchCoreCell.x + 1;
+								int endJ = searchCoreCell.y + 1 >= width ? width - 1 : searchCoreCell.y + 1;
+								int startK = searchCoreCell.z - 1 < 0 ? 0 : searchCoreCell.z - 1;
+								int endK = searchCoreCell.z + 1 >= height ? height - 1 : searchCoreCell.z + 1;
+
+								for (int i1 = startI; i1 <= endI; i1++)
+								{
+									for (int j1 = startJ; j1 <= endJ; j1++)
+									{
+										for (int k1 = startK; k1 <= endK; k1++)
+										{
+											if ((i1 == searchCoreCell.x && j1 == searchCoreCell.y && k1 == searchCoreCell.z) ||
+												(i1 != searchCoreCell.x && j1 != searchCoreCell.y))
+												continue;
+
+											if (Cells[i1, j1, k1] == searchedCellType && !markedCells[i1, j1, k1])
+											{
+												Vector3Int newSearchCoreCell = new Vector3Int(i1, j1, k1);
+
+												cellsToSearch.Enqueue(newSearchCoreCell);
+												markedCells[i1, j1, k1] = true;
+											}
+										}
+									}
+								}
+							}
+
+							CaveGroup newGroup = CaveGroup.GetCaveGroup(searchedCellType, foundCells);
+							result.Add((T)newGroup);
+						}
+					}
+				}
+			}
+
+			return result;
 		}
 
 		public static bool IsHollowCell(CellType cell)

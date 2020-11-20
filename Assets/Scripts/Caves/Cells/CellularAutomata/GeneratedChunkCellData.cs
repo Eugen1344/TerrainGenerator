@@ -8,7 +8,7 @@ namespace Caves.Cells.CellularAutomata
 	{
 		public List<HollowGroup> Hollows;
 		public List<WallGroup> Walls;
-		public List<CaveTunnel> Tunnels;
+		public List<Tunnel> Tunnels;
 		public bool IsFinalized = false;
 
 		public GeneratedChunkCellData(CellSettings settings, CaveChunkManager chunkManager, Vector2Int chunkCoordinate) : base(settings, chunkManager, chunkCoordinate)
@@ -46,7 +46,7 @@ namespace Caves.Cells.CellularAutomata
 
 			Hollows = GetCellGroups<HollowGroup>(CellType.Hollow);
 
-			Tunnels = Settings.GenerateTunnels ? CaveTunnel.CreateTunnelsAndConnectCaves(ref FinalIteration, Hollows, Settings) : new List<CaveTunnel>();
+			Tunnels = Settings.GenerateTunnels ? Tunnel.CreateTunnelsAndConnectCaves(ref FinalIteration, Hollows, Settings) : new List<Tunnel>();
 
 			Walls = GetCellGroups<WallGroup>(CellType.Wall);
 
@@ -73,7 +73,7 @@ namespace Caves.Cells.CellularAutomata
 
 					if (_chunkManager.GeneratedChunks.TryGetValue(coordinate, out CaveChunk chunk))
 					{
-						chunks[i, j] = chunk.CellData;
+						//chunks[i, j] = chunk.CellData;
 					}
 					else
 					{

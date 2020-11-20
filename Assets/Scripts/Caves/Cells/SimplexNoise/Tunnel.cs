@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using Caves.Cells.CellularAutomata;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace Caves.Cells
+namespace Caves.Cells.SimplexNoise
 {
-	public class CaveTunnel
+	public class Tunnel
 	{
 		public List<Vector3Int> CellChunkCoordinates;
 		public HollowGroup _first;
@@ -13,7 +11,7 @@ namespace Caves.Cells
 		public Vector3Int FirstCaveConnectionPoint;
 		public Vector3Int SecondCaveConnectionPoint;
 
-		public CaveTunnel(List<Vector3Int> cellChunkCoordinates, HollowGroup first, HollowGroup second, Vector3Int firstCaveConnectionPoint, Vector3Int secondCaveConnectionPoint)
+		public Tunnel(List<Vector3Int> cellChunkCoordinates, HollowGroup first, HollowGroup second, Vector3Int firstCaveConnectionPoint, Vector3Int secondCaveConnectionPoint)
 		{
 			CellChunkCoordinates = cellChunkCoordinates;
 			_first = first;
@@ -22,10 +20,10 @@ namespace Caves.Cells
 			SecondCaveConnectionPoint = secondCaveConnectionPoint;
 		}
 
-		public static List<CaveTunnel> CreateTunnelsAndConnectCaves(ref CellType[,,] cells, List<HollowGroup> hollows, CellSettings settings)
+		public static List<Tunnel> CreateTunnelsAndConnectCaves(ref CellType[,,] cells, List<HollowGroup> hollows, CellularAutomata.CellSettings settings)
 		{
 			List<HollowGroup> alreadyConnectedCaves = new List<HollowGroup>();
-			List<CaveTunnel> tunnels = new List<CaveTunnel>();
+			List<Tunnel> tunnels = new List<Tunnel>();
 
 			foreach (HollowGroup firstHollow in hollows)
 			{
@@ -33,7 +31,7 @@ namespace Caves.Cells
 
 				List<Vector3Int> tunnelCells = GetTunnelCellsAndConnectCaves(ref cells, settings, firstPoint, secondPoint);
 
-				CaveTunnel tunnel = new CaveTunnel(tunnelCells, firstHollow, secondHollow, firstPoint, secondPoint);
+				Tunnel tunnel = new Tunnel(tunnelCells, firstHollow, secondHollow, firstPoint, secondPoint);
 				tunnels.Add(tunnel);
 
 				alreadyConnectedCaves.Add(firstHollow);
@@ -42,7 +40,7 @@ namespace Caves.Cells
 			return tunnels;
 		}
 
-		private static List<Vector3Int> GetTunnelCellsAndConnectCaves(ref CellType[,,] cells, CellSettings settings, Vector3Int firstPoint, Vector3Int secondPoint)
+		private static List<Vector3Int> GetTunnelCellsAndConnectCaves(ref CellType[,,] cells, CellularAutomata.CellSettings settings, Vector3Int firstPoint, Vector3Int secondPoint)
 		{
 			int firstX = Mathf.Min(firstPoint.x, secondPoint.x);
 			int secondX = Mathf.Max(firstPoint.x, secondPoint.x);
