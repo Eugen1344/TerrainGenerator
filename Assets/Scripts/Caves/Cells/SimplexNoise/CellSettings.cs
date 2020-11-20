@@ -14,11 +14,13 @@ namespace Caves.Cells.SimplexNoise
 		public int TunnelHeight;
 		public int TunnelWidth;
 
-		public int GenerateSeed(int baseSeed, Vector2Int chunkCoordinate)
+		public int GenerateSeed(int baseSeed, Vector3Int chunkCoordinate)
 		{
-			ushort chunkCoordinateX = (ushort)chunkCoordinate.x;
-			ushort chunkCoordinateY = (ushort)chunkCoordinate.y;
-			int chunkOffset = chunkCoordinateX << (sizeof(ushort) * 8) | chunkCoordinateY;
+			byte chunkCoordinateX = (byte)chunkCoordinate.x; //TODO change to Random(long)
+			byte chunkCoordinateY = (byte)chunkCoordinate.y;
+			byte chunkCoordinateZ = (byte)chunkCoordinate.z;
+
+			int chunkOffset = (chunkCoordinateX << (sizeof(byte) * 2 * 8)) | (chunkCoordinateY << (sizeof(byte) * 8)) | chunkCoordinateZ; //TODO test this
 
 			return baseSeed + chunkOffset;
 		}

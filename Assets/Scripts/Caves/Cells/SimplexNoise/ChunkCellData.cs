@@ -8,7 +8,7 @@ namespace Caves.Cells.SimplexNoise
 	public class ChunkCellData
 	{
 		public readonly CellSettings Settings;
-		public readonly Vector2Int ChunkCoordinate;
+		public readonly Vector3Int ChunkCoordinate;
 		public readonly int ChunkSeed;
 
 		protected CaveChunkManager _chunkManager;
@@ -23,7 +23,7 @@ namespace Caves.Cells.SimplexNoise
 
 		private Noise _noise;
 
-		public ChunkCellData(CellSettings settings, CaveChunkManager chunkManager, Vector2Int chunkCoordinate)
+		public ChunkCellData(CellSettings settings, CaveChunkManager chunkManager, Vector3Int chunkCoordinate)
 		{
 			Debug.Log($"Created chunk {GetType()}");
 

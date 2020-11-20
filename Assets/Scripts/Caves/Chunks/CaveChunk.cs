@@ -12,11 +12,11 @@ namespace Caves.Chunks
 		public CaveChunkManager ChunkManager;
 		public CaveWall WallPrefab;
 		public CellSettings Settings;
-		public Vector2Int ChunkCoordinate;
+		public Vector3Int ChunkCoordinate;
 		public int ChunkSeed;
 		public bool IsFinalized = false;
 
-		public void Generate(Vector2Int chunkCoordinate)
+		public void Generate(Vector3Int chunkCoordinate)
 		{
 			ChunkCoordinate = chunkCoordinate;
 
@@ -88,7 +88,7 @@ namespace Caves.Chunks
 
 		public Vector3Int GetLocalCoordinate(Vector3Int globalCoordinate)
 		{
-			Vector3Int localCoordinate = new Vector3Int(0, 0, globalCoordinate.z);
+			Vector3Int localCoordinate = new Vector3Int(0, 0, 0);
 
 			if (globalCoordinate.x < 0)
 			{
@@ -108,12 +108,21 @@ namespace Caves.Chunks
 				localCoordinate.y = globalCoordinate.y % Settings.TerrainCubicSize.y;
 			}
 
+			if (globalCoordinate.z < 0)
+			{
+				localCoordinate.z = Settings.TerrainCubicSize.z - Mathf.Abs(globalCoordinate.z + 1) % Settings.TerrainCubicSize.z - 1;
+			}
+			else
+			{
+				localCoordinate.z = globalCoordinate.z % Settings.TerrainCubicSize.z;
+			}
+
 			return localCoordinate;
 		}
 
 		public Vector3Int GetGlobalCoordinate(Vector3Int localCoordinate)
 		{
-			return new Vector3Int(localCoordinate.x + Settings.TerrainCubicSize.x * ChunkCoordinate.x, localCoordinate.y + Settings.TerrainCubicSize.y * ChunkCoordinate.y, localCoordinate.z);
+			return new Vector3Int(localCoordinate.x + Settings.TerrainCubicSize.x * ChunkCoordinate.x, localCoordinate.y + Settings.TerrainCubicSize.y * ChunkCoordinate.y, localCoordinate.z + Settings.TerrainCubicSize.z * ChunkCoordinate.z);
 		}
 	}
 }

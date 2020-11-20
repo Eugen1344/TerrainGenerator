@@ -6,7 +6,7 @@ public class PlayerChunkTracker : MonoBehaviour
 {
 	public int ChunkGenerationRadius;
 	public CaveChunkManager ChunkManager;
-	public Vector2Int CurrentChunkCoordinate;
+	public Vector3Int CurrentChunkCoordinate;
 
 	private void Start()
 	{
@@ -15,7 +15,7 @@ public class PlayerChunkTracker : MonoBehaviour
 
 	private void Update()
 	{
-		Vector2Int chunkCoordinate = ChunkManager.GetChunkCoordinate(transform.position);
+		Vector3Int chunkCoordinate = ChunkManager.GetChunkCoordinate(transform.position);
 
 		if (CurrentChunkCoordinate == chunkCoordinate)
 			return;
@@ -30,9 +30,12 @@ public class PlayerChunkTracker : MonoBehaviour
 		{
 			for (int j = CurrentChunkCoordinate.y - ChunkGenerationRadius + 1; j < CurrentChunkCoordinate.y + ChunkGenerationRadius; j++)
 			{
-				Vector2Int newChunkCoordinate = new Vector2Int(i, j);
+				for (int k = CurrentChunkCoordinate.z - ChunkGenerationRadius + 1; k < CurrentChunkCoordinate.z + ChunkGenerationRadius; k++)
+				{
+					Vector3Int newChunkCoordinate = new Vector3Int(i, j, k);
 
-				ChunkManager.CreateChunk(newChunkCoordinate);
+					ChunkManager.CreateChunk(newChunkCoordinate);
+				}
 			}
 		}
 	}

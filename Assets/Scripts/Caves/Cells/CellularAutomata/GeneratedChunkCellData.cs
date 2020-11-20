@@ -11,7 +11,7 @@ namespace Caves.Cells.CellularAutomata
 		public List<Tunnel> Tunnels;
 		public bool IsFinalized = false;
 
-		public GeneratedChunkCellData(CellSettings settings, CaveChunkManager chunkManager, Vector2Int chunkCoordinate) : base(settings, chunkManager, chunkCoordinate)
+		public GeneratedChunkCellData(CellSettings settings, CaveChunkManager chunkManager, Vector3Int chunkCoordinate) : base(settings, chunkManager, chunkCoordinate)
 		{
 
 		}
@@ -42,7 +42,7 @@ namespace Caves.Cells.CellularAutomata
 
 		public void FinalizeGeneration()
 		{
-			RemoveSmallHollowGroupsByGroundSize(Hollows, Settings.MinHollowGroupCubicSize);
+			//RemoveSmallHollowGroupsByGroundSize(Hollows, Settings.MinHollowGroupCubicSize);
 
 			Hollows = GetCellGroups<HollowGroup>(CellType.Hollow);
 
@@ -69,7 +69,7 @@ namespace Caves.Cells.CellularAutomata
 						continue;
 					}
 
-					Vector2Int coordinate = new Vector2Int(ChunkCoordinate.x - 1 + i, ChunkCoordinate.y - 1 + j);
+					Vector3Int coordinate = new Vector3Int(ChunkCoordinate.x - 1 + i, ChunkCoordinate.y - 1 + j, 0);
 
 					if (_chunkManager.GeneratedChunks.TryGetValue(coordinate, out CaveChunk chunk))
 					{
@@ -158,7 +158,7 @@ namespace Caves.Cells.CellularAutomata
 			return result;
 		}
 
-		private void RemoveSmallHollowGroupsByGroundSize(List<HollowGroup> hollows, int minHollowGroupGroundSize)
+		/*private void RemoveSmallHollowGroupsByGroundSize(List<HollowGroup> hollows, int minHollowGroupGroundSize)
 		{
 			foreach (HollowGroup group in hollows)
 			{
@@ -170,7 +170,7 @@ namespace Caves.Cells.CellularAutomata
 					}
 				}
 			}
-		}
+		}*/
 
 		private void FilterHollowGroups(List<HollowGroup> hollows, int minHollowGroupSize)
 		{

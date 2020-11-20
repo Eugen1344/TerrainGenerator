@@ -8,7 +8,7 @@ namespace Caves.Cells.CellularAutomata
 	public abstract class ChunkCellData
 	{
 		public readonly CellSettings Settings;
-		public readonly Vector2Int ChunkCoordinate;
+		public readonly Vector3Int ChunkCoordinate;
 		public readonly int ChunkSeed;
 
 		public List<CellType[,,]> Iterations = new List<CellType[,,]>();
@@ -16,7 +16,7 @@ namespace Caves.Cells.CellularAutomata
 
 		protected CaveChunkManager _chunkManager;
 
-		protected ChunkCellData(CellSettings settings, CaveChunkManager chunkManager, Vector2Int chunkCoordinate)
+		protected ChunkCellData(CellSettings settings, CaveChunkManager chunkManager, Vector3Int chunkCoordinate)
 		{
 			Debug.Log($"Created chunk {GetType()}");
 

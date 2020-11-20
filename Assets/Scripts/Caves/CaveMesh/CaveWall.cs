@@ -87,7 +87,7 @@ namespace Caves.CaveMesh
 			{
 				for (int j = 0; j < actualMatrixSize.y; j++)
 				{
-					for (int k = 1; k < actualMatrixSize.z - 1; k++)
+					for (int k = 0; k < actualMatrixSize.z; k++)
 					{
 						if ((i == 0 || j == 0 || k == 0 ||
 							i == actualMatrixSize.x - 1 || j == actualMatrixSize.y - 1 || k == actualMatrixSize.z - 1))

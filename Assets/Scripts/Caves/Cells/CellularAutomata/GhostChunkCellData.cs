@@ -8,7 +8,7 @@ namespace Caves.Cells.CellularAutomata
 	{
 		public ChunkCellData[,] NearbyChunks;
 
-		public GhostChunkCellData(CellSettings settings, CaveChunkManager chunkManager, Vector2Int chunkCoordinate) : base(settings, chunkManager, chunkCoordinate)
+		public GhostChunkCellData(CellSettings settings, CaveChunkManager chunkManager, Vector3Int chunkCoordinate) : base(settings, chunkManager, chunkCoordinate)
 		{
 		}
 
@@ -27,7 +27,7 @@ namespace Caves.Cells.CellularAutomata
 						continue;
 					}
 
-					Vector2Int coordinate = new Vector2Int(ChunkCoordinate.x - 1 + i, ChunkCoordinate.y - 1 + j);
+					Vector3Int coordinate = new Vector3Int(ChunkCoordinate.x - 1 + i, ChunkCoordinate.y - 1 + j, 0);
 
 					if (_chunkManager.GeneratedChunks.TryGetValue(coordinate, out CaveChunk chunk))
 					{

@@ -82,14 +82,14 @@ MonoBehaviour:
   WallPrefab: {fileID: 8652350943365143204, guid: 5204836ef8bb785419212c309e3aebc4,
     type: 3}
   Settings:
-    TerrainCubicSize: {x: 100, y: 100, z: 10}
+    TerrainCubicSize: {x: 32, y: 32, z: 32}
     Seed: 1344
     RandomHollowCellsPercent: 0.4
     NoiseScale: 0.1
     GenerateTunnels: 1
     TunnelHeight: 3
     TunnelWidth: 1
-  ChunkCoordinate: {x: 0, y: 0}
+  ChunkCoordinate: {x: 0, y: 0, z: 0}
   ChunkSeed: 0
   IsFinalized: 0
 --- !u!114 &5190200657607983640

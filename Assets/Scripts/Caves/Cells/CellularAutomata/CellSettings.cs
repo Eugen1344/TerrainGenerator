@@ -19,7 +19,7 @@ namespace Caves.Cells.CellularAutomata
 		public int TunnelHeight;
 		public int TunnelWidth;
 
-		public int GenerateSeed(int baseSeed, Vector2Int chunkCoordinate)
+		public int GenerateSeed(int baseSeed, Vector3Int chunkCoordinate)
 		{
 			ushort chunkCoordinateX = (ushort)chunkCoordinate.x;
 			ushort chunkCoordinateY = (ushort)chunkCoordinate.y;
