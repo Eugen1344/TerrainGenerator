@@ -462,8 +462,8 @@ MonoBehaviour:
   _enableTranslation: 1
   _translationSpeed: 55
   _enableMovement: 1
-  _movementSpeed: 30
-  _boostedSpeed: 200
+  _movementSpeed: 800
+  _boostedSpeed: 1600
   _enableSpeedAcceleration: 1
   _speedAccelerationFactor: 1.5
   _initPositonButton: 114
@@ -688,7 +688,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ChunkManager: {fileID: 1024746415}
   DestinationChunkCoordinate: {x: 0, y: 0, z: 0}
-  SpawnInRandomCave: 1
+  SpawnInRandomCave: 0
   CaveIndexToSpawn: 0
 --- !u!1 &705507993
 GameObject:
@@ -1491,7 +1491,7 @@ MonoBehaviour:
   ChunkHolder: {fileID: 725878631}
   ChunkPrefab: {fileID: 5190200657607983642, guid: d8a6dc15a1eb9f14dabf66b0d8047211,
     type: 3}
-  RandomSeed: 1
+  RandomSeed: 0
   Seed: 666
 --- !u!1 &1234496885
 GameObject:

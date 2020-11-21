@@ -21,7 +21,7 @@ namespace Caves.Cells.SimplexNoise
 
 		public bool IsFinalized = false;
 
-		private Noise _noise;
+		private Noise _noiseGenerator;
 
 		public ChunkCellData(CellSettings settings, CaveChunkManager chunkManager, Vector3Int chunkCoordinate)
 		{
@@ -31,16 +31,38 @@ namespace Caves.Cells.SimplexNoise
 
 			Settings = settings;
 			ChunkCoordinate = chunkCoordinate;
-			ChunkSeed = Settings.GenerateSeed(Settings.Seed, chunkCoordinate);
+			//ChunkSeed = Settings.GenerateSeed(Settings.Seed, chunkCoordinate);
 
-			_noise = new Noise(ChunkSeed);
+			_noiseGenerator = new Noise(Settings.Seed);
 		}
 
 		public void Generate()
 		{
-			float[,,] noise = _noise.Calc3D(Settings.TerrainCubicSize.x, Settings.TerrainCubicSize.y, Settings.TerrainCubicSize.z, Settings.NoiseScale);
+			float[,,] noise = GetNoise();
 
 			Cells = GetCellsFromNoise(noise);
+		}
+
+		private float[,,] GetNoise()
+		{
+			float[,,] noise = new float[Settings.TerrainCubicSize.x, Settings.TerrainCubicSize.y, Settings.TerrainCubicSize.z];
+
+			Vector3Int offset = Settings.TerrainCubicSize * ChunkCoordinate;
+
+			for (int i = 0; i < Settings.TerrainCubicSize.x; i++)
+			{
+				for (int j = 0; j < Settings.TerrainCubicSize.y; j++)
+				{
+					for (int k = 0; k < Settings.TerrainCubicSize.z; k++)
+					{
+						Vector3Int noisePixelPosition = new Vector3Int(i + offset.x, j + offset.y, k + offset.z);
+
+						noise[i, j, k] = _noiseGenerator.CalcPixel3D(noisePixelPosition.x, noisePixelPosition.y, noisePixelPosition.z, Settings.NoiseScale);
+					}
+				}
+			}
+
+			return noise;
 		}
 
 		public void FinalizeGeneration()
