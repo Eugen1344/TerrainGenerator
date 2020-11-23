@@ -26,7 +26,7 @@ namespace Develop
 					{
 						Vector3 globalPosition = Chunk.GetWorldPosition(coordinate);
 
-						Gizmos.color = Color.black;
+						Gizmos.color = Color.cyan;
 						Gizmos.DrawSphere(globalPosition, 3);
 
 						if (DrawCoordinates)
@@ -41,11 +41,11 @@ namespace Develop
 
 			if (DrawTunnels)
 			{
-				foreach (Tunnel tunnel in Chunk.CellData.Tunnels)
+				/*foreach (Tunnel tunnel in Chunk.CellData.Tunnels)
 				{
 					Gizmos.color = Color.cyan;
 					Gizmos.DrawLine(Chunk.GetWorldPosition(tunnel.FirstCaveConnectionPoint), Chunk.GetWorldPosition(tunnel.SecondCaveConnectionPoint));
-				}
+				}*/
 			}
 		}
 	}

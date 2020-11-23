@@ -82,10 +82,12 @@ MonoBehaviour:
   WallPrefab: {fileID: 8652350943365143204, guid: 5204836ef8bb785419212c309e3aebc4,
     type: 3}
   Settings:
-    TerrainCubicSize: {x: 32, y: 32, z: 32}
+    TerrainCubicSize: {x: 16, y: 16, z: 16}
     Seed: 1344
     RandomHollowCellsPercent: 0.4
     NoiseScale: 0.1
+    RandomHollowCellsPercentDecreasePerPixel: 0.01
+    CentralDecreasePoint: {x: 0, y: 0, z: 0}
     GenerateTunnels: 1
     TunnelHeight: 3
     TunnelWidth: 1

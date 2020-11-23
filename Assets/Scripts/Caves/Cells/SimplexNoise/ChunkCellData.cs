@@ -65,6 +65,13 @@ namespace Caves.Cells.SimplexNoise
 			return noise;
 		}
 
+		public float GetRandomHollowCellsPercent(Vector3Int globalPixelCoordinate)
+		{
+			int heightDiff = Mathf.Abs(globalPixelCoordinate.z - Settings.CentralDecreasePoint.z);
+
+			return Mathf.Clamp(Settings.RandomHollowCellsPercent - heightDiff * Settings.RandomHollowCellsPercentDecreasePerPixel, 0, Settings.RandomHollowCellsPercent);
+		}
+
 		public void FinalizeGeneration()
 		{
 			//RemoveSmallHollowGroupsByGroundSize(Hollows, Settings.MinHollowGroupCubicSize);
@@ -86,6 +93,8 @@ namespace Caves.Cells.SimplexNoise
 
 			CellType[,,] cells = new CellType[length, width, height];
 
+			Vector3Int offset = Settings.TerrainCubicSize * ChunkCoordinate;
+
 			for (int i = 0; i < length; i++)
 			{
 				for (int j = 0; j < width; j++)
@@ -93,8 +102,9 @@ namespace Caves.Cells.SimplexNoise
 					for (int k = 0; k < height; k++)
 					{
 						float normalizedNoise = (noise[i, j, k] + 1f) / 2f;
+						Vector3Int noisePixelPosition = new Vector3Int(i + offset.x, j + offset.y, k + offset.z);
 
-						if (normalizedNoise <= Settings.RandomHollowCellsPercent)
+						if (normalizedNoise <= GetRandomHollowCellsPercent(noisePixelPosition))
 							cells[i, j, k] = CellType.Hollow;
 						else
 							cells[i, j, k] = CellType.Wall;
