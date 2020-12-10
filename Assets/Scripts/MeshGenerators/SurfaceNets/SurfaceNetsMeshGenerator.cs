@@ -2,11 +2,11 @@
 using UnityEngine;
 using UnityEngine.Rendering;
 
-namespace MeshGenerators
+namespace MeshGenerators.SurfaceNets
 {
-	public class MarchingCubesMeshGenerator : MeshGenerator
+	public class SurfaceNetsMeshGenerator : MeshGenerator
 	{
-		public MarchingCubesMeshGenerator(MeshGeneratorSettings settings) : base(settings)
+		public SurfaceNetsMeshGenerator(MeshGeneratorSettings settings) : base(settings)
 		{
 		}
 
@@ -26,9 +26,9 @@ namespace MeshGenerators
 				{
 					for (int k = 0; k < height - 1; k++)
 					{
-						int nodeConfiguration = MarchingCubesData.GetNodeConfiguration(nodeMatrix, i, j, k);
+						/*int nodeConfiguration = MeshGeneratorData.GetNodeConfiguration(nodeMatrix, i, j, k);
 
-						foreach (Vector3 vertex in MarchingCubesData.GetVertices(nodeConfiguration))
+						foreach (Vector3 vertex in MeshGeneratorData.GetVertices(nodeConfiguration))
 						{
 							Vector3 vertexPosition = new Vector3((vertex.x + i - 1) * gridSize.x, (vertex.y + j - 1) * gridSize.y, (vertex.z + k - 1) * gridSize.z);
 							vertices.Add(vertexPosition);
@@ -37,7 +37,7 @@ namespace MeshGenerators
 							triangles.Add(triangleIndex);
 
 							//normals.Add(vertex);
-						}
+						}*/
 					}
 				}
 			}

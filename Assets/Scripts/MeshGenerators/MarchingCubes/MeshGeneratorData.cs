@@ -1,39 +1,39 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace MeshGenerators
+namespace MeshGenerators.MarchingCubes
 {
-	public static class MarchingCubesData
+	public static class MeshGeneratorData
 	{
-		private static MarchingCubesPrimaryNode[] _primaryNodes =
+		private static MeshGeneratorPrimaryNode[] _primaryNodes =
 		{
-			new MarchingCubesPrimaryNode(new Vector3(0, 0, 0)),
-			new MarchingCubesPrimaryNode(new Vector3(1, 0, 0)),
-			new MarchingCubesPrimaryNode(new Vector3(1, 1, 0)),
-			new MarchingCubesPrimaryNode(new Vector3(0, 1, 0)),
+			new MeshGeneratorPrimaryNode(new Vector3(0, 0, 0)),
+			new MeshGeneratorPrimaryNode(new Vector3(1, 0, 0)),
+			new MeshGeneratorPrimaryNode(new Vector3(1, 1, 0)),
+			new MeshGeneratorPrimaryNode(new Vector3(0, 1, 0)),
 
-			new MarchingCubesPrimaryNode(new Vector3(0, 0, 1)),
-			new MarchingCubesPrimaryNode(new Vector3(1, 0, 1)),
-			new MarchingCubesPrimaryNode(new Vector3(1, 1, 1)),
-			new MarchingCubesPrimaryNode(new Vector3(0, 1, 1)),
+			new MeshGeneratorPrimaryNode(new Vector3(0, 0, 1)),
+			new MeshGeneratorPrimaryNode(new Vector3(1, 0, 1)),
+			new MeshGeneratorPrimaryNode(new Vector3(1, 1, 1)),
+			new MeshGeneratorPrimaryNode(new Vector3(0, 1, 1)),
 		};
 
-		private static MarchingCubesSecondaryNode[] _secondaryNodes =
+		private static MeshGeneratorSecondaryNode[] _secondaryNodes =
 		{
-			new MarchingCubesSecondaryNode(_primaryNodes[0], _primaryNodes[1]),
-			new MarchingCubesSecondaryNode(_primaryNodes[1], _primaryNodes[2]),
-			new MarchingCubesSecondaryNode(_primaryNodes[2], _primaryNodes[3]),
-			new MarchingCubesSecondaryNode(_primaryNodes[0], _primaryNodes[3]),
+			new MeshGeneratorSecondaryNode(_primaryNodes[0], _primaryNodes[1]),
+			new MeshGeneratorSecondaryNode(_primaryNodes[1], _primaryNodes[2]),
+			new MeshGeneratorSecondaryNode(_primaryNodes[2], _primaryNodes[3]),
+			new MeshGeneratorSecondaryNode(_primaryNodes[0], _primaryNodes[3]),
 
-			new MarchingCubesSecondaryNode(_primaryNodes[4], _primaryNodes[5]),
-			new MarchingCubesSecondaryNode(_primaryNodes[5], _primaryNodes[6]),
-			new MarchingCubesSecondaryNode(_primaryNodes[6], _primaryNodes[7]),
-			new MarchingCubesSecondaryNode(_primaryNodes[4], _primaryNodes[7]),
+			new MeshGeneratorSecondaryNode(_primaryNodes[4], _primaryNodes[5]),
+			new MeshGeneratorSecondaryNode(_primaryNodes[5], _primaryNodes[6]),
+			new MeshGeneratorSecondaryNode(_primaryNodes[6], _primaryNodes[7]),
+			new MeshGeneratorSecondaryNode(_primaryNodes[4], _primaryNodes[7]),
 
-			new MarchingCubesSecondaryNode(_primaryNodes[0], _primaryNodes[4]),
-			new MarchingCubesSecondaryNode(_primaryNodes[1], _primaryNodes[5]),
-			new MarchingCubesSecondaryNode(_primaryNodes[2], _primaryNodes[6]),
-			new MarchingCubesSecondaryNode(_primaryNodes[3], _primaryNodes[7])
+			new MeshGeneratorSecondaryNode(_primaryNodes[0], _primaryNodes[4]),
+			new MeshGeneratorSecondaryNode(_primaryNodes[1], _primaryNodes[5]),
+			new MeshGeneratorSecondaryNode(_primaryNodes[2], _primaryNodes[6]),
+			new MeshGeneratorSecondaryNode(_primaryNodes[3], _primaryNodes[7])
 		};
 
 		private static byte[][] _triangles =
@@ -317,7 +317,7 @@ namespace MeshGenerators
 
 			for (int i = 0; i < triangles.GetLength(0); i++)
 			{
-				MarchingCubesSecondaryNode node = _secondaryNodes[triangles[i]];
+				MeshGeneratorSecondaryNode node = _secondaryNodes[triangles[i]];
 
 				yield return node.InterpolatePosition(0.5f); //TODO interpolation
 			}
