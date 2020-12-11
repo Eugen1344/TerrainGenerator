@@ -1,6 +1,7 @@
 ﻿using System;
 using MeshGenerators;
 using MeshGenerators.MarchingCubes;
+using MeshGenerators.SurfaceNets;
 using UnityEngine;
 
 namespace Develop
@@ -9,19 +10,28 @@ namespace Develop
 	{
 		public Vector3Int GridSize;
 		public int SphereRadius;
-		public MeshGenerator MeshGenerator;
 
-		private void Awake()
+		[ContextMenu("Marching cubes sphere")]
+		public void MarchingCubesSphere()
 		{
-			MeshGenerator = new MarchingCubesMeshGenerator(new MeshGeneratorSettings());
+			MeshGenerator generator = new MarchingCubesMeshGenerator(new MeshGeneratorSettings());
+
+			GenerateSphere(generator);
 		}
 
-		[ContextMenu("Generate sphere")]
-		public void GenerateSphere()
+		[ContextMenu("Surface nets sphere")]
+		public void SurfaceNetsSphere()
+		{
+			MeshGenerator generator = new SurfaceNetsMeshGenerator(new MeshGeneratorSettings());
+
+			GenerateSphere(generator);
+		}
+
+		public void GenerateSphere(MeshGenerator generator)
 		{
 			MeshFilter meshFilter = GetComponent<MeshFilter>();
 
-			Mesh mesh = MeshGenerator.Generate(GetNodeMatrix(), GridSize);
+			Mesh mesh = generator.Generate(GetNodeMatrix(), GridSize);
 			meshFilter.sharedMesh = mesh;
 		}
 

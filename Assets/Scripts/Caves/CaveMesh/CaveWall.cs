@@ -2,6 +2,7 @@
 using Caves.Chunks;
 using MeshGenerators;
 using MeshGenerators.MarchingCubes;
+using MeshGenerators.SurfaceNets;
 using UnityEngine;
 
 namespace Caves.CaveMesh
@@ -21,7 +22,7 @@ namespace Caves.CaveMesh
 			_wall = wall;
 			_chunk = chunk;
 
-			SetMarchingCubesMeshGenerator();
+			SetMeshGenerator();
 
 			Mesh mesh = GenerateMesh(out Vector3Int minCoordinate);
 
@@ -31,9 +32,9 @@ namespace Caves.CaveMesh
 			MeshCollider.sharedMesh = mesh;
 		}
 
-		private void SetMarchingCubesMeshGenerator() //TODO temp, move
+		private void SetMeshGenerator() //TODO temp, move
 		{
-			_meshGenerator = new MarchingCubesMeshGenerator(MeshSettings);
+			_meshGenerator = new SurfaceNetsMeshGenerator(MeshSettings);
 		}
 
 		private Mesh GenerateMesh(out Vector3Int minCoordinate)
