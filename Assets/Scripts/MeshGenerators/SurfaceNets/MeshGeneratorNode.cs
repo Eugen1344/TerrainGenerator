@@ -53,6 +53,8 @@ namespace MeshGenerators.SurfaceNets
 
 						int firstCommonPoint = _nodeMatrix[minCoordinate.x, minCoordinate.y, minCoordinate.z];
 						int secondCommonPoint = _nodeMatrix[maxCoordinate.x, maxCoordinate.y, maxCoordinate.z];
+						
+						HaveCreatedTriangle = true;
 
 						if (firstCommonPoint == secondCommonPoint)
 							continue;
@@ -87,8 +89,6 @@ namespace MeshGenerators.SurfaceNets
 								triangles.Add(firstNode.Position);
 							}
 						}
-
-						HaveCreatedTriangle = true;
 					}
 				}
 			}
