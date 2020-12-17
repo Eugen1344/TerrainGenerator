@@ -31,11 +31,29 @@ namespace Develop
 		{
 			MeshFilter meshFilter = GetComponent<MeshFilter>();
 
-			Mesh mesh = generator.Generate(GetNodeMatrix(), GridSize);
+			Mesh mesh = generator.Generate(GetSphereMatrix(), GridSize);
 			meshFilter.sharedMesh = mesh;
 		}
 
-		private int[,,] GetNodeMatrix()
+		private int[,,] GetCubeMatrix(int cubeSize)
+		{
+			int[,,] nodeMatrix = new int[cubeSize + 2, cubeSize + 2, cubeSize + 2 + 2];
+
+			for (int i = 1; i < cubeSize + 1; i++)
+			{
+				for (int j = 1; j < cubeSize + 1; j++)
+				{
+					for (int k = 1; k < cubeSize + 1 + 2; k++)
+					{
+						nodeMatrix[i, j, k] = 1;
+					}
+				}
+			}
+
+			return nodeMatrix;
+		}
+
+		private int[,,] GetSphereMatrix()
 		{
 			int sphereDiameter = SphereRadius * 2;
 			int[,,] matrix = new int[sphereDiameter, sphereDiameter, sphereDiameter];
@@ -50,7 +68,8 @@ namespace Develop
 					{
 						Vector3Int currentCoordinate = new Vector3Int(i, j, k);
 
-						if (Vector3Int.Distance(currentCoordinate, sphereCenter) <= SphereRadius)
+						float distanceToCenter = Vector3Int.Distance(currentCoordinate, sphereCenter);
+						if (distanceToCenter <= SphereRadius)
 						{
 							matrix[i, j, k] = 1;
 						}
