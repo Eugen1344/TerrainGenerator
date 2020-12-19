@@ -6,7 +6,7 @@ namespace MeshGenerators
 	{
 		public readonly MeshGeneratorSettings Settings;
 
-		public abstract Mesh Generate(int[,,] nodeMatrix, Vector3Int gridSize);
+		public abstract Mesh Generate(int[,,] nodeMatrix);
 
 		protected MeshGenerator(MeshGeneratorSettings settings)
 		{

@@ -46,6 +46,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d4b0075ed4bb87e4482846699c9778ae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  MeshSettings:
+    GridSize: {x: 5, y: 5, z: 5}
+    SmoothIterationCount: 0
   MeshFilter: {fileID: 868067939435830052}
   MeshCollider: {fileID: 868067939435830055}
 --- !u!23 &868067939435830053
@@ -63,6 +66,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -87,6 +91,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!33 &868067939435830052
 MeshFilter:
   m_ObjectHideFlags: 0

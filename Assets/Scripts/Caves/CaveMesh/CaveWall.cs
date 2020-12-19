@@ -39,9 +39,11 @@ namespace Caves.CaveMesh
 
 		private Mesh GenerateMesh(out Vector3Int minCoordinate)
 		{
+			MeshSettings.GridSize = _chunk.CellSize;
+
 			int[,,] nodeMatrix = GetAlignedNodeMatrix(_wall, out minCoordinate);
 
-			return _meshGenerator.Generate(nodeMatrix, _chunk.CellSize);
+			return _meshGenerator.Generate(nodeMatrix);
 		}
 
 		private static Vector2[] CalculateUVs(Vector3[] vertices, Vector3 size)

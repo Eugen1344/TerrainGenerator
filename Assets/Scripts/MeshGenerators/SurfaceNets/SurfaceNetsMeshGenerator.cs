@@ -10,7 +10,7 @@ namespace MeshGenerators.SurfaceNets
 		{
 		}
 
-		public override Mesh Generate(int[,,] nodeMatrix, Vector3Int gridSize)
+		public override Mesh Generate(int[,,] nodeMatrix)
 		{
 			List<Vector3> vertices = new List<Vector3>();
 			//List<Vector3> normals = new List<Vector3>();
@@ -20,7 +20,12 @@ namespace MeshGenerators.SurfaceNets
 			foreach (MeshGeneratorNode node in surfaceNodes)
 			{
 				List<Vector3> nodeTriangles = node.GetAllTriangles();
-				vertices.AddRange(nodeTriangles);
+
+				foreach (Vector3 vertex in nodeTriangles)
+				{
+					Vector3 scaledVertex = new Vector3(vertex.x * Settings.GridSize.x, vertex.y * Settings.GridSize.y, vertex.z * Settings.GridSize.z);
+					vertices.Add(scaledVertex);
+				}
 			}
 
 			for (int i = 0; i < vertices.Count; i++)

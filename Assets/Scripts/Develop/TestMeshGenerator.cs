@@ -8,13 +8,13 @@ namespace Develop
 {
 	public class TestMeshGenerator : MonoBehaviour
 	{
-		public Vector3Int GridSize;
+		public MeshGeneratorSettings Settings;
 		public int SphereRadius;
 
 		[ContextMenu("Marching cubes sphere")]
 		public void MarchingCubesSphere()
 		{
-			MeshGenerator generator = new MarchingCubesMeshGenerator(new MeshGeneratorSettings());
+			MeshGenerator generator = new MarchingCubesMeshGenerator(Settings);
 
 			GenerateSphere(generator);
 		}
@@ -22,7 +22,7 @@ namespace Develop
 		[ContextMenu("Surface nets sphere")]
 		public void SurfaceNetsSphere()
 		{
-			MeshGenerator generator = new SurfaceNetsMeshGenerator(new MeshGeneratorSettings());
+			MeshGenerator generator = new SurfaceNetsMeshGenerator(Settings);
 
 			GenerateSphere(generator);
 		}
@@ -31,7 +31,7 @@ namespace Develop
 		{
 			MeshFilter meshFilter = GetComponent<MeshFilter>();
 
-			Mesh mesh = generator.Generate(GetSphereMatrix(), GridSize);
+			Mesh mesh = generator.Generate(GetSphereMatrix());
 			meshFilter.sharedMesh = mesh;
 		}
 

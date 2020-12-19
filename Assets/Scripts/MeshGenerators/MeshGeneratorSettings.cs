@@ -4,7 +4,9 @@ using UnityEngine;
 namespace MeshGenerators
 {
 	[Serializable]
-	public struct MeshGeneratorSettings //TODO we will definitely need this class later
+	public struct MeshGeneratorSettings
 	{
+		public Vector3Int GridSize;
+		public int SmoothIterationCount;
 	}
 }

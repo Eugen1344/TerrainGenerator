@@ -10,7 +10,7 @@ namespace MeshGenerators.MarchingCubes
 		{
 		}
 
-		public override Mesh Generate(int[,,] nodeMatrix, Vector3Int gridSize)
+		public override Mesh Generate(int[,,] nodeMatrix)
 		{
 			List<Vector3> vertices = new List<Vector3>();
 			//List<Vector3> normals = new List<Vector3>();
@@ -30,7 +30,7 @@ namespace MeshGenerators.MarchingCubes
 
 						foreach (Vector3 vertex in MeshGeneratorData.GetVertices(nodeConfiguration))
 						{
-							Vector3 vertexPosition = new Vector3((vertex.x + i - 1) * gridSize.x, (vertex.y + j - 1) * gridSize.y, (vertex.z + k - 1) * gridSize.z);
+							Vector3 vertexPosition = new Vector3((vertex.x + i - 1) * Settings.GridSize.x, (vertex.y + j - 1) * Settings.GridSize.y, (vertex.z + k - 1) * Settings.GridSize.z);
 							vertices.Add(vertexPosition);
 
 							int triangleIndex = vertices.Count - 1;
