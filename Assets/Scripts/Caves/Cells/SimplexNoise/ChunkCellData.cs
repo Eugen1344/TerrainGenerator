@@ -25,8 +25,6 @@ namespace Caves.Cells.SimplexNoise
 
 		public ChunkCellData(CellSettings settings, CaveChunkManager chunkManager, Vector3Int chunkCoordinate)
 		{
-			Debug.Log($"Created chunk {GetType()}");
-
 			_chunkManager = chunkManager;
 
 			Settings = settings;

@@ -36,6 +36,9 @@ namespace Caves.Chunks
 					{
 						Vector3Int nearbyChunkCoordinate = new Vector3Int(i, j, k);
 
+						if (nearbyChunkCoordinate == chunkCoordinate)
+							continue;
+
 						GenerateAndAddChunk(nearbyChunkCoordinate);
 					}
 				}
@@ -50,6 +53,8 @@ namespace Caves.Chunks
 		{
 			if (GeneratedChunks.TryGetValue(chunkCoordinate, out CaveChunk generatedChunk))
 				return generatedChunk;
+			
+			Debug.Log($"Generating chunk: {chunkCoordinate}");
 
 			GameObject newChunkObject = Instantiate(ChunkPrefab.gameObject, ChunkHolder.transform);
 			newChunkObject.name = chunkCoordinate.ToString();
@@ -68,6 +73,8 @@ namespace Caves.Chunks
 
 		private void FinalizeChunk(CaveChunk chunk)
 		{
+			Debug.Log($"Finalizing chunk: {chunk.ChunkCoordinate}");
+			
 			chunk.FinalizeGeneration();
 		}
 

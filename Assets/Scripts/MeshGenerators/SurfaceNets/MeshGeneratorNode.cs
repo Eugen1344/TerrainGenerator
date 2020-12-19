@@ -23,6 +23,12 @@ namespace MeshGenerators.SurfaceNets
 			_nodeMatrix = nodeMatrix;
 		}
 
+		public void CreateMutualLink(MeshGeneratorNode node)
+		{
+			LinkedNodes.Add(node);
+			node.LinkedNodes.Add(this);
+		}
+
 		public List<Vector3> GetAllTriangles()
 		{
 			List<Vector3> triangles = new List<Vector3>(TriangleCount * 3);
@@ -53,7 +59,7 @@ namespace MeshGenerators.SurfaceNets
 
 						int firstCommonPoint = _nodeMatrix[minCoordinate.x, minCoordinate.y, minCoordinate.z];
 						int secondCommonPoint = _nodeMatrix[maxCoordinate.x, maxCoordinate.y, maxCoordinate.z];
-						
+
 						HaveCreatedTriangle = true;
 
 						if (firstCommonPoint == secondCommonPoint)
@@ -96,15 +102,21 @@ namespace MeshGenerators.SurfaceNets
 			return triangles;
 		}
 
+		public void PlaceEquidistant()
+		{
+			Vector3 equidistantPosition = Vector3.zero;
+
+			foreach (MeshGeneratorNode linkedNode in LinkedNodes)
+			{
+				equidistantPosition += linkedNode.Position;
+			}
+
+			Position = equidistantPosition / LinkedNodes.Count;
+		}
+
 		public static Vector3Int Cross(Vector3Int first, Vector3Int second)
 		{
 			return new Vector3Int(first.y * second.z - first.z * second.y, first.z * second.x - first.x * second.z, first.x * second.y - first.y * second.x);
-		}
-
-		public void CreateMutualLink(MeshGeneratorNode node)
-		{
-			LinkedNodes.Add(node);
-			node.LinkedNodes.Add(this);
 		}
 	}
 }

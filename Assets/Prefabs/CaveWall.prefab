@@ -47,8 +47,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MeshSettings:
-    GridSize: {x: 5, y: 5, z: 5}
-    SmoothIterationCount: 0
+    GridSize: {x: 10, y: 10, z: 10}
+    SmoothIterationCount: 5
   MeshFilter: {fileID: 868067939435830052}
   MeshCollider: {fileID: 868067939435830055}
 --- !u!23 &868067939435830053

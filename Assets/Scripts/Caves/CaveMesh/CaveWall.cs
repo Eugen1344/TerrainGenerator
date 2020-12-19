@@ -34,13 +34,12 @@ namespace Caves.CaveMesh
 
 		private void SetMeshGenerator() //TODO temp, move
 		{
+			MeshSettings.GridSize = _chunk.CellSize;
 			_meshGenerator = new SurfaceNetsMeshGenerator(MeshSettings);
 		}
 
 		private Mesh GenerateMesh(out Vector3Int minCoordinate)
 		{
-			MeshSettings.GridSize = _chunk.CellSize;
-
 			int[,,] nodeMatrix = GetAlignedNodeMatrix(_wall, out minCoordinate);
 
 			return _meshGenerator.Generate(nodeMatrix);

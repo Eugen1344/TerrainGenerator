@@ -1,4 +1,5 @@
-﻿using Caves;
+﻿using System.Collections;
+using Caves;
 using Caves.Chunks;
 using UnityEngine;
 
@@ -8,20 +9,28 @@ public class PlayerChunkTracker : MonoBehaviour
 	public CaveChunkManager ChunkManager;
 	public Vector3Int CurrentChunkCoordinate;
 
-	private void Start()
+	private IEnumerator Start()
 	{
+		yield return new WaitForSeconds(5);
+
 		GenerateNearbyChunks();
+		
+		yield return null;
+		yield return null;
+		yield return null;
+		
+		Application.Quit();
 	}
 
 	private void Update()
 	{
-		Vector3Int chunkCoordinate = ChunkManager.GetChunkCoordinate(transform.position);
+		/*Vector3Int chunkCoordinate = ChunkManager.GetChunkCoordinate(transform.position);
 
 		if (CurrentChunkCoordinate == chunkCoordinate)
 			return;
 
 		CurrentChunkCoordinate = chunkCoordinate;
-		GenerateNearbyChunks();
+		GenerateNearbyChunks();*/
 	}
 
 	private void GenerateNearbyChunks()

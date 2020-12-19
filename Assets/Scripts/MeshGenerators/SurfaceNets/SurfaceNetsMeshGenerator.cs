@@ -13,10 +13,18 @@ namespace MeshGenerators.SurfaceNets
 		public override Mesh Generate(int[,,] nodeMatrix)
 		{
 			List<Vector3> vertices = new List<Vector3>();
-			//List<Vector3> normals = new List<Vector3>();
 			List<int> triangles = new List<int>();
 
 			List<MeshGeneratorNode> surfaceNodes = GetSurfaceNodes(nodeMatrix);
+
+			for (int i = 0; i < Settings.SmoothIterationCount; i++)
+			{
+				foreach (MeshGeneratorNode node in surfaceNodes)
+				{
+					node.PlaceEquidistant();
+				}
+			}
+
 			foreach (MeshGeneratorNode node in surfaceNodes)
 			{
 				List<Vector3> nodeTriangles = node.GetAllTriangles();
@@ -38,14 +46,12 @@ namespace MeshGenerators.SurfaceNets
 				indexFormat = IndexFormat.UInt32,
 				vertices = vertices.ToArray(),
 				triangles = triangles.ToArray(),
-				//normals = vertices.ToArray()
 			};
 
 			mesh.Optimize();
 			mesh.RecalculateNormals();
 			mesh.RecalculateBounds();
 			mesh.RecalculateTangents();
-			//mesh.normals = normals.ToArray();
 			//mesh.uv = Unwrapping.GeneratePerTriangleUV(mesh);
 
 			return mesh;

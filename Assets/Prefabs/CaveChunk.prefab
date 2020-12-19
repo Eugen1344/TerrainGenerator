@@ -49,7 +49,7 @@ MonoBehaviour:
   WallPrefab: {fileID: 8652350943365143204, guid: 5204836ef8bb785419212c309e3aebc4,
     type: 3}
   Settings:
-    TerrainCubicSize: {x: 16, y: 16, z: 16}
+    TerrainCubicSize: {x: 64, y: 32, z: 64}
     Seed: 1344
     RandomHollowCellsPercent: 0.4
     NoiseScale: 0.1
