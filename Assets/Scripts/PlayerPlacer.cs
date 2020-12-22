@@ -1,13 +1,22 @@
-﻿public class PlayerPlacer : Placer
+﻿using System.Diagnostics;
+
+public class PlayerPlacer : Placer
 {
 	public bool SpawnInRandomCave;
 	public int CaveIndexToSpawn;
 
-	private void Start()
+	private async void Start()
 	{
+		Stopwatch watch = new Stopwatch();
+		watch.Start();
+		UnityEngine.Debug.Log($"Started chunk generation of {ChunkGenerationRadius * ChunkGenerationRadius} chunks:");
+
 		if (SpawnInRandomCave)
-			PlaceInRandomCave();
+			await PlaceInRandomCave();
 		else
-			PlaceInCave(CaveIndexToSpawn);
+			await PlaceInCave(CaveIndexToSpawn);
+
+		watch.Stop();
+		UnityEngine.Debug.Log($"Done generating chunk. Took: {watch.Elapsed.TotalSeconds}s");
 	}
 }

@@ -1,4 +1,8 @@
-﻿using Caves.CaveMesh;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using Caves.CaveMesh;
 using Caves.Cells;
 using Caves.Cells.SimplexNoise;
 using UnityEngine;
@@ -16,43 +20,73 @@ namespace Caves.Chunks
 		public int ChunkSeed;
 		public bool IsFinalized = false;
 
-		public void Generate(Vector3Int chunkCoordinate)
+		private List<CaveWall> _walls = new List<CaveWall>();
+
+		private void Start()
 		{
-			ChunkCoordinate = chunkCoordinate;
+			ChunkCoordinate = CellData.ChunkCoordinate;
+			ChunkSeed = Settings.GenerateSeed(Settings.Seed, ChunkCoordinate);
 
-			ChunkSeed = Settings.GenerateSeed(Settings.Seed, chunkCoordinate);
+			gameObject.transform.localPosition = ChunkManager.GetChunkWorldPosition(CellData.ChunkCoordinate);
 
-			CellData = new ChunkCellData(Settings, ChunkManager, chunkCoordinate);
-			CellData.Generate();
+			foreach (CaveWall wall in _walls)
+			{
+				wall.gameObject.SetActive(true);
+			}
 		}
 
-		public void FinalizeGeneration()
+		public async Task FinalizeGenerationAsync()
 		{
 			if (IsFinalized)
 				return;
 
-			CellData.FinalizeGeneration();
+			await Task.Run(CellData.FinalizeGeneration);
 
-			CreateAndPlaceWalls();
+			_walls = CreateWalls();
+
+			await GenerateWallMeshesAsync(_walls);
 
 			IsFinalized = true;
+			
+			gameObject.SetActive(true);
 		}
 
-		private void CreateAndPlaceWalls()
+		private List<CaveWall> CreateWalls()
 		{
+			List<CaveWall> walls = new List<CaveWall>();
+
 			for (int i = 0; i < CellData.Walls.Count; i++)
 			{
-				PlaceWall(CellData.Walls[i], i);
+				walls.Add(CreateWall(i));
 			}
+
+			return walls;
 		}
 
-		private void PlaceWall(WallGroup wallCells, int index)
+		private async Task GenerateWallMeshesAsync(List<CaveWall> walls)
+		{
+			List<Task> wallGenerationTasks = new List<Task>();
+
+			for (int i = 0; i < CellData.Walls.Count; i++)
+			{
+				wallGenerationTasks.Add(GenerateWallMesh(walls[i], CellData.Walls[i]));
+			}
+
+			await Task.WhenAll(wallGenerationTasks);
+		}
+
+		private CaveWall CreateWall(int index)
 		{
 			GameObject wallObject = Instantiate(WallPrefab.gameObject, transform);
+			wallObject.SetActive(false);
 			wallObject.name = index.ToString();
-			CaveWall wall = wallObject.GetComponent<CaveWall>();
 
-			wall.Generate(wallCells, this);
+			return wallObject.GetComponent<CaveWall>();
+		}
+
+		private async Task GenerateWallMesh(CaveWall wall, WallGroup wallCells)
+		{
+			await Task.Run(() => wall.Generate(wallCells, this));
 		}
 
 		public Vector3 GetWorldPosition(Vector3Int cellCoordinate)

@@ -10,7 +10,7 @@ namespace MeshGenerators.SurfaceNets
 		{
 		}
 
-		public override Mesh Generate(int[,,] nodeMatrix)
+		public override MeshData Generate(int[,,] nodeMatrix)
 		{
 			List<Vector3> vertices = new List<Vector3>();
 			List<int> triangles = new List<int>();
@@ -41,20 +41,10 @@ namespace MeshGenerators.SurfaceNets
 				triangles.Add(i);
 			}
 
-			Mesh mesh = new Mesh
-			{
-				indexFormat = IndexFormat.UInt32,
-				vertices = vertices.ToArray(),
-				triangles = triangles.ToArray(),
-			};
 
-			mesh.Optimize();
-			mesh.RecalculateNormals();
-			mesh.RecalculateBounds();
-			mesh.RecalculateTangents();
 			//mesh.uv = Unwrapping.GeneratePerTriangleUV(mesh);
 
-			return mesh;
+			return new MeshData(vertices, triangles);
 		}
 
 		private List<MeshGeneratorNode> GetSurfaceNodes(int[,,] nodeMatrix)

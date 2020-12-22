@@ -1,31 +1,40 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using Caves.Cells;
+using Caves.Cells.SimplexNoise;
 using UnityEngine;
 
 namespace Caves.Chunks
 {
 	public class CaveChunkManager : MonoBehaviour
 	{
-		public Dictionary<Vector3Int, CaveChunk> GeneratedChunks = new Dictionary<Vector3Int, CaveChunk>();
+		public CellSettings GeneratorSettings;
 		public GameObject ChunkHolder;
 		public CaveChunk ChunkPrefab;
 		public bool RandomSeed;
 		public int Seed;
 
+		public Dictionary<Vector3Int, CaveChunk> GeneratedChunks = new Dictionary<Vector3Int, CaveChunk>();
+
 		private Vector3 _chunkSize;
+		private readonly Dictionary<Vector3Int, Task<CaveChunk>> _chunkGenerationQueue = new Dictionary<Vector3Int, Task<CaveChunk>>();
 
 		private void Awake()
 		{
 			if (RandomSeed)
-				Seed = Environment.TickCount;
+				GeneratorSettings.Seed = Environment.TickCount;
 
 			_chunkSize = Vector3.Scale(ChunkPrefab.CellSize, ChunkPrefab.Settings.TerrainCubicSize);
 		}
 
-		public CaveChunk CreateChunk(Vector3Int chunkCoordinate)
+		public async Task<CaveChunk> CreateChunkAsync(Vector3Int chunkCoordinate)
 		{
-			CaveChunk chunk = GenerateAndAddChunk(chunkCoordinate);
+			Task<CaveChunk> mainChunkTask = GenerateAndAddChunkAsync(chunkCoordinate);
+			List<Task<CaveChunk>> nearbyChunkTasks = new List<Task<CaveChunk>>(9);
+
+			nearbyChunkTasks.Add(mainChunkTask);
 
 			for (int i = chunkCoordinate.x - 1; i <= chunkCoordinate.x + 1; i++)
 			{
@@ -38,46 +47,85 @@ namespace Caves.Chunks
 						if (nearbyChunkCoordinate == chunkCoordinate)
 							continue;
 
-						GenerateAndAddChunk(nearbyChunkCoordinate);
+						Task<CaveChunk> chunkTask = GenerateAndAddChunkAsync(nearbyChunkCoordinate);
+						nearbyChunkTasks.Add(chunkTask);
 					}
 				}
 			}
 
-			FinalizeChunk(chunk);
+			await Task.WhenAll(nearbyChunkTasks);
+
+			CaveChunk chunk = mainChunkTask.Result;
+			await FinalizeChunkAsync(chunk);
 
 			return chunk;
 		}
 
-		private CaveChunk GenerateAndAddChunk(Vector3Int chunkCoordinate)
+		private async Task<CaveChunk> GenerateAndAddChunkAsync(Vector3Int chunkCoordinate)
 		{
-			if (GeneratedChunks.TryGetValue(chunkCoordinate, out CaveChunk generatedChunk))
-				return generatedChunk;
-			
-			Debug.Log($"Generating chunk: {chunkCoordinate}");
+			Task<CaveChunk> newChunkTask;
+			bool isTaskInQueue;
 
+			lock (GeneratedChunks)
+			{
+				if (GeneratedChunks.TryGetValue(chunkCoordinate, out CaveChunk generatedChunk))
+					return generatedChunk;
+
+				isTaskInQueue = _chunkGenerationQueue.TryGetValue(chunkCoordinate, out newChunkTask);
+
+				if (!isTaskInQueue)
+				{
+					newChunkTask = GenerateChunkAsync(chunkCoordinate);
+					_chunkGenerationQueue.Add(chunkCoordinate, newChunkTask);
+				}
+			}
+
+			if (!isTaskInQueue)
+			{
+				CaveChunk chunk = await newChunkTask;
+
+				lock (GeneratedChunks)
+				{
+					GeneratedChunks.Add(chunkCoordinate, chunk);
+					_chunkGenerationQueue.Remove(chunkCoordinate);
+				}
+			}
+
+			return await newChunkTask;
+		}
+
+		private async Task<CaveChunk> GenerateChunkAsync(Vector3Int chunkCoordinate)
+		{
+			ChunkCellData cellData = new ChunkCellData(GeneratorSettings, this, chunkCoordinate);
+			CaveChunk chunk = CreateChunk(cellData);
+
+			await Task.Run(cellData.Generate);
+
+			return chunk;
+		}
+
+		private CaveChunk CreateChunk(ChunkCellData data)
+		{
 			GameObject newChunkObject = Instantiate(ChunkPrefab.gameObject, ChunkHolder.transform);
-			newChunkObject.name = chunkCoordinate.ToString();
-			newChunkObject.transform.localPosition = GetChunkWorldPosition(chunkCoordinate);
+			newChunkObject.name = data.ChunkCoordinate.ToString();
+			newChunkObject.SetActive(false);
 
 			CaveChunk newChunk = newChunkObject.GetComponent<CaveChunk>();
-			newChunk.Settings.Seed = Seed; //TODO rewrite seed
+			newChunk.Settings = GeneratorSettings;
 			newChunk.ChunkManager = this;
-
-			GeneratedChunks.Add(chunkCoordinate, newChunk);
-
-			newChunk.Generate(chunkCoordinate);
+			newChunk.CellData = data;
 
 			return newChunk;
 		}
 
-		private void FinalizeChunk(CaveChunk chunk)
+		private async Task FinalizeChunkAsync(CaveChunk chunk)
 		{
-			Debug.Log($"Finalizing chunk: {chunk.ChunkCoordinate}");
-			
-			chunk.FinalizeGeneration();
+			//Debug.Log($"Finalizing chunk: {chunk.ChunkCoordinate}");
+
+			await chunk.FinalizeGenerationAsync();
 		}
 
-		private Vector3 GetChunkWorldPosition(Vector3Int chunkCoordinate)
+		public Vector3 GetChunkWorldPosition(Vector3Int chunkCoordinate)
 		{
 			return new Vector3(chunkCoordinate.x * _chunkSize.x, chunkCoordinate.y * _chunkSize.y, chunkCoordinate.z * _chunkSize.z);
 		}

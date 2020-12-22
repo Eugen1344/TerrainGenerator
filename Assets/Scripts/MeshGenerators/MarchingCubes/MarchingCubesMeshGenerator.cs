@@ -10,7 +10,7 @@ namespace MeshGenerators.MarchingCubes
 		{
 		}
 
-		public override Mesh Generate(int[,,] nodeMatrix)
+		public override MeshData Generate(int[,,] nodeMatrix)
 		{
 			List<Vector3> vertices = new List<Vector3>();
 			//List<Vector3> normals = new List<Vector3>();
@@ -42,19 +42,9 @@ namespace MeshGenerators.MarchingCubes
 				}
 			}
 
-			Mesh mesh = new Mesh();
-			mesh.indexFormat = IndexFormat.UInt32; //TODO maybe optimization will fix this
-			Vector3[] verticesArray = vertices.ToArray();
-			mesh.vertices = verticesArray;
-			mesh.triangles = triangles.ToArray();
-			//mesh.normals = normals.ToArray();
-			mesh.RecalculateNormals();
-			mesh.RecalculateBounds();
-			mesh.RecalculateTangents();
-			mesh.Optimize();
 			//mesh.uv = Unwrapping.GeneratePerTriangleUV(mesh);
 
-			return mesh;
+			return new MeshData(vertices, triangles);
 		}
 	}
 }

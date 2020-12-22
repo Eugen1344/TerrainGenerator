@@ -1,4 +1,6 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Caves;
 using Caves.Chunks;
 using UnityEngine;
@@ -11,7 +13,7 @@ public class PlayerChunkTracker : MonoBehaviour
 
 	private void Start()
 	{
-		GenerateNearbyChunks();
+		GenerateNearbyChunksAsync(CurrentChunkCoordinate).Wait();
 	}
 
 	private void Update()
@@ -22,22 +24,26 @@ public class PlayerChunkTracker : MonoBehaviour
 			return;
 
 		CurrentChunkCoordinate = chunkCoordinate;
-		GenerateNearbyChunks();
+		GenerateNearbyChunksAsync(CurrentChunkCoordinate).Wait();
 	}
 
-	private void GenerateNearbyChunks()
+	private async Task GenerateNearbyChunksAsync(Vector3Int chunkCoordinate)
 	{
-		for (int i = CurrentChunkCoordinate.x - ChunkGenerationRadius + 1; i < CurrentChunkCoordinate.x + ChunkGenerationRadius; i++)
+		List<Task<CaveChunk>> chunkTasks = new List<Task<CaveChunk>>(9);
+
+		for (int i = chunkCoordinate.x - ChunkGenerationRadius + 1; i < chunkCoordinate.x + ChunkGenerationRadius; i++)
 		{
-			for (int j = CurrentChunkCoordinate.y - ChunkGenerationRadius + 1; j < CurrentChunkCoordinate.y + ChunkGenerationRadius; j++)
+			for (int j = chunkCoordinate.y - ChunkGenerationRadius + 1; j < chunkCoordinate.y + ChunkGenerationRadius; j++)
 			{
-				for (int k = CurrentChunkCoordinate.z - ChunkGenerationRadius + 1; k < CurrentChunkCoordinate.z + ChunkGenerationRadius; k++)
+				for (int k = chunkCoordinate.z - ChunkGenerationRadius + 1; k < chunkCoordinate.z + ChunkGenerationRadius; k++)
 				{
 					Vector3Int newChunkCoordinate = new Vector3Int(i, j, k);
 
-					ChunkManager.CreateChunk(newChunkCoordinate);
+					chunkTasks.Add(ChunkManager.CreateChunkAsync(newChunkCoordinate));
 				}
 			}
 		}
+
+		await Task.WhenAll(chunkTasks);
 	}
 }

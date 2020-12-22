@@ -1,4 +1,5 @@
-﻿using Caves.Cells;
+﻿using System;
+using Caves.Cells;
 using Caves.Chunks;
 using MeshGenerators;
 using MeshGenerators.MarchingCubes;
@@ -16,6 +17,17 @@ namespace Caves.CaveMesh
 		private MeshGenerator _meshGenerator;
 		private WallGroup _wall;
 		private CaveChunk _chunk;
+		private Vector3Int _minCoordinate;
+		private MeshData _data;
+
+		private void Start()
+		{
+			transform.localPosition += _minCoordinate * _chunk.CellSize;
+
+			Mesh mesh = _meshGenerator.CreateMesh(_data);
+			MeshFilter.sharedMesh = mesh;
+			MeshCollider.sharedMesh = mesh;
+		}
 
 		public void Generate(WallGroup wall, CaveChunk chunk)
 		{
@@ -24,12 +36,7 @@ namespace Caves.CaveMesh
 
 			SetMeshGenerator();
 
-			Mesh mesh = GenerateMesh(out Vector3Int minCoordinate);
-
-			transform.localPosition += minCoordinate * _chunk.CellSize;
-
-			MeshFilter.sharedMesh = mesh;
-			MeshCollider.sharedMesh = mesh;
+			_data = GenerateMeshData(out _minCoordinate);
 		}
 
 		private void SetMeshGenerator() //TODO temp, move
@@ -38,7 +45,7 @@ namespace Caves.CaveMesh
 			_meshGenerator = new SurfaceNetsMeshGenerator(MeshSettings);
 		}
 
-		private Mesh GenerateMesh(out Vector3Int minCoordinate)
+		private MeshData GenerateMeshData(out Vector3Int minCoordinate)
 		{
 			int[,,] nodeMatrix = GetAlignedNodeMatrix(_wall, out minCoordinate);
 
