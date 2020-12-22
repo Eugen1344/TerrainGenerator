@@ -21,12 +21,10 @@ namespace Caves.Chunks
 		public bool IsFinalized = false;
 
 		private List<CaveWall> _walls = new List<CaveWall>();
+		private Task _finalizationTask;
 
 		private void Start()
 		{
-			ChunkCoordinate = CellData.ChunkCoordinate;
-			ChunkSeed = Settings.GenerateSeed(Settings.Seed, ChunkCoordinate);
-
 			gameObject.transform.localPosition = ChunkManager.GetChunkWorldPosition(CellData.ChunkCoordinate);
 
 			foreach (CaveWall wall in _walls)
@@ -35,20 +33,42 @@ namespace Caves.Chunks
 			}
 		}
 
+		public void Init(ChunkCellData data, CaveChunkManager chunkManager)
+		{
+			Settings = chunkManager.GeneratorSettings;
+			ChunkManager = chunkManager;
+			CellData = data;
+			ChunkCoordinate = data.ChunkCoordinate;
+			ChunkSeed = Settings.GenerateSeed(Settings.Seed, ChunkCoordinate);
+		}
+
 		public async Task FinalizeGenerationAsync()
 		{
-			if (IsFinalized)
-				return;
+			lock (this)
+			{
+				if (IsFinalized)
+					return;
 
-			await Task.Run(CellData.FinalizeGeneration);
+				if (_finalizationTask == null)
+					_finalizationTask = FinalizeTaskAsync();
+			}
 
+			await _finalizationTask;
+		}
+
+		private async Task FinalizeTaskAsync()
+		{
+			await CellData.FinalizeGenerationAsync();
 			_walls = CreateWalls();
 
 			await GenerateWallMeshesAsync(_walls);
 
-			IsFinalized = true;
-			
 			gameObject.SetActive(true);
+
+			lock (this)
+			{
+				IsFinalized = true;
+			}
 		}
 
 		private List<CaveWall> CreateWalls()
@@ -69,7 +89,7 @@ namespace Caves.Chunks
 
 			for (int i = 0; i < CellData.Walls.Count; i++)
 			{
-				wallGenerationTasks.Add(GenerateWallMesh(walls[i], CellData.Walls[i]));
+				wallGenerationTasks.Add(GenerateWallMeshAsync(walls[i], CellData.Walls[i]));
 			}
 
 			await Task.WhenAll(wallGenerationTasks);
@@ -84,7 +104,7 @@ namespace Caves.Chunks
 			return wallObject.GetComponent<CaveWall>();
 		}
 
-		private async Task GenerateWallMesh(CaveWall wall, WallGroup wallCells)
+		private async Task GenerateWallMeshAsync(CaveWall wall, WallGroup wallCells)
 		{
 			await Task.Run(() => wall.Generate(wallCells, this));
 		}

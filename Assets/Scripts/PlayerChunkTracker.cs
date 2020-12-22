@@ -11,12 +11,12 @@ public class PlayerChunkTracker : MonoBehaviour
 	public CaveChunkManager ChunkManager;
 	public Vector3Int CurrentChunkCoordinate;
 
-	private void Start()
+	private async void Start()
 	{
-		GenerateNearbyChunksAsync(CurrentChunkCoordinate).Wait();
+		await GenerateNearbyChunksAsync(CurrentChunkCoordinate);
 	}
 
-	private void Update()
+	private async void Update()
 	{
 		Vector3Int chunkCoordinate = ChunkManager.GetChunkCoordinate(transform.position);
 
@@ -24,7 +24,7 @@ public class PlayerChunkTracker : MonoBehaviour
 			return;
 
 		CurrentChunkCoordinate = chunkCoordinate;
-		GenerateNearbyChunksAsync(CurrentChunkCoordinate).Wait();
+		await GenerateNearbyChunksAsync(CurrentChunkCoordinate);
 	}
 
 	private async Task GenerateNearbyChunksAsync(Vector3Int chunkCoordinate)

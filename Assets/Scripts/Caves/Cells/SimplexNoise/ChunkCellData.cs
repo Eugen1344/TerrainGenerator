@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Caves.Chunks;
 using SimplexNoise;
 using UnityEngine;
@@ -9,7 +10,7 @@ namespace Caves.Cells.SimplexNoise
 	{
 		public readonly CellSettings Settings;
 		public readonly Vector3Int ChunkCoordinate;
-		public readonly int ChunkSeed;
+		//public readonly int ChunkSeed;
 
 		protected CaveChunkManager _chunkManager;
 
@@ -70,15 +71,16 @@ namespace Caves.Cells.SimplexNoise
 			return Mathf.Clamp(Settings.RandomHollowCellsPercent - heightDiff * Settings.RandomHollowCellsPercentDecreasePerPixel, 0, Settings.RandomHollowCellsPercent);
 		}
 
-		public void FinalizeGeneration()
+		public async Task FinalizeGenerationAsync()
 		{
 			//RemoveSmallHollowGroupsByGroundSize(Hollows, Settings.MinHollowGroupCubicSize);
-
-			Hollows = GetCellGroups<HollowGroup>(CellType.Hollow);
+			Task<List<HollowGroup>> getHollowGroupTask = GetCellGroupsAsync<HollowGroup>(CellType.Hollow);
+			Task<List<WallGroup>> getWallGroupTask = GetCellGroupsAsync<WallGroup>(CellType.Wall);
 
 			//Tunnels = Settings.GenerateTunnels ? Tunnel.CreateTunnelsAndConnectCaves(ref Cells, Hollows, Settings) : new List<Tunnel>();
 
-			Walls = GetCellGroups<WallGroup>(CellType.Wall);
+			Walls = await getWallGroupTask;
+			Hollows = await getHollowGroupTask;
 
 			IsFinalized = true;
 		}
@@ -111,6 +113,11 @@ namespace Caves.Cells.SimplexNoise
 			}
 
 			return cells;
+		}
+
+		private async Task<List<T>> GetCellGroupsAsync<T>(CellType searchedCellType) where T : CaveGroup
+		{
+			return await Task.Run(() => GetCellGroups<T>(searchedCellType));
 		}
 
 		private List<T> GetCellGroups<T>(CellType searchedCellType) where T : CaveGroup
