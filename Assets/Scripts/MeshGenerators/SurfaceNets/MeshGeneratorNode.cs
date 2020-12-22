@@ -15,12 +15,17 @@ namespace MeshGenerators.SurfaceNets
 		private const int TriangleCount = 12;
 
 		private readonly int[,,] _nodeMatrix;
+		private readonly Vector3 _minPosition;
+		private readonly Vector3 _maxPosition;
 
 		public MeshGeneratorNode(Vector3 position, Vector3Int matrixPosition, int[,,] nodeMatrix)
 		{
 			Position = position;
 			MatrixPosition = matrixPosition;
 			_nodeMatrix = nodeMatrix;
+
+			_minPosition = matrixPosition - new Vector3(0.5f, 0.5f, 0.5f);
+			_maxPosition = matrixPosition + new Vector3(0.5f, 0.5f, 0.5f);
 		}
 
 		public void CreateMutualLink(MeshGeneratorNode node)
@@ -111,7 +116,16 @@ namespace MeshGenerators.SurfaceNets
 				equidistantPosition += linkedNode.Position;
 			}
 
-			Position = equidistantPosition / LinkedNodes.Count;
+			Position = ConstraintPosition(equidistantPosition / LinkedNodes.Count);
+		}
+
+		public Vector3 ConstraintPosition(Vector3 position)
+		{
+			position.x = Mathf.Clamp(position.x, _minPosition.x, _maxPosition.x);
+			position.y = Mathf.Clamp(position.y, _minPosition.y, _maxPosition.y);
+			position.z = Mathf.Clamp(position.z, _minPosition.z, _maxPosition.z);
+
+			return position;
 		}
 
 		public static Vector3Int Cross(Vector3Int first, Vector3Int second)
