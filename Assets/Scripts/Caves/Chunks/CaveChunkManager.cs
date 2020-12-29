@@ -97,21 +97,20 @@ namespace Caves.Chunks
 		private async Task<CaveChunk> GenerateChunkAsync(Vector3Int chunkCoordinate)
 		{
 			ChunkCellData cellData = new ChunkCellData(GeneratorSettings, this, chunkCoordinate);
-			CaveChunk chunk = CreateChunk(cellData);
+			CaveChunk chunk = CreateChunk(cellData.ChunkCoordinate.ToString());
 
-			await Task.Run(cellData.Generate);
+			await chunk.Generate(cellData, this);
 
 			return chunk;
 		}
 
-		private CaveChunk CreateChunk(ChunkCellData data)
+		private CaveChunk CreateChunk(string chunkName)
 		{
 			GameObject newChunkObject = Instantiate(ChunkPrefab.gameObject, ChunkHolder.transform);
-			newChunkObject.name = data.ChunkCoordinate.ToString();
+			newChunkObject.name = chunkName;
 			newChunkObject.SetActive(false);
 
 			CaveChunk newChunk = newChunkObject.GetComponent<CaveChunk>();
-			newChunk.Init(data, this);
 
 			return newChunk;
 		}

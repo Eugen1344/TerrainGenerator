@@ -33,13 +33,15 @@ namespace Caves.Chunks
 			}
 		}
 
-		public void Init(ChunkCellData data, CaveChunkManager chunkManager)
+		public async Task Generate(ChunkCellData data, CaveChunkManager chunkManager)
 		{
 			Settings = chunkManager.GeneratorSettings;
 			ChunkManager = chunkManager;
 			CellData = data;
 			ChunkCoordinate = data.ChunkCoordinate;
 			ChunkSeed = Settings.GenerateSeed(Settings.Seed, ChunkCoordinate);
+
+			await Task.Run(data.Generate);
 		}
 
 		public async Task FinalizeGenerationAsync()
