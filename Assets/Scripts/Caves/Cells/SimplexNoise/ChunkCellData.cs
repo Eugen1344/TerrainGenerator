@@ -35,11 +35,20 @@ namespace Caves.Cells.SimplexNoise
 			_noiseGenerator = new Noise(Settings.Seed);
 		}
 
-		public void Generate()
+		public async Task Generate()
 		{
 			float[,,] noise = GetNoise();
 
-			Cells = GetCellsFromNoise(noise);
+			Cells = await Task.Run(() => GetCellsFromNoise(noise));
+
+			Task<List<HollowGroup>> getHollowGroupTask = GetCellGroupsAsync<HollowGroup>(CellType.Hollow);
+			Hollows = await getHollowGroupTask;
+
+			Hollows = RemoveSmallHollowGroups(Hollows, ref Cells, Settings.MinCaveSize);
+
+			Task<List<WallGroup>> getWallGroupTask = GetCellGroupsAsync<WallGroup>(CellType.Wall);
+
+			Walls = await getWallGroupTask;
 		}
 
 		private float[,,] GetNoise()
@@ -71,18 +80,33 @@ namespace Caves.Cells.SimplexNoise
 			return Mathf.Clamp(Settings.RandomHollowCellsPercent - heightDiff * Settings.RandomHollowCellsPercentDecreasePerPixel, 0, Settings.RandomHollowCellsPercent);
 		}
 
-		public async Task FinalizeGenerationAsync()
+		public void FinalizeGeneration()
 		{
-			//RemoveSmallHollowGroupsByGroundSize(Hollows, Settings.MinHollowGroupCubicSize);
-			Task<List<HollowGroup>> getHollowGroupTask = GetCellGroupsAsync<HollowGroup>(CellType.Hollow);
-			Task<List<WallGroup>> getWallGroupTask = GetCellGroupsAsync<WallGroup>(CellType.Wall);
-
 			//Tunnels = Settings.GenerateTunnels ? Tunnel.CreateTunnelsAndConnectCaves(ref Cells, Hollows, Settings) : new List<Tunnel>();
 
-			Walls = await getWallGroupTask;
-			Hollows = await getHollowGroupTask;
-
 			IsFinalized = true;
+		}
+
+		private List<HollowGroup> RemoveSmallHollowGroups(List<HollowGroup> hollows, ref CellType[,,] cells, int minCaveSize)
+		{
+			List<HollowGroup> filteredHollows = new List<HollowGroup>();
+
+			foreach (HollowGroup hollow in hollows)
+			{
+				if (hollow.CellCount < minCaveSize)
+				{
+					foreach (Vector3Int coordinate in hollow.CellChunkCoordinates)
+					{
+						cells[coordinate.x, coordinate.y, coordinate.z] = CellType.Wall;
+					}
+				}
+				else
+				{
+					filteredHollows.Add(hollow);
+				}
+			}
+
+			return filteredHollows;
 		}
 
 		private CellType[,,] GetCellsFromNoise(float[,,] noise)

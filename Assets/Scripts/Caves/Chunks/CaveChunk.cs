@@ -41,7 +41,7 @@ namespace Caves.Chunks
 			ChunkCoordinate = data.ChunkCoordinate;
 			ChunkSeed = Settings.GenerateSeed(Settings.Seed, ChunkCoordinate);
 
-			await Task.Run(data.Generate);
+			await data.Generate();
 		}
 
 		public async Task FinalizeGenerationAsync()
@@ -60,7 +60,7 @@ namespace Caves.Chunks
 
 		private async Task FinalizeTaskAsync()
 		{
-			await CellData.FinalizeGenerationAsync();
+			CellData.FinalizeGeneration();
 			_walls = CreateWalls();
 
 			await GenerateWallMeshesAsync(_walls);

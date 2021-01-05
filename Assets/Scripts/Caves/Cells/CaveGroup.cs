@@ -9,18 +9,11 @@ namespace Caves.Cells
 	{
 		public List<Vector3Int> CellChunkCoordinates;
 		public int CellCount => CellChunkCoordinates.Count;
-		//public List<Vector3Int> GroundCells; //TODO maybe break cells into layers (List<Vector2Int>[])
 
 		protected CaveGroup(List<Vector3Int> cellChunkCoordinates)
 		{
 			CellChunkCoordinates = cellChunkCoordinates;
-			//GroundCells = GetGroundCells();
 		}
-
-		/*private List<Vector3Int> GetGroundCells()
-		{
-			return CellChunkCoordinates.Where(cell => cell.z == 0).ToList();
-		}*/
 
 		public Vector3Int GetLowestPoint()
 		{
