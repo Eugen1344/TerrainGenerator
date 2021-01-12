@@ -129,9 +129,9 @@ namespace Caves.Chunks
 
 		public bool IsInsideChunk(Vector3Int localCellCoordinate)
 		{
-			return localCellCoordinate.x >= 0 && localCellCoordinate.x < Settings.TerrainCubicSize.x &&
-				   localCellCoordinate.y >= 0 && localCellCoordinate.y < Settings.TerrainCubicSize.y &&
-				   localCellCoordinate.z >= 0 && localCellCoordinate.z < Settings.TerrainCubicSize.z;
+			return localCellCoordinate.x >= 0 && localCellCoordinate.x < Settings.ChunkCubicSize.x &&
+				   localCellCoordinate.y >= 0 && localCellCoordinate.y < Settings.ChunkCubicSize.y &&
+				   localCellCoordinate.z >= 0 && localCellCoordinate.z < Settings.ChunkCubicSize.z;
 		}
 
 		public CellType GetCell(Vector3Int globalCoordinate)
@@ -147,29 +147,29 @@ namespace Caves.Chunks
 
 			if (globalCoordinate.x < 0)
 			{
-				localCoordinate.x = Settings.TerrainCubicSize.x - Mathf.Abs(globalCoordinate.x + 1) % Settings.TerrainCubicSize.x - 1;
+				localCoordinate.x = Settings.ChunkCubicSize.x - Mathf.Abs(globalCoordinate.x + 1) % Settings.ChunkCubicSize.x - 1;
 			}
 			else
 			{
-				localCoordinate.x = globalCoordinate.x % Settings.TerrainCubicSize.x;
+				localCoordinate.x = globalCoordinate.x % Settings.ChunkCubicSize.x;
 			}
 
 			if (globalCoordinate.y < 0)
 			{
-				localCoordinate.y = Settings.TerrainCubicSize.y - Mathf.Abs(globalCoordinate.y + 1) % Settings.TerrainCubicSize.y - 1;
+				localCoordinate.y = Settings.ChunkCubicSize.y - Mathf.Abs(globalCoordinate.y + 1) % Settings.ChunkCubicSize.y - 1;
 			}
 			else
 			{
-				localCoordinate.y = globalCoordinate.y % Settings.TerrainCubicSize.y;
+				localCoordinate.y = globalCoordinate.y % Settings.ChunkCubicSize.y;
 			}
 
 			if (globalCoordinate.z < 0)
 			{
-				localCoordinate.z = Settings.TerrainCubicSize.z - Mathf.Abs(globalCoordinate.z + 1) % Settings.TerrainCubicSize.z - 1;
+				localCoordinate.z = Settings.ChunkCubicSize.z - Mathf.Abs(globalCoordinate.z + 1) % Settings.ChunkCubicSize.z - 1;
 			}
 			else
 			{
-				localCoordinate.z = globalCoordinate.z % Settings.TerrainCubicSize.z;
+				localCoordinate.z = globalCoordinate.z % Settings.ChunkCubicSize.z;
 			}
 
 			return localCoordinate;
@@ -177,7 +177,7 @@ namespace Caves.Chunks
 
 		public Vector3Int GetGlobalCoordinate(Vector3Int localCoordinate)
 		{
-			return new Vector3Int(localCoordinate.x + Settings.TerrainCubicSize.x * ChunkCoordinate.x, localCoordinate.y + Settings.TerrainCubicSize.y * ChunkCoordinate.y, localCoordinate.z + Settings.TerrainCubicSize.z * ChunkCoordinate.z);
+			return new Vector3Int(localCoordinate.x + Settings.ChunkCubicSize.x * ChunkCoordinate.x, localCoordinate.y + Settings.ChunkCubicSize.y * ChunkCoordinate.y, localCoordinate.z + Settings.ChunkCubicSize.z * ChunkCoordinate.z);
 		}
 	}
 }

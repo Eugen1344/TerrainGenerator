@@ -11,25 +11,25 @@ namespace Develop
 		[ContextMenu("Generate noise png")]
 		public void GenerateNoisePng()
 		{
-			Texture2D noiseTexture = new Texture2D(Settings.TerrainCubicSize.x, Settings.TerrainCubicSize.y);
+			Texture2D noiseTexture = new Texture2D(Settings.ChunkCubicSize.x, Settings.ChunkCubicSize.y);
 
 			Noise noiseGenerator = new Noise(Settings.Seed);
 
-			float[,] noise = noiseGenerator.Calc2D(Settings.TerrainCubicSize.x, Settings.TerrainCubicSize.y, Settings.NoiseScale);
+			float[,] noise = noiseGenerator.Calc2D(Settings.ChunkCubicSize.x, Settings.ChunkCubicSize.y, Settings.NoiseScale);
 
-			//float[,] noise = new float[Settings.TerrainCubicSize.x, Settings.TerrainCubicSize.y];
+			//float[,] noise = new float[Settings.ChunkCubicSize.x, Settings.ChunkCubicSize.y];
 
-			/*for (int i = 0; i < Settings.TerrainCubicSize.x; i++)
+			/*for (int i = 0; i < Settings.ChunkCubicSize.x; i++)
 			{
-				for (int j = 0; j < Settings.TerrainCubicSize.y; j++)
+				for (int j = 0; j < Settings.ChunkCubicSize.y; j++)
 				{
 					noise[i, j] = TestNoise.Noise.Simplex2D(new Vector3(i, j, 0), Settings.NoiseScale).value;
 				}
 			}*/
 
-			for (int i = 0; i < Settings.TerrainCubicSize.x; i++)
+			for (int i = 0; i < Settings.ChunkCubicSize.x; i++)
 			{
-				for (int j = 0; j < Settings.TerrainCubicSize.y; j++)
+				for (int j = 0; j < Settings.ChunkCubicSize.y; j++)
 				{
 					float normalizedNoise = (noise[i, j] + 1f) / 2f;
 					Color color = new Color(normalizedNoise, normalizedNoise, normalizedNoise, 1f);
@@ -42,11 +42,11 @@ namespace Develop
 			string filename = "Assets/noise.png";
 			System.IO.File.WriteAllBytes(filename, bytes);
 
-			Texture2D resultTexture = new Texture2D(Settings.TerrainCubicSize.x, Settings.TerrainCubicSize.y);
+			Texture2D resultTexture = new Texture2D(Settings.ChunkCubicSize.x, Settings.ChunkCubicSize.y);
 
-			for (int i = 0; i < Settings.TerrainCubicSize.x; i++)
+			for (int i = 0; i < Settings.ChunkCubicSize.x; i++)
 			{
-				for (int j = 0; j < Settings.TerrainCubicSize.y; j++)
+				for (int j = 0; j < Settings.ChunkCubicSize.y; j++)
 				{
 					float normalizedNoise = (noise[i, j] + 1f) / 2f;
 

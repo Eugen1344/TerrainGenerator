@@ -14,15 +14,15 @@ namespace MeshGenerators.SurfaceNets
 		private const int NodeCount = 6;
 		private const int TriangleCount = 12;
 
-		private readonly int[,,] _nodeMatrix;
+		private readonly int[,,] _pointsMatrix;
 		private readonly Vector3 _minPosition;
 		private readonly Vector3 _maxPosition;
 
-		public MeshGeneratorNode(Vector3 position, Vector3Int matrixPosition, int[,,] nodeMatrix)
+		public MeshGeneratorNode(Vector3 position, Vector3Int matrixPosition, int[,,] pointsMatrix)
 		{
 			Position = position;
 			MatrixPosition = matrixPosition;
-			_nodeMatrix = nodeMatrix;
+			_pointsMatrix = pointsMatrix;
 
 			_minPosition = matrixPosition - new Vector3(0.5f, 0.5f, 0.5f);
 			_maxPosition = matrixPosition + new Vector3(0.5f, 0.5f, 0.5f);
@@ -62,8 +62,8 @@ namespace MeshGenerators.SurfaceNets
 							Mathf.Max(MatrixPosition.y, firstNode.MatrixPosition.y, secondNode.MatrixPosition.y, oppositeMatrixPoint.y),
 							Mathf.Max(MatrixPosition.z, firstNode.MatrixPosition.z, secondNode.MatrixPosition.z, oppositeMatrixPoint.z));
 
-						int firstCommonPoint = _nodeMatrix[minCoordinate.x, minCoordinate.y, minCoordinate.z];
-						int secondCommonPoint = _nodeMatrix[maxCoordinate.x, maxCoordinate.y, maxCoordinate.z];
+						int firstCommonPoint = _pointsMatrix[minCoordinate.x, minCoordinate.y, minCoordinate.z];
+						int secondCommonPoint = _pointsMatrix[maxCoordinate.x, maxCoordinate.y, maxCoordinate.z];
 
 						HaveCreatedTriangle = true;
 
@@ -131,6 +131,12 @@ namespace MeshGenerators.SurfaceNets
 		public static Vector3Int Cross(Vector3Int first, Vector3Int second)
 		{
 			return new Vector3Int(first.y * second.z - first.z * second.y, first.z * second.x - first.x * second.z, first.x * second.y - first.y * second.x);
+		}
+
+		public bool IsEdgeNode()
+		{
+			return MatrixPosition.x == 0 || MatrixPosition.y == 0 || MatrixPosition.z == 0
+				   || MatrixPosition.x == _pointsMatrix.GetLength(0) - 2 || MatrixPosition.y == _pointsMatrix.GetLength(1) - 2 || MatrixPosition.z == _pointsMatrix.GetLength(2) - 2;
 		}
 	}
 }

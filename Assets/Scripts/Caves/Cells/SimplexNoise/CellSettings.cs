@@ -6,7 +6,7 @@ namespace Caves.Cells.SimplexNoise
 	[Serializable]
 	public struct CellSettings
 	{
-		public Vector3Int TerrainCubicSize;
+		public Vector3Int ChunkCubicSize;
 		public int Seed;
 		[Range(0, 1)] public float RandomHollowCellsPercent;
 		public int MinCaveSize;

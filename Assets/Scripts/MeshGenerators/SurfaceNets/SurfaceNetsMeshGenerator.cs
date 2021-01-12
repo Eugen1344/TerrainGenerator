@@ -21,7 +21,8 @@ namespace MeshGenerators.SurfaceNets
 			{
 				foreach (MeshGeneratorNode node in surfaceNodes)
 				{
-					node.PlaceEquidistant();
+					if (!node.IsEdgeNode())
+						node.PlaceEquidistant();
 				}
 			}
 
@@ -49,18 +50,18 @@ namespace MeshGenerators.SurfaceNets
 
 		private List<MeshGeneratorNode> GetSurfaceNodes(int[,,] nodeMatrix)
 		{
-			int length = nodeMatrix.GetLength(0);
-			int width = nodeMatrix.GetLength(1);
-			int height = nodeMatrix.GetLength(2);
+			int length = nodeMatrix.GetLength(0) - 1;
+			int width = nodeMatrix.GetLength(1) - 1;
+			int height = nodeMatrix.GetLength(2) - 1;
 
 			List<MeshGeneratorNode> nodes = new List<MeshGeneratorNode>();
 			MeshGeneratorNode[,,] matrix = new MeshGeneratorNode[length, width, height];
 
-			for (int i = 0; i < length - 1; i++)
+			for (int i = 0; i < length; i++)
 			{
-				for (int j = 0; j < width - 1; j++)
+				for (int j = 0; j < width; j++)
 				{
-					for (int k = 0; k < height - 1; k++)
+					for (int k = 0; k < height; k++)
 					{
 						MeshGeneratorNode node = GetSurfaceNode(nodeMatrix, i, j, k);
 

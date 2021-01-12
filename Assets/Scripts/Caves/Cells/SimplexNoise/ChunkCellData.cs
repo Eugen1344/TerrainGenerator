@@ -53,15 +53,15 @@ namespace Caves.Cells.SimplexNoise
 
 		private float[,,] GetNoise()
 		{
-			float[,,] noise = new float[Settings.TerrainCubicSize.x, Settings.TerrainCubicSize.y, Settings.TerrainCubicSize.z];
+			float[,,] noise = new float[Settings.ChunkCubicSize.x, Settings.ChunkCubicSize.y, Settings.ChunkCubicSize.z];
 
-			Vector3Int offset = Settings.TerrainCubicSize * ChunkCoordinate;
+			Vector3Int offset = Settings.ChunkCubicSize * ChunkCoordinate;
 
-			for (int i = 0; i < Settings.TerrainCubicSize.x; i++)
+			for (int i = 0; i < Settings.ChunkCubicSize.x; i++)
 			{
-				for (int j = 0; j < Settings.TerrainCubicSize.y; j++)
+				for (int j = 0; j < Settings.ChunkCubicSize.y; j++)
 				{
-					for (int k = 0; k < Settings.TerrainCubicSize.z; k++)
+					for (int k = 0; k < Settings.ChunkCubicSize.z; k++)
 					{
 						Vector3Int noisePixelPosition = new Vector3Int(i + offset.x, j + offset.y, k + offset.z);
 
@@ -117,7 +117,7 @@ namespace Caves.Cells.SimplexNoise
 
 			CellType[,,] cells = new CellType[length, width, height];
 
-			Vector3Int offset = Settings.TerrainCubicSize * ChunkCoordinate;
+			Vector3Int offset = Settings.ChunkCubicSize * ChunkCoordinate;
 
 			for (int i = 0; i < length; i++)
 			{
