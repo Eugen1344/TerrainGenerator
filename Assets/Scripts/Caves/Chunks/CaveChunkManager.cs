@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 using Caves.Cells;
 using Caves.Cells.SimplexNoise;
+using MeshGenerators;
 using UnityEngine;
 
 namespace Caves.Chunks
@@ -11,6 +11,8 @@ namespace Caves.Chunks
 	public class CaveChunkManager : MonoBehaviour
 	{
 		public CellSettings GeneratorSettings;
+		public MeshGeneratorSettings MeshSettings;
+
 		public GameObject ChunkHolder;
 		public CaveChunk ChunkPrefab;
 		public bool RandomSeed;
@@ -26,7 +28,7 @@ namespace Caves.Chunks
 			if (RandomSeed)
 				GeneratorSettings.Seed = Environment.TickCount;
 
-			_chunkSize = Vector3.Scale(ChunkPrefab.CellSize, GeneratorSettings.TerrainCubicSize);
+			_chunkSize = Vector3.Scale(MeshSettings.GridSize, GeneratorSettings.TerrainCubicSize);
 		}
 
 		public async Task<CaveChunk> CreateChunkAsync(Vector3Int chunkCoordinate)

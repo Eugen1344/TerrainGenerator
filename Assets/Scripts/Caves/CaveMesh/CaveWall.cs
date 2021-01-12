@@ -1,8 +1,6 @@
-﻿using System;
-using Caves.Cells;
+﻿using Caves.Cells;
 using Caves.Chunks;
 using MeshGenerators;
-using MeshGenerators.MarchingCubes;
 using MeshGenerators.SurfaceNets;
 using UnityEngine;
 
@@ -10,7 +8,6 @@ namespace Caves.CaveMesh
 {
 	public class CaveWall : MonoBehaviour
 	{
-		public MeshGeneratorSettings MeshSettings;
 		public MeshFilter MeshFilter;
 		public MeshCollider MeshCollider;
 
@@ -22,7 +19,7 @@ namespace Caves.CaveMesh
 
 		private void Start()
 		{
-			transform.localPosition += _minCoordinate * _chunk.CellSize;
+			transform.localPosition += _minCoordinate * _meshGenerator.Settings.GridSize;
 
 			Mesh mesh = _meshGenerator.CreateMesh(_data);
 			MeshFilter.sharedMesh = mesh;
@@ -41,8 +38,7 @@ namespace Caves.CaveMesh
 
 		private void SetMeshGenerator() //TODO temp, move
 		{
-			MeshSettings.GridSize = _chunk.CellSize;
-			_meshGenerator = new SurfaceNetsMeshGenerator(MeshSettings);
+			_meshGenerator = new SurfaceNetsMeshGenerator(_chunk.ChunkManager.MeshSettings);
 		}
 
 		private MeshData GenerateMeshData(out Vector3Int minCoordinate)

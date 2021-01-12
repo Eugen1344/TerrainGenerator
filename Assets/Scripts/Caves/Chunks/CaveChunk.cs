@@ -11,7 +11,6 @@ namespace Caves.Chunks
 {
 	public class CaveChunk : Chunk
 	{
-		public Vector3Int CellSize;
 		public ChunkCellData CellData;
 		public CaveChunkManager ChunkManager;
 		public CaveWall WallPrefab;
@@ -113,7 +112,7 @@ namespace Caves.Chunks
 
 		public Vector3 GetWorldPosition(Vector3Int cellCoordinate)
 		{
-			Vector3 localPosition = new Vector3(cellCoordinate.x * CellSize.x, cellCoordinate.y * CellSize.y, cellCoordinate.z * CellSize.z);
+			Vector3 localPosition = new Vector3(cellCoordinate.x * ChunkManager.MeshSettings.GridSize.x, cellCoordinate.y * ChunkManager.MeshSettings.GridSize.y, cellCoordinate.z * ChunkManager.MeshSettings.GridSize.z);
 			return transform.TransformPoint(localPosition); //TODO spacing
 		}
 

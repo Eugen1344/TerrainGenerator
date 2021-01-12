@@ -30,12 +30,13 @@ public class Placer : MonoBehaviour
 
 	public async Task PlaceInCave(HollowGroup cave) //TODO different placements
 	{
-		Vector3Int chunkPosition = cave.GetLowestPoint();
+		Vector3Int lowestPointChunkPosition = cave.GetLowestPoint();
 
 		await GenerateNearbyChunksAsync(DestinationChunkCoordinate);
 		CaveChunk destinationChunk = await ChunkManager.CreateChunkAsync(DestinationChunkCoordinate);
 
-		Vector3 position = destinationChunk.GetWorldPosition(chunkPosition);
+		Vector3 offsetPosition = (Vector3)ChunkManager.MeshSettings.GridSize / 2.0f;
+		Vector3 position = destinationChunk.GetWorldPosition(lowestPointChunkPosition) + offsetPosition;
 		transform.position = position;
 	}
 
