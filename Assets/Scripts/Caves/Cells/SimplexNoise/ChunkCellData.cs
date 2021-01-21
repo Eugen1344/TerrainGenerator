@@ -37,16 +37,15 @@ namespace Caves.Cells.SimplexNoise
 
 		public async Task Generate()
 		{
-			float[,,] noise = GetNoise();
-
+			float[,,] noise = await Task.Run(GetNoise);
 			Cells = await Task.Run(() => GetCellsFromNoise(noise));
+
+			Task<List<WallGroup>> getWallGroupTask = GetCellGroupsAsync<WallGroup>(CellType.Wall);
 
 			Task<List<HollowGroup>> getHollowGroupTask = GetCellGroupsAsync<HollowGroup>(CellType.Hollow);
 			Hollows = await getHollowGroupTask;
 
 			Hollows = RemoveSmallHollowGroups(Hollows, ref Cells, Settings.MinCaveSize);
-
-			Task<List<WallGroup>> getWallGroupTask = GetCellGroupsAsync<WallGroup>(CellType.Wall);
 
 			Walls = await getWallGroupTask;
 		}
