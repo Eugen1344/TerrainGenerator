@@ -81,7 +81,7 @@ namespace Caves.Cells.SimplexNoise
 
 		public void FinalizeGeneration()
 		{
-			//Tunnels = Settings.GenerateTunnels ? Tunnel.CreateTunnelsAndConnectCaves(ref Cells, Hollows, Settings) : new List<Tunnel>();
+			Tunnels = Settings.GenerateTunnels ? Tunnel.CreateTunnelsAndConnectCaves(ref Cells, Hollows, Settings) : new List<Tunnel>();
 
 			IsFinalized = true;
 		}

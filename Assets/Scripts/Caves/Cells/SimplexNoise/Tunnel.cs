@@ -20,7 +20,7 @@ namespace Caves.Cells.SimplexNoise
 			SecondCaveConnectionPoint = secondCaveConnectionPoint;
 		}
 
-		public static List<Tunnel> CreateTunnelsAndConnectCaves(ref CellType[,,] cells, List<HollowGroup> hollows, CellularAutomata.CellSettings settings)
+		public static List<Tunnel> CreateTunnelsAndConnectCaves(ref CellType[,,] cells, List<HollowGroup> hollows, CellSettings settings)
 		{
 			List<HollowGroup> alreadyConnectedCaves = new List<HollowGroup>();
 			List<Tunnel> tunnels = new List<Tunnel>();
@@ -40,7 +40,7 @@ namespace Caves.Cells.SimplexNoise
 			return tunnels;
 		}
 
-		private static List<Vector3Int> GetTunnelCellsAndConnectCaves(ref CellType[,,] cells, CellularAutomata.CellSettings settings, Vector3Int firstPoint, Vector3Int secondPoint)
+		private static List<Vector3Int> GetTunnelCellsAndConnectCaves(ref CellType[,,] cells, CellSettings settings, Vector3Int firstPoint, Vector3Int secondPoint)
 		{
 			int firstX = Mathf.Min(firstPoint.x, secondPoint.x);
 			int secondX = Mathf.Max(firstPoint.x, secondPoint.x);
@@ -48,9 +48,9 @@ namespace Caves.Cells.SimplexNoise
 			int secondY = Mathf.Max(firstPoint.y, secondPoint.y);
 
 			firstX = Mathf.Max(firstX - settings.TunnelWidth, 0);
-			secondX = Mathf.Min(secondX + settings.TunnelWidth, settings.TerrainCubicSize.x - 1);
+			secondX = Mathf.Min(secondX + settings.TunnelWidth, settings.ChunkCubicSize.x - 1);
 			firstY = Mathf.Max(firstY - settings.TunnelWidth, 0);
-			secondY = Mathf.Min(secondY + settings.TunnelWidth, settings.TerrainCubicSize.y - 1);
+			secondY = Mathf.Min(secondY + settings.TunnelWidth, settings.ChunkCubicSize.y - 1);
 
 			List<Vector3Int> tunnelCells = new List<Vector3Int>();
 
@@ -63,7 +63,7 @@ namespace Caves.Cells.SimplexNoise
 					if (distance > settings.TunnelWidth)
 						continue;
 
-					int maxHeight = Mathf.Min(settings.TunnelHeight, settings.TerrainCubicSize.z);
+					int maxHeight = Mathf.Min(settings.TunnelHeight, settings.ChunkCubicSize.z);
 
 					for (int z = 0; z < maxHeight; z++)
 					{
