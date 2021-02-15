@@ -65,7 +65,7 @@ namespace MeshGenerators.SurfaceNets
 						int firstCommonPoint = _pointsMatrix[minCoordinate.x, minCoordinate.y, minCoordinate.z];
 						int secondCommonPoint = _pointsMatrix[maxCoordinate.x, maxCoordinate.y, maxCoordinate.z];
 
-						//HaveCreatedTriangle = true; //TODO HACK, make better
+						HaveCreatedTriangle = true; //TODO HACK, make better
 
 						if (firstCommonPoint == secondCommonPoint)
 							continue;

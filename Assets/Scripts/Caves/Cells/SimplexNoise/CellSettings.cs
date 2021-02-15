@@ -15,8 +15,7 @@ namespace Caves.Cells.SimplexNoise
 		public Vector3Int CentralDecreasePoint;
 
 		public bool GenerateTunnels;
-		public int TunnelHeight;
-		public int TunnelWidth;
+		public int TunnelRadius;
 
 		public int GenerateSeed(int baseSeed, Vector3Int chunkCoordinate)
 		{

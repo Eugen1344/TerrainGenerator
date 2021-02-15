@@ -44,13 +44,17 @@ namespace Caves.Cells.SimplexNoise
 		{
 			int firstX = Mathf.Min(firstPoint.x, secondPoint.x);
 			int secondX = Mathf.Max(firstPoint.x, secondPoint.x);
-			int firstY = Mathf.Min(firstPoint.y, secondPoint.y); //TODO test, may not work
+			int firstY = Mathf.Min(firstPoint.y, secondPoint.y);
 			int secondY = Mathf.Max(firstPoint.y, secondPoint.y);
+			int firstZ = Mathf.Min(firstPoint.z, secondPoint.z);
+			int secondZ = Mathf.Max(firstPoint.z, secondPoint.z);
 
-			firstX = Mathf.Max(firstX - settings.TunnelWidth, 0);
-			secondX = Mathf.Min(secondX + settings.TunnelWidth, settings.ChunkCubicSize.x - 1);
-			firstY = Mathf.Max(firstY - settings.TunnelWidth, 0);
-			secondY = Mathf.Min(secondY + settings.TunnelWidth, settings.ChunkCubicSize.y - 1);
+			firstX = Mathf.Max(firstX - settings.TunnelRadius, 0);
+			secondX = Mathf.Min(secondX + settings.TunnelRadius, settings.ChunkCubicSize.x - 1);
+			firstY = Mathf.Max(firstY - settings.TunnelRadius, 0);
+			secondY = Mathf.Min(secondY + settings.TunnelRadius, settings.ChunkCubicSize.y - 1);
+			firstZ = Mathf.Max(firstZ - settings.TunnelRadius, 0);
+			secondZ = Mathf.Min(secondZ + settings.TunnelRadius, settings.ChunkCubicSize.z - 1);
 
 			List<Vector3Int> tunnelCells = new List<Vector3Int>();
 
@@ -58,15 +62,13 @@ namespace Caves.Cells.SimplexNoise
 			{
 				for (int y = firstY; y <= secondY; y++)
 				{
-					float distance = DistanceFromPointToLine(firstPoint, secondPoint, x, y);
-
-					if (distance > settings.TunnelWidth)
-						continue;
-
-					int maxHeight = Mathf.Min(settings.TunnelHeight, settings.ChunkCubicSize.z);
-
-					for (int z = 0; z < maxHeight; z++)
+					for (int z = firstZ; z < secondZ; z++)
 					{
+						float distance = DistanceFromPointToLine(new Vector3Int(x, y, z), firstPoint, secondPoint);
+
+						if (distance > settings.TunnelRadius)
+							continue;
+
 						cells[x, y, z] = CellType.Hollow;
 
 						tunnelCells.Add(new Vector3Int(x, y, z));
@@ -77,16 +79,13 @@ namespace Caves.Cells.SimplexNoise
 			return tunnelCells;
 		}
 
-		private static float DistanceFromPointToLine(Vector3Int lineFirstPoint, Vector3Int lineSecondPoint, int x, int y)
+		private static float DistanceFromPointToLine(Vector3Int point, Vector3Int lineFirstPoint, Vector3Int lineSecondPoint)
 		{
-			if (lineFirstPoint.x == lineSecondPoint.x)
-				return Mathf.Abs(lineFirstPoint.x - x);
+			Vector3Int lineDirection = lineSecondPoint - lineFirstPoint;
+			Vector3Int pointDirection = lineFirstPoint - point;
 
-			if (lineFirstPoint.y == lineSecondPoint.y)
-				return Mathf.Abs(lineFirstPoint.y - y);
-
-			return Mathf.Abs((lineSecondPoint.y - lineFirstPoint.y) * x - (lineSecondPoint.x - lineFirstPoint.x) * y + lineSecondPoint.x * lineFirstPoint.y - lineSecondPoint.y * lineFirstPoint.x) /
-				   Mathf.Sqrt(Mathf.Pow(lineSecondPoint.x - lineFirstPoint.x, 2) + Mathf.Pow(lineSecondPoint.y - lineFirstPoint.y, 2));
+			float distance = Vector3.Cross(pointDirection, lineDirection).magnitude / lineDirection.magnitude;
+			return distance;
 		}
 
 		private static (HollowGroup hollow, Vector3Int firstPoint, Vector3Int secondPoint) ClosestNotConnectedHollow(HollowGroup hollow, List<HollowGroup> hollows, List<HollowGroup> alreadyConnectedCaves)
@@ -103,14 +102,8 @@ namespace Caves.Cells.SimplexNoise
 
 				foreach (Vector3Int firstCoordinate in hollow.CellChunkCoordinates)
 				{
-					if (firstCoordinate.z != 0)
-						continue;
-
 					foreach (Vector3Int secondCoordinate in nextHollow.CellChunkCoordinates)
 					{
-						if (secondCoordinate.z != 0)
-							continue;
-
 						float distance = Vector3Int.Distance(firstCoordinate, secondCoordinate);
 
 						if (distance < minDistance || closestHollow == null)

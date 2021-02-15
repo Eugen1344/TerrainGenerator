@@ -40,12 +40,14 @@ namespace Caves.Cells.SimplexNoise
 			float[,,] noise = await Task.Run(GetNoise);
 			Cells = await Task.Run(() => GetCellsFromNoise(noise));
 
-			Task<List<WallGroup>> getWallGroupTask = GetCellGroupsAsync<WallGroup>(CellType.Wall);
-
 			Task<List<HollowGroup>> getHollowGroupTask = GetCellGroupsAsync<HollowGroup>(CellType.Hollow);
 			Hollows = await getHollowGroupTask;
 
 			Hollows = RemoveSmallHollowGroups(Hollows, ref Cells, Settings.MinCaveSize);
+
+			Tunnels = Settings.GenerateTunnels ? Tunnel.CreateTunnelsAndConnectCaves(ref Cells, Hollows, Settings) : new List<Tunnel>();
+
+			Task<List<WallGroup>> getWallGroupTask = GetCellGroupsAsync<WallGroup>(CellType.Wall);
 
 			Walls = await getWallGroupTask;
 		}
@@ -81,8 +83,6 @@ namespace Caves.Cells.SimplexNoise
 
 		public void FinalizeGeneration()
 		{
-			Tunnels = Settings.GenerateTunnels ? Tunnel.CreateTunnelsAndConnectCaves(ref Cells, Hollows, Settings) : new List<Tunnel>();
-
 			IsFinalized = true;
 		}
 
