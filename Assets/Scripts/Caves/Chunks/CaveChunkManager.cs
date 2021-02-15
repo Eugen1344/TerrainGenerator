@@ -161,18 +161,25 @@ namespace Caves.Chunks
 
 		public Vector3Int GetChunkCoordinate(Vector3Int globalCellCoordinate)
 		{
-			Vector3Int chunkCoordinate = new Vector3Int((int)(globalCellCoordinate.x / GeneratorSettings.ChunkCubicSize.x), (int)(globalCellCoordinate.y / GeneratorSettings.ChunkCubicSize.y), (int)(globalCellCoordinate.z / GeneratorSettings.ChunkCubicSize.z));
+			Vector3Int offset = new Vector3Int();
 
 			if (globalCellCoordinate.x < 0)
-				chunkCoordinate.x -= 1;
+				offset.x = 1;
 
 			if (globalCellCoordinate.y < 0)
-				chunkCoordinate.y -= 1;
+				offset.y = 1;
 
 			if (globalCellCoordinate.z < 0)
-				chunkCoordinate.z -= 1;
+				offset.z = 1;
 
-			return chunkCoordinate;
+			globalCellCoordinate += offset;
+
+			Vector3Int chunkCoordinate = new Vector3Int(
+				(int)(globalCellCoordinate.x / GeneratorSettings.ChunkCubicSize.x),
+				(int)(globalCellCoordinate.y / GeneratorSettings.ChunkCubicSize.y),
+				(int)(globalCellCoordinate.z / GeneratorSettings.ChunkCubicSize.z));
+
+			return chunkCoordinate - offset;
 		}
 	}
 }

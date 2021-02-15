@@ -81,7 +81,7 @@ namespace Caves.CaveMesh
 
 				if (cell.z < minCoordinate.z)
 					minCoordinate.z = cell.z;
-				if (cell.z > maxCoordinate.z)
+				else if (cell.z > maxCoordinate.z)
 					maxCoordinate.z = cell.z;
 			}
 
@@ -99,12 +99,12 @@ namespace Caves.CaveMesh
 							i == actualMatrixSize.x - 1 || j == actualMatrixSize.y - 1 || k == actualMatrixSize.z - 1))
 						{
 							Vector3Int matrixCoordinate = new Vector3Int(i, j, k);
-							Vector3Int coordinate = matrixCoordinate + minCoordinate - Vector3Int.one;
+							Vector3Int chunkCoordinate = matrixCoordinate + minCoordinate - Vector3Int.one;
 
-							if (_chunk.IsInsideChunk(coordinate))
+							if (_chunk.IsInsideChunk(chunkCoordinate))
 								continue;
 
-							nodes[i, j, k] = _chunk.GetCellFromAllChunks(coordinate) == CellType.Wall ? 1 : 0;
+							nodes[i, j, k] = _chunk.GetCellFromAllChunks(chunkCoordinate) == CellType.Wall ? 1 : 0;
 						}
 					}
 				}
@@ -116,8 +116,6 @@ namespace Caves.CaveMesh
 
 				nodes[matrixCoordinate.x, matrixCoordinate.y, matrixCoordinate.z] = 1;
 			}
-
-			//minCoordinate -= Vector3Int.one; //TODO hack
 
 			return nodes;
 		}
