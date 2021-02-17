@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Profiling;
+using Random = System.Random;
 
 namespace Caves.Cells.SimplexNoise
 {
@@ -28,6 +30,14 @@ namespace Caves.Cells.SimplexNoise
 			foreach (HollowGroup firstHollow in hollows)
 			{
 				(HollowGroup secondHollow, Vector3Int firstPoint, Vector3Int secondPoint) = ClosestNotConnectedHollow(firstHollow, hollows, alreadyConnectedCaves);
+
+				if (EmergencyShutdown.Instance.CheckForShutdownTimer())
+				{
+					return tunnels;
+				}
+
+				if (secondHollow == null)
+					continue;
 
 				List<Vector3Int> tunnelCells = GetTunnelCellsAndConnectCaves(ref cells, settings, firstPoint, secondPoint);
 
@@ -92,7 +102,7 @@ namespace Caves.Cells.SimplexNoise
 		{
 			Vector3Int firstPoint = default;
 			Vector3Int secondPoint = default;
-			float minDistance = 0;
+			float minSqrDistance = 0;
 			HollowGroup closestHollow = null;
 
 			foreach (HollowGroup nextHollow in hollows)
@@ -100,17 +110,28 @@ namespace Caves.Cells.SimplexNoise
 				if (nextHollow == hollow || alreadyConnectedCaves.Contains(nextHollow))
 					continue;
 
+				Random rand = new Random();
+
+				int firstPointIndex = rand.Next(0, hollow.CellChunkCoordinates.Count);
+				int secondPointIndex = rand.Next(0, nextHollow.CellChunkCoordinates.Count);
+
+				return (nextHollow, hollow.CellChunkCoordinates[firstPointIndex], nextHollow.CellChunkCoordinates[secondPointIndex]);
+
 				foreach (Vector3Int firstCoordinate in hollow.CellChunkCoordinates)
 				{
 					foreach (Vector3Int secondCoordinate in nextHollow.CellChunkCoordinates)
 					{
-						float distance = Vector3Int.Distance(firstCoordinate, secondCoordinate);
+						float sqrDistance = 0;
+						//float sqrDistance = (firstCoordinate - secondCoordinate).sqrMagnitude;
 
-						if (distance < minDistance || closestHollow == null)
+						if (EmergencyShutdown.Instance.CheckForShutdownTimer())
+							return (null, Vector3Int.zero, Vector3Int.zero);
+
+						if (sqrDistance < minSqrDistance || closestHollow == null)
 						{
 							firstPoint = firstCoordinate;
 							secondPoint = secondCoordinate;
-							minDistance = distance;
+							minSqrDistance = sqrDistance;
 							closestHollow = nextHollow;
 						}
 					}

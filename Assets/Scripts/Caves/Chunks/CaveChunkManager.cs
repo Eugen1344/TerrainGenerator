@@ -16,7 +16,6 @@ namespace Caves.Chunks
 		public GameObject ChunkHolder;
 		public CaveChunk ChunkPrefab;
 		public bool RandomSeed;
-		public int Seed;
 
 		public Dictionary<Vector3Int, CaveChunk> GeneratedChunks = new Dictionary<Vector3Int, CaveChunk>();
 

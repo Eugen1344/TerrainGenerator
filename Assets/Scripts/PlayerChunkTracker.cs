@@ -16,7 +16,7 @@ public class PlayerChunkTracker : MonoBehaviour
 		await GenerateNearbyChunksAsync(CurrentChunkCoordinate);
 	}
 
-	private async void Update()
+	private void Update()
 	{
 		Vector3Int chunkCoordinate = ChunkManager.GetChunkCoordinate(transform.position);
 
@@ -24,7 +24,7 @@ public class PlayerChunkTracker : MonoBehaviour
 			return;
 
 		CurrentChunkCoordinate = chunkCoordinate;
-		await GenerateNearbyChunksAsync(CurrentChunkCoordinate);
+		_ = GenerateNearbyChunksAsync(CurrentChunkCoordinate);
 	}
 
 	private async Task GenerateNearbyChunksAsync(Vector3Int chunkCoordinate)
