@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using Caves.CaveMesh;
+using Caves.Chunks;
+using UnityEngine;
 using UnityEngine.Rendering;
 
 namespace MeshGenerators
@@ -6,12 +8,14 @@ namespace MeshGenerators
 	public abstract class MeshGenerator
 	{
 		public readonly MeshGeneratorSettings Settings;
+		public readonly CaveWall Wall;
 
 		public abstract MeshData Generate(int[,,] nodeMatrix);
 
-		protected MeshGenerator(MeshGeneratorSettings settings)
+		protected MeshGenerator(MeshGeneratorSettings settings, CaveWall wall)
 		{
 			Settings = settings;
+			Wall = wall;
 		}
 
 		public Mesh CreateMesh(MeshData data)

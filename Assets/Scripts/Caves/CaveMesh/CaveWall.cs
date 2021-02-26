@@ -11,15 +11,16 @@ namespace Caves.CaveMesh
 		public MeshFilter MeshFilter;
 		public MeshCollider MeshCollider;
 
+		public CaveChunk Chunk { get; private set; }
+		public Vector3Int MinCoordinate { get; private set; }
+
 		private MeshGenerator _meshGenerator;
 		private WallGroup _wall;
-		private CaveChunk _chunk;
-		private Vector3Int _minCoordinate;
 		private MeshData _data;
 
 		private void Start()
 		{
-			transform.localPosition += _minCoordinate * _meshGenerator.Settings.GridSize;
+			transform.localPosition += MinCoordinate * _meshGenerator.Settings.GridSize;
 
 			Mesh mesh = _meshGenerator.CreateMesh(_data);
 			MeshFilter.sharedMesh = mesh;
@@ -29,16 +30,17 @@ namespace Caves.CaveMesh
 		public void Generate(WallGroup wall, CaveChunk chunk)
 		{
 			_wall = wall;
-			_chunk = chunk;
+			Chunk = chunk;
 
 			SetMeshGenerator();
 
-			_data = GenerateMeshData(out _minCoordinate);
+			_data = GenerateMeshData(out Vector3Int minCoordinate);
+			MinCoordinate = minCoordinate;
 		}
 
 		private void SetMeshGenerator() //TODO temp, move
 		{
-			_meshGenerator = new SurfaceNetsMeshGenerator(_chunk.ChunkManager.MeshSettings);
+			_meshGenerator = new SurfaceNetsMeshGenerator(Chunk.ChunkManager.MeshSettings, this);
 		}
 
 		private MeshData GenerateMeshData(out Vector3Int minCoordinate)
@@ -101,10 +103,10 @@ namespace Caves.CaveMesh
 							Vector3Int matrixCoordinate = new Vector3Int(i, j, k);
 							Vector3Int chunkCoordinate = matrixCoordinate + minCoordinate - Vector3Int.one;
 
-							if (_chunk.IsInsideChunk(chunkCoordinate))
+							if (Chunk.IsInsideChunk(chunkCoordinate))
 								continue;
 
-							nodes[i, j, k] = _chunk.GetCellFromAllChunks(chunkCoordinate) == CellType.Wall ? 1 : 0;
+							nodes[i, j, k] = Chunk.GetCellFromAllChunks(chunkCoordinate) == CellType.Wall ? 1 : 0;
 						}
 					}
 				}

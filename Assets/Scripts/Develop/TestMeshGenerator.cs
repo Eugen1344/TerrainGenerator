@@ -14,7 +14,7 @@ namespace Develop
 		[ContextMenu("Marching cubes sphere")]
 		public void MarchingCubesSphere()
 		{
-			MeshGenerator generator = new MarchingCubesMeshGenerator(Settings);
+			MeshGenerator generator = new MarchingCubesMeshGenerator(Settings, null);
 
 			GenerateSphere(generator);
 		}
@@ -22,7 +22,7 @@ namespace Develop
 		[ContextMenu("Surface nets sphere")]
 		public void SurfaceNetsSphere()
 		{
-			MeshGenerator generator = new SurfaceNetsMeshGenerator(Settings);
+			MeshGenerator generator = new SurfaceNetsMeshGenerator(Settings, null);
 
 			GenerateSphere(generator);
 		}

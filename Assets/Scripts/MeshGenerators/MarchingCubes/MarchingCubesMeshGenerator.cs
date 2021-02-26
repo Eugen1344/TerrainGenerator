@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using Caves.CaveMesh;
+using Caves.Chunks;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -6,7 +8,7 @@ namespace MeshGenerators.MarchingCubes
 {
 	public class MarchingCubesMeshGenerator : MeshGenerator
 	{
-		public MarchingCubesMeshGenerator(MeshGeneratorSettings settings) : base(settings)
+		public MarchingCubesMeshGenerator(MeshGeneratorSettings settings, CaveWall wall) : base(settings, wall)
 		{
 		}
 

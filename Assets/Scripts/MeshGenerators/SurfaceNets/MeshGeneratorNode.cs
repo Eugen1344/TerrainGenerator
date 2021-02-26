@@ -8,13 +8,14 @@ namespace MeshGenerators.SurfaceNets
 		public Vector3 Position;
 		public Vector3Int MatrixPosition;
 		public bool HaveCreatedTriangle = false;
+		public bool IsStatic;
 
 		public List<MeshGeneratorNode> LinkedNodes = new List<MeshGeneratorNode>(NodeCount);
 
 		private const int NodeCount = 6;
 		private const int TriangleCount = 12;
 
-		private readonly int[,,] _pointsMatrix;
+		public readonly int[,,] PointsMatrix;
 		private readonly Vector3 _minPosition;
 		private readonly Vector3 _maxPosition;
 
@@ -22,7 +23,7 @@ namespace MeshGenerators.SurfaceNets
 		{
 			Position = position;
 			MatrixPosition = matrixPosition;
-			_pointsMatrix = pointsMatrix;
+			PointsMatrix = pointsMatrix;
 
 			_minPosition = matrixPosition - new Vector3(0.5f, 0.5f, 0.5f);
 			_maxPosition = matrixPosition + new Vector3(0.5f, 0.5f, 0.5f);
@@ -62,8 +63,8 @@ namespace MeshGenerators.SurfaceNets
 							Mathf.Max(MatrixPosition.y, firstNode.MatrixPosition.y, secondNode.MatrixPosition.y, oppositeMatrixPoint.y),
 							Mathf.Max(MatrixPosition.z, firstNode.MatrixPosition.z, secondNode.MatrixPosition.z, oppositeMatrixPoint.z));
 
-						int firstCommonPoint = _pointsMatrix[minCoordinate.x, minCoordinate.y, minCoordinate.z];
-						int secondCommonPoint = _pointsMatrix[maxCoordinate.x, maxCoordinate.y, maxCoordinate.z];
+						int firstCommonPoint = PointsMatrix[minCoordinate.x, minCoordinate.y, minCoordinate.z];
+						int secondCommonPoint = PointsMatrix[maxCoordinate.x, maxCoordinate.y, maxCoordinate.z];
 
 						//HaveCreatedTriangle = true; //TODO HACK, make better
 
@@ -109,6 +110,9 @@ namespace MeshGenerators.SurfaceNets
 
 		public void PlaceEquidistant()
 		{
+			if (IsStatic)
+				return;
+
 			Vector3 equidistantPosition = Vector3.zero;
 
 			foreach (MeshGeneratorNode linkedNode in LinkedNodes)
@@ -131,12 +135,6 @@ namespace MeshGenerators.SurfaceNets
 		public static Vector3Int Cross(Vector3Int first, Vector3Int second)
 		{
 			return new Vector3Int(first.y * second.z - first.z * second.y, first.z * second.x - first.x * second.z, first.x * second.y - first.y * second.x);
-		}
-
-		public bool IsEdgeNode()
-		{
-			return MatrixPosition.x == 0 || MatrixPosition.y == 0 || MatrixPosition.z == 0
-				   || MatrixPosition.x == _pointsMatrix.GetLength(0) - 2 || MatrixPosition.y == _pointsMatrix.GetLength(1) - 2 || MatrixPosition.z == _pointsMatrix.GetLength(2) - 2;
 		}
 	}
 }

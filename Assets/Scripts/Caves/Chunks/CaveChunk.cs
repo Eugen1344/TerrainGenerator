@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Caves.CaveMesh;
 using Caves.Cells;
 using Caves.Cells.SimplexNoise;
+using MeshGenerators.SurfaceNets;
 using UnityEngine;
 
 namespace Caves.Chunks
@@ -18,6 +20,8 @@ namespace Caves.Chunks
 		public Vector3Int ChunkCoordinate;
 		public int ChunkSeed;
 		public bool IsFinalized = false;
+
+		public Dictionary<Vector3Int, MeshGeneratorNode> EdgeNodes = new Dictionary<Vector3Int, MeshGeneratorNode>();
 
 		private List<CaveWall> _walls = new List<CaveWall>();
 		private Task _finalizationTask;
