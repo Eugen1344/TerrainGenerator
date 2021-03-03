@@ -7,26 +7,17 @@ namespace MeshGenerators.SurfaceNets
 {
 	public class SurfaceNetsMeshGenerator : MeshGenerator
 	{
+		private List<MeshGeneratorNode> _surfaceNodes;
+
 		public SurfaceNetsMeshGenerator(MeshGeneratorSettings settings, CaveWall wall) : base(settings, wall)
 		{
 		}
 
-		public override MeshData Generate(int[,,] matrix)
+		public override void Init(int[,,] matrix)
 		{
-			List<Vector3> vertices = new List<Vector3>();
-			List<int> triangles = new List<int>();
+			_surfaceNodes = GetSurfaceNodes(matrix);
 
-			List<MeshGeneratorNode> surfaceNodes = GetSurfaceNodes(matrix);
-
-			for (int i = 0; i < Settings.SmoothIterationCount; i++)
-			{
-				foreach (MeshGeneratorNode node in surfaceNodes)
-				{
-					node.PlaceEquidistant();
-				}
-			}
-
-			foreach (MeshGeneratorNode node in surfaceNodes)
+			foreach (MeshGeneratorNode node in _surfaceNodes)
 			{
 				Vector3Int chunkPosition = node.MatrixPosition + Wall.MinCoordinate;
 
@@ -35,7 +26,24 @@ namespace MeshGenerators.SurfaceNets
 					if (!Wall.Chunk.EdgeNodes.ContainsKey(chunkPosition))
 						Wall.Chunk.EdgeNodes.Add(chunkPosition, node);
 				}
+			}
+		}
 
+		public override MeshData Generate() //TODO remove parameter
+		{
+			List<Vector3> vertices = new List<Vector3>();
+			List<int> triangles = new List<int>();
+
+			for (int i = 0; i < Settings.SmoothIterationCount; i++)
+			{
+				foreach (MeshGeneratorNode node in _surfaceNodes)
+				{
+					node.PlaceEquidistant();
+				}
+			}
+
+			foreach (MeshGeneratorNode node in _surfaceNodes)
+			{
 				List<Vector3> nodeTriangles = node.GetAllTriangles();
 
 				foreach (Vector3 vertex in nodeTriangles)

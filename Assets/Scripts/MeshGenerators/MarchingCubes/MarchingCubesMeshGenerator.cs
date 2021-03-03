@@ -8,19 +8,26 @@ namespace MeshGenerators.MarchingCubes
 {
 	public class MarchingCubesMeshGenerator : MeshGenerator
 	{
+		private int[,,] _matrix;
+
 		public MarchingCubesMeshGenerator(MeshGeneratorSettings settings, CaveWall wall) : base(settings, wall)
 		{
 		}
 
-		public override MeshData Generate(int[,,] nodeMatrix)
+		public override void Init(int[,,] matrix)
+		{
+			_matrix = matrix;
+		}
+
+		public override MeshData Generate()
 		{
 			List<Vector3> vertices = new List<Vector3>();
 			//List<Vector3> normals = new List<Vector3>();
 			List<int> triangles = new List<int>();
 
-			int length = nodeMatrix.GetLength(0);
-			int width = nodeMatrix.GetLength(1);
-			int height = nodeMatrix.GetLength(2);
+			int length = _matrix.GetLength(0);
+			int width = _matrix.GetLength(1);
+			int height = _matrix.GetLength(2);
 
 			for (int i = 0; i < length - 1; i++)
 			{
@@ -28,7 +35,7 @@ namespace MeshGenerators.MarchingCubes
 				{
 					for (int k = 0; k < height - 1; k++)
 					{
-						int nodeConfiguration = MeshGeneratorData.GetNodeConfiguration(nodeMatrix, i, j, k);
+						int nodeConfiguration = MeshGeneratorData.GetNodeConfiguration(_matrix, i, j, k);
 
 						foreach (Vector3 vertex in MeshGeneratorData.GetVertices(nodeConfiguration))
 						{

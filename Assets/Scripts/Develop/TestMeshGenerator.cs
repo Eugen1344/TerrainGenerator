@@ -31,7 +31,8 @@ namespace Develop
 		{
 			MeshFilter meshFilter = GetComponent<MeshFilter>();
 
-			Mesh mesh = generator.CreateMesh(generator.Generate(GetSphereMatrix()));
+			generator.Init(GetSphereMatrix());
+			Mesh mesh = generator.CreateMesh(generator.Generate());
 			meshFilter.sharedMesh = mesh;
 		}
 

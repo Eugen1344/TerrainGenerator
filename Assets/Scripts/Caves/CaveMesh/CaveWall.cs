@@ -27,15 +27,22 @@ namespace Caves.CaveMesh
 			MeshCollider.sharedMesh = mesh;
 		}
 
-		public void Generate(WallGroup wall, CaveChunk chunk)
+		public void Init(WallGroup wall, CaveChunk chunk)
 		{
 			_wall = wall;
 			Chunk = chunk;
 
 			SetMeshGenerator();
 
-			_data = GenerateMeshData(out Vector3Int minCoordinate);
+			int[,,] nodeMatrix = GetAlignedNodeMatrix(_wall, out Vector3Int minCoordinate);
 			MinCoordinate = minCoordinate;
+
+			_meshGenerator.Init(nodeMatrix);
+		}
+
+		public void Generate()
+		{
+			_data = GenerateMeshData();
 		}
 
 		private void SetMeshGenerator() //TODO temp, move
@@ -43,11 +50,9 @@ namespace Caves.CaveMesh
 			_meshGenerator = new SurfaceNetsMeshGenerator(Chunk.ChunkManager.MeshSettings, this);
 		}
 
-		private MeshData GenerateMeshData(out Vector3Int minCoordinate)
+		private MeshData GenerateMeshData()
 		{
-			int[,,] nodeMatrix = GetAlignedNodeMatrix(_wall, out minCoordinate);
-
-			return _meshGenerator.Generate(nodeMatrix);
+			return _meshGenerator.Generate();
 		}
 
 		private static Vector2[] CalculateUVs(Vector3[] vertices, Vector3 size)

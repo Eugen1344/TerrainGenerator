@@ -45,6 +45,9 @@ namespace Caves.Chunks
 			ChunkSeed = Settings.GenerateSeed(Settings.Seed, ChunkCoordinate);
 
 			await data.Generate();
+
+			data.FinalizeGeneration();
+			_walls = CreateWalls();
 		}
 
 		public async Task FinalizeGenerationAsync()
@@ -63,9 +66,6 @@ namespace Caves.Chunks
 
 		private async Task FinalizeTaskAsync()
 		{
-			CellData.FinalizeGeneration();
-			_walls = CreateWalls();
-
 			await GenerateWallMeshesAsync(_walls);
 
 			gameObject.SetActive(true);
@@ -82,7 +82,10 @@ namespace Caves.Chunks
 
 			for (int i = 0; i < CellData.Walls.Count; i++)
 			{
-				walls.Add(CreateWall(i));
+				CaveWall wall = CreateWall(i);
+				wall.Init(CellData.Walls[i], this);
+
+				walls.Add(wall);
 			}
 
 			return walls;
@@ -92,9 +95,9 @@ namespace Caves.Chunks
 		{
 			List<Task> wallGenerationTasks = new List<Task>();
 
-			for (int i = 0; i < CellData.Walls.Count; i++)
+			foreach (CaveWall wall in walls)
 			{
-				wallGenerationTasks.Add(GenerateWallMeshAsync(walls[i], CellData.Walls[i]));
+				wallGenerationTasks.Add(GenerateWallMeshAsync(wall));
 			}
 
 			await Task.WhenAll(wallGenerationTasks);
@@ -109,9 +112,9 @@ namespace Caves.Chunks
 			return wallObject.GetComponent<CaveWall>();
 		}
 
-		private async Task GenerateWallMeshAsync(CaveWall wall, WallGroup wallCells)
+		private async Task GenerateWallMeshAsync(CaveWall wall)
 		{
-			await Task.Run(() => wall.Generate(wallCells, this));
+			await Task.Run(wall.Generate);
 		}
 
 		public Vector3 GetWorldPosition(Vector3Int cellCoordinate)

@@ -10,7 +10,8 @@ namespace MeshGenerators
 		public readonly MeshGeneratorSettings Settings;
 		public readonly CaveWall Wall;
 
-		public abstract MeshData Generate(int[,,] nodeMatrix);
+		public abstract void Init(int[,,] matrix);
+		public abstract MeshData Generate();
 
 		protected MeshGenerator(MeshGeneratorSettings settings, CaveWall wall)
 		{
