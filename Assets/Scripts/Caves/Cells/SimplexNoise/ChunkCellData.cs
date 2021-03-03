@@ -43,7 +43,7 @@ namespace Caves.Cells.SimplexNoise
 			Task<List<HollowGroup>> getHollowGroupTask = GetCellGroupsAsync<HollowGroup>(CellType.Hollow);
 			Hollows = await getHollowGroupTask;
 
-			Hollows = RemoveSmallHollowGroups(Hollows, ref Cells, Settings.MinCaveSize);
+			Hollows = await Task.Run(() => RemoveSmallHollowGroups(Hollows, ref Cells, Settings.MinCaveSize));
 
 			Tunnels = Settings.GenerateTunnels ? Tunnel.CreateTunnelsAndConnectCaves(ref Cells, Hollows, Settings) : new List<Tunnel>();
 
