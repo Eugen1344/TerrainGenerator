@@ -49,6 +49,8 @@ namespace Caves.Chunks
 
 		public async Task FinalizeGenerationAsync()
 		{
+			IsFinalized = true;
+
 			if (IsFinalized)
 				return;
 
@@ -66,8 +68,6 @@ namespace Caves.Chunks
 			await GenerateWallMeshesAsync(_walls);
 
 			gameObject.SetActive(true);
-
-			IsFinalized = true;
 		}
 
 		private List<CaveWall> CreateWalls()
