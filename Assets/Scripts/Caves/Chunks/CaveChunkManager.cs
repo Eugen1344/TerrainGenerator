@@ -5,6 +5,7 @@ using Caves.Cells;
 using Caves.Cells.SimplexNoise;
 using MeshGenerators;
 using UnityEngine;
+using Object = System.Object;
 
 namespace Caves.Chunks
 {
@@ -33,6 +34,8 @@ namespace Caves.Chunks
 		public async Task<CaveChunk> CreateChunkAsync(Vector3Int chunkCoordinate)
 		{
 			Task<CaveChunk> mainChunkTask = GenerateAndAddChunkAsync(chunkCoordinate);
+			_ = mainChunkTask.ContinueWith(ChunkGenerationExceptionHandler, TaskContinuationOptions.OnlyOnFaulted);
+
 			List<Task<CaveChunk>> nearbyChunkTasks = new List<Task<CaveChunk>>(9);
 
 			nearbyChunkTasks.Add(mainChunkTask);
@@ -49,6 +52,8 @@ namespace Caves.Chunks
 							continue;
 
 						Task<CaveChunk> chunkTask = GenerateAndAddChunkAsync(nearbyChunkCoordinate);
+						_ = chunkTask.ContinueWith(ChunkGenerationExceptionHandler, TaskContinuationOptions.OnlyOnFaulted);
+
 						nearbyChunkTasks.Add(chunkTask);
 					}
 				}
@@ -57,9 +62,24 @@ namespace Caves.Chunks
 			await Task.WhenAll(nearbyChunkTasks);
 
 			CaveChunk chunk = mainChunkTask.Result;
-			await FinalizeChunkAsync(chunk);
+
+			Task finalizationTask = FinalizeChunkAsync(chunk);
+			_ = finalizationTask.ContinueWith(ChunkFinalizationExceptionHandler, TaskContinuationOptions.OnlyOnFaulted);
+			await finalizationTask;
 
 			return chunk;
+		}
+
+		private void ChunkGenerationExceptionHandler(Task<CaveChunk> task)
+		{
+			if (task?.Exception?.InnerException != null)
+				throw task.Exception.InnerException;
+		}
+
+		private void ChunkFinalizationExceptionHandler(Task task)
+		{
+			if (task?.Exception?.InnerException != null)
+				Debug.LogException(task.Exception.InnerException);
 		}
 
 		private async Task<CaveChunk> GenerateAndAddChunkAsync(Vector3Int chunkCoordinate)

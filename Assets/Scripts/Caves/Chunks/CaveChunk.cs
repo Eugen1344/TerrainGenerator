@@ -49,14 +49,11 @@ namespace Caves.Chunks
 
 		public async Task FinalizeGenerationAsync()
 		{
-			lock (this)
-			{
-				if (IsFinalized)
-					return;
+			if (IsFinalized)
+				return;
 
-				if (_finalizationTask == null)
-					_finalizationTask = FinalizeTaskAsync();
-			}
+			if (_finalizationTask == null)
+				_finalizationTask = FinalizeTaskAsync();
 
 			await _finalizationTask;
 		}
@@ -70,10 +67,7 @@ namespace Caves.Chunks
 
 			gameObject.SetActive(true);
 
-			lock (this)
-			{
-				IsFinalized = true;
-			}
+			IsFinalized = true;
 		}
 
 		private List<CaveWall> CreateWalls()

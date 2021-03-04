@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace MeshGenerators.SurfaceNets
@@ -47,8 +48,8 @@ namespace MeshGenerators.SurfaceNets
 				{
 					MeshGeneratorNode secondNode = LinkedNodes[j];
 
-					if ((firstNode.HaveCreatedTriangle && !secondNode.HaveCreatedTriangle) || (!firstNode.HaveCreatedTriangle && secondNode.HaveCreatedTriangle))
-						continue;
+					//if ((firstNode.HaveCreatedTriangle && !secondNode.HaveCreatedTriangle) || (!firstNode.HaveCreatedTriangle && secondNode.HaveCreatedTriangle))
+					//continue;
 
 					if ((firstNode.MatrixPosition.x == secondNode.MatrixPosition.x && firstNode.MatrixPosition.y != secondNode.MatrixPosition.y && firstNode.MatrixPosition.z != secondNode.MatrixPosition.z)
 						|| (firstNode.MatrixPosition.y == secondNode.MatrixPosition.y && firstNode.MatrixPosition.x != secondNode.MatrixPosition.x && firstNode.MatrixPosition.z != secondNode.MatrixPosition.z)
@@ -63,8 +64,22 @@ namespace MeshGenerators.SurfaceNets
 							Mathf.Max(MatrixPosition.y, firstNode.MatrixPosition.y, secondNode.MatrixPosition.y, oppositeMatrixPoint.y),
 							Mathf.Max(MatrixPosition.z, firstNode.MatrixPosition.z, secondNode.MatrixPosition.z, oppositeMatrixPoint.z));
 
-						int firstCommonPoint = PointsMatrix[minCoordinate.x, minCoordinate.y, minCoordinate.z];
-						int secondCommonPoint = PointsMatrix[maxCoordinate.x, maxCoordinate.y, maxCoordinate.z];
+						int firstCommonPoint;
+						int secondCommonPoint;
+
+						try
+						{
+							Vector3Int minNodeCoordinate = minCoordinate - Vector3Int.one;
+							Vector3Int maxNodeCoordinate = maxCoordinate - Vector3Int.one;
+
+							firstCommonPoint = PointsMatrix[minNodeCoordinate.x, minNodeCoordinate.y, minNodeCoordinate.z];
+							secondCommonPoint = PointsMatrix[maxNodeCoordinate.x, maxNodeCoordinate.y, maxNodeCoordinate.z];
+						}
+						catch (Exception e)
+						{
+							Console.WriteLine(e);
+							throw;
+						}
 
 						//HaveCreatedTriangle = true; //TODO HACK, make better
 
