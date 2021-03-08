@@ -64,22 +64,8 @@ namespace MeshGenerators.SurfaceNets
 							Mathf.Max(MatrixPosition.y, firstNode.MatrixPosition.y, secondNode.MatrixPosition.y, oppositeMatrixPoint.y),
 							Mathf.Max(MatrixPosition.z, firstNode.MatrixPosition.z, secondNode.MatrixPosition.z, oppositeMatrixPoint.z));
 
-						int firstCommonPoint;
-						int secondCommonPoint;
-
-						try
-						{
-							Vector3Int minNodeCoordinate = minCoordinate - Vector3Int.one;
-							Vector3Int maxNodeCoordinate = maxCoordinate - Vector3Int.one;
-
-							firstCommonPoint = PointsMatrix[minNodeCoordinate.x, minNodeCoordinate.y, minNodeCoordinate.z];
-							secondCommonPoint = PointsMatrix[maxNodeCoordinate.x, maxNodeCoordinate.y, maxNodeCoordinate.z];
-						}
-						catch (Exception e)
-						{
-							Console.WriteLine(e);
-							throw;
-						}
+						int firstCommonPoint = PointsMatrix[minCoordinate.x, minCoordinate.y, minCoordinate.z];
+						int secondCommonPoint = PointsMatrix[maxCoordinate.x, maxCoordinate.y, maxCoordinate.z];
 
 						//HaveCreatedTriangle = true; //TODO HACK, make better
 

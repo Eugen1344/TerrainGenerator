@@ -21,8 +21,6 @@ namespace Caves.Chunks
 		public int ChunkSeed;
 		public bool IsFinalized = false;
 
-		public Dictionary<Vector3Int, MeshGeneratorNode> EdgeNodes = new Dictionary<Vector3Int, MeshGeneratorNode>();
-
 		private List<CaveWall> _walls = new List<CaveWall>();
 		private Task _finalizationTask;
 

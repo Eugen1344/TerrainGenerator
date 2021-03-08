@@ -7,6 +7,8 @@ namespace MeshGenerators.SurfaceNets
 {
 	public class SurfaceNetsMeshGenerator : MeshGenerator
 	{
+		public Dictionary<Vector3Int, MeshGeneratorNode> EdgeNodes = new Dictionary<Vector3Int, MeshGeneratorNode>();
+
 		public SurfaceNetsMeshGenerator(MeshGeneratorSettings settings, CaveWall wall) : base(settings, wall)
 		{
 		}
@@ -32,8 +34,8 @@ namespace MeshGenerators.SurfaceNets
 
 				if (IsOnChunkEdge(chunkPosition))
 				{
-					if (!Wall.Chunk.EdgeNodes.ContainsKey(chunkPosition))
-						Wall.Chunk.EdgeNodes.Add(chunkPosition, node);
+					if (!EdgeNodes.ContainsKey(chunkPosition))
+						EdgeNodes.Add(chunkPosition, node);
 				}
 
 				List<Vector3> nodeTriangles = node.GetAllTriangles();
@@ -65,9 +67,9 @@ namespace MeshGenerators.SurfaceNets
 
 		private List<MeshGeneratorNode> GetSurfaceNodes(int[,,] matrix)
 		{
-			int length = matrix.GetLength(0) + 1;
-			int width = matrix.GetLength(1) + 1;
-			int height = matrix.GetLength(2) + 1;
+			int length = matrix.GetLength(0);
+			int width = matrix.GetLength(1);
+			int height = matrix.GetLength(2);
 
 			List<MeshGeneratorNode> nodes = new List<MeshGeneratorNode>();
 			MeshGeneratorNode[,,] nodeMatrix = new MeshGeneratorNode[length, width, height];
@@ -78,23 +80,7 @@ namespace MeshGenerators.SurfaceNets
 				{
 					for (int k = 0; k < height; k++)
 					{
-						MeshGeneratorNode node = null;
-
-						if (i == 0)
-							node = GetNearbyChunkNode(i, j, k, new Vector3Int(-1, 0, 0), matrix);
-						else if (i == length - 1)
-							node = GetNearbyChunkNode(i, j, k, new Vector3Int(1, 0, 0), matrix);
-						else if (j == 0)
-							node = GetNearbyChunkNode(i, j, k, new Vector3Int(0, -1, 0), matrix);
-						else if (j == width - 1)
-							node = GetNearbyChunkNode(i, j, k, new Vector3Int(0, 1, 0), matrix);
-						else if (k == 0)
-							node = GetNearbyChunkNode(i, j, k, new Vector3Int(0, 0, -1), matrix);
-						else if (k == height - 1)
-							node = GetNearbyChunkNode(i, j, k, new Vector3Int(0, 0, 1), matrix);
-						else
-							node = GetSurfaceNode(matrix, i, j, k);
-
+						MeshGeneratorNode node = GetSurfaceNode(matrix, i, j, k);
 						nodeMatrix[i, j, k] = node;
 
 						if (node == null)
@@ -125,7 +111,7 @@ namespace MeshGenerators.SurfaceNets
 			return nodes;
 		}
 
-		private MeshGeneratorNode GetNearbyChunkNode(int i, int j, int k, Vector3Int offset, int[,,] matrix)
+		/*private MeshGeneratorNode GetNearbyChunkNode(int i, int j, int k, Vector3Int offset, int[,,] matrix)
 		{
 			MeshGeneratorNode node = null;
 
@@ -158,21 +144,19 @@ namespace MeshGenerators.SurfaceNets
 			}
 
 			return node;
-		}
+		}*/
 
 		private MeshGeneratorNode GetSurfaceNode(int[,,] matrix, int i0, int j0, int k0)
 		{
-			Vector3Int nodeMatrixPosition = new Vector3Int(i0 - 1, j0 - 1, k0 - 1);
+			int node0 = matrix[i0, j0, k0];
+			int node1 = matrix[i0 + 1, j0, k0];
+			int node2 = matrix[i0 + 1, j0 + 1, k0];
+			int node3 = matrix[i0, j0 + 1, k0];
 
-			int node0 = matrix[nodeMatrixPosition.x, nodeMatrixPosition.y, nodeMatrixPosition.z];
-			int node1 = matrix[nodeMatrixPosition.x + 1, nodeMatrixPosition.y, nodeMatrixPosition.z];
-			int node2 = matrix[nodeMatrixPosition.x + 1, nodeMatrixPosition.y + 1, nodeMatrixPosition.z];
-			int node3 = matrix[nodeMatrixPosition.x, nodeMatrixPosition.y + 1, nodeMatrixPosition.z];
-
-			int node4 = matrix[nodeMatrixPosition.x, nodeMatrixPosition.y, nodeMatrixPosition.z + 1];
-			int node5 = matrix[nodeMatrixPosition.x + 1, nodeMatrixPosition.y, nodeMatrixPosition.z + 1];
-			int node6 = matrix[nodeMatrixPosition.x + 1, nodeMatrixPosition.y + 1, nodeMatrixPosition.z + 1];
-			int node7 = matrix[nodeMatrixPosition.x, nodeMatrixPosition.y + 1, nodeMatrixPosition.z + 1];
+			int node4 = matrix[i0, j0, k0 + 1];
+			int node5 = matrix[i0 + 1, j0, k0 + 1];
+			int node6 = matrix[i0 + 1, j0 + 1, k0 + 1];
+			int node7 = matrix[i0, j0 + 1, k0 + 1];
 
 			int nodeSum = node0 + node1 + node2 + node3 + node4 + node5 + node6 + node7;
 
