@@ -6,6 +6,8 @@ namespace Develop
 {
 	public class NoiseTest : MonoBehaviour
 	{
+		public Color HollowColor;
+		public Color CaveColor;
 		public CellSettings Settings;
 
 		[ContextMenu("Generate noise png")]
@@ -50,12 +52,7 @@ namespace Develop
 				{
 					float normalizedNoise = (noise[i, j] + 1f) / 2f;
 
-					Color color;
-
-					if (normalizedNoise <= Settings.RandomHollowCellsPercent)
-						color = Color.cyan;
-					else
-						color = Color.black;
+					Color color = normalizedNoise <= Settings.RandomHollowCellsPercent ? HollowColor : CaveColor;
 
 					resultTexture.SetPixel(i, j, color);
 				}
