@@ -47,13 +47,12 @@ namespace Caves.Chunks
 
 		public async Task FinalizeGenerationAsync()
 		{
-			IsFinalized = true;
-
 			if (IsFinalized)
 				return;
 
-			if (_finalizationTask == null)
-				_finalizationTask = FinalizeTaskAsync();
+			IsFinalized = true;
+
+			_finalizationTask ??= FinalizeTaskAsync();
 
 			await _finalizationTask;
 		}
