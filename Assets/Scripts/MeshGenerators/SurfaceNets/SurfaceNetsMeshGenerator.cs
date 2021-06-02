@@ -7,7 +7,6 @@ namespace MeshGenerators.SurfaceNets
 {
 	public class SurfaceNetsMeshGenerator : MeshGenerator
 	{
-		public Dictionary<Vector3Int, MeshGeneratorNode> EdgeNodes = new Dictionary<Vector3Int, MeshGeneratorNode>();
 
 		public SurfaceNetsMeshGenerator(MeshGeneratorSettings settings, CaveWall wall) : base(settings, wall)
 		{
@@ -31,12 +30,6 @@ namespace MeshGenerators.SurfaceNets
 			foreach (MeshGeneratorNode node in surfaceNodes)
 			{
 				Vector3Int chunkPosition = node.MatrixPosition + Wall.MinCoordinate;
-
-				if (IsOnChunkEdge(chunkPosition))
-				{
-					if (!EdgeNodes.ContainsKey(chunkPosition))
-						EdgeNodes.Add(chunkPosition, node);
-				}
 
 				List<Vector3> nodeTriangles = node.GetAllTriangles();
 
@@ -80,6 +73,9 @@ namespace MeshGenerators.SurfaceNets
 				{
 					for (int k = 0; k < height; k++)
 					{
+						if(i == 0 || j == 0 || k == 0 || i == length - 1 || j == width - 1 || k == height - 1)
+							continue;
+
 						MeshGeneratorNode node = GetSurfaceNode(matrix, i, j, k);
 						nodeMatrix[i, j, k] = node;
 
