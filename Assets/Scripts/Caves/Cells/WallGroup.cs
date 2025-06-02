@@ -3,10 +3,10 @@ using UnityEngine;
 
 namespace Caves.Cells
 {
-	public class WallGroup : CaveGroup
-	{
-		public WallGroup(List<Vector3Int> cellChunkCoordinates) : base(cellChunkCoordinates)
-		{
-		}
-	}
+    public class WallGroup : CaveGroup
+    {
+        public WallGroup(List<Vector3Int> cellChunkCoordinates) : base(cellChunkCoordinates)
+        {
+        }
+    }
 }

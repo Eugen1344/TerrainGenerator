@@ -6,47 +6,47 @@ using UnityEngine;
 
 public class Test : MonoBehaviour
 {
-	void OnEnable()
-	{
-		Debug.Log("OnEnable " + gameObject.name);
-	}
+    private void OnEnable()
+    {
+        Debug.Log("OnEnable " + gameObject.name);
+    }
 
-	void Awake()
-	{
-		/*Debug.Log("Awake " + gameObject.name);
+    private void Awake()
+    {
+        /*Debug.Log("Awake " + gameObject.name);
 
-		if (!gameObject.name.Contains("Clone"))
-		{
-			GameObject newObj = Instantiate(gameObject);
-			newObj.SetActive(false);
-		}*/
-	}
+        if (!gameObject.name.Contains("Clone"))
+        {
+            GameObject newObj = Instantiate(gameObject);
+            newObj.SetActive(false);
+        }*/
+    }
 
-	void Start()
-	{
-		Debug.Log("Start " + gameObject.name);
+    private void Start()
+    {
+        Debug.Log("Start " + gameObject.name);
 
-		var t = TaskScheduler.Current;
-		var tt = TaskScheduler.Default;
+        TaskScheduler t = TaskScheduler.Current;
+        TaskScheduler tt = TaskScheduler.Default;
 
-		List<Task> tasks = new List<Task>();
+        List<Task> tasks = new List<Task>();
 
-		for (int i = 0; i < 100; i++)
-		{
-			//tasks.Add(Task.Run(ExpensiveTask));
-		}
+        for (int i = 0; i < 100; i++)
+        {
+            //tasks.Add(Task.Run(ExpensiveTask));
+        }
 
-		//Task.WaitAll(tasks.ToArray());
-	}
+        //Task.WaitAll(tasks.ToArray());
+    }
 
-	private void ExpensiveTask()
-	{
-		var t = Thread.CurrentThread;
+    private void ExpensiveTask()
+    {
+        Thread t = Thread.CurrentThread;
 
-		for (int i = 0; i < 10; i++)
-		{
-			SimplexNoise.Noise d = new Noise();
-			d.Calc3D(100, 100, 100, 1);
-		}
-	}
+        for (int i = 0; i < 10; i++)
+        {
+            Noise d = new Noise();
+            d.Calc3D(100, 100, 100, 1);
+        }
+    }
 }

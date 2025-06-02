@@ -2,7 +2,7 @@
 
 namespace Caves.Chunks
 {
-	public class Chunk : MonoBehaviour
-	{
-	}
+    public class Chunk : MonoBehaviour
+    {
+    }
 }

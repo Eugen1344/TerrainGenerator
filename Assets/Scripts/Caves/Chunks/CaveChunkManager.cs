@@ -5,200 +5,199 @@ using Caves.Cells;
 using Caves.Cells.SimplexNoise;
 using MeshGenerators;
 using UnityEngine;
-using Object = System.Object;
 
 namespace Caves.Chunks
 {
-	public class CaveChunkManager : MonoBehaviour
-	{
-		public CellSettings GeneratorSettings;
-		public MeshGeneratorSettings MeshSettings;
+    public class CaveChunkManager : MonoBehaviour
+    {
+        public CellSettings GeneratorSettings;
+        public MeshGeneratorSettings MeshSettings;
 
-		public GameObject ChunkHolder;
-		public CaveChunk ChunkPrefab;
-		public bool RandomSeed;
+        public GameObject ChunkHolder;
+        public CaveChunk ChunkPrefab;
+        public bool RandomSeed;
 
-		public Dictionary<Vector3Int, CaveChunk> GeneratedChunks = new Dictionary<Vector3Int, CaveChunk>();
+        public Dictionary<Vector3Int, CaveChunk> GeneratedChunks = new Dictionary<Vector3Int, CaveChunk>();
 
-		private Vector3 _chunkSize;
-		private readonly Dictionary<Vector3Int, Task<CaveChunk>> _chunkGenerationQueue = new Dictionary<Vector3Int, Task<CaveChunk>>();
+        private Vector3 _chunkSize;
+        private readonly Dictionary<Vector3Int, Task<CaveChunk>> _chunkGenerationQueue = new Dictionary<Vector3Int, Task<CaveChunk>>();
 
-		private void Awake()
-		{
-			if (RandomSeed)
-				GeneratorSettings.Seed = Environment.TickCount;
+        private void Awake()
+        {
+            if (RandomSeed)
+                GeneratorSettings.Seed = Environment.TickCount;
 
-			_chunkSize = Vector3.Scale(MeshSettings.GridSize, GeneratorSettings.ChunkCubicSize);
-		}
+            _chunkSize = Vector3.Scale(MeshSettings.GridSize, GeneratorSettings.ChunkCubicSize);
+        }
 
-		public async Task<CaveChunk> CreateChunkAsync(Vector3Int chunkCoordinate)
-		{
-			Task<CaveChunk> mainChunkTask = GenerateAndAddChunkAsync(chunkCoordinate);
-			_ = mainChunkTask.ContinueWith(ChunkGenerationExceptionHandler, TaskContinuationOptions.OnlyOnFaulted);
+        public async Task<CaveChunk> CreateChunkAsync(Vector3Int chunkCoordinate)
+        {
+            Task<CaveChunk> mainChunkTask = GenerateAndAddChunkAsync(chunkCoordinate);
+            _ = mainChunkTask.ContinueWith(ChunkGenerationExceptionHandler, TaskContinuationOptions.OnlyOnFaulted);
 
-			List<Task<CaveChunk>> nearbyChunkTasks = new List<Task<CaveChunk>>(9);
+            List<Task<CaveChunk>> nearbyChunkTasks = new List<Task<CaveChunk>>(9);
 
-			nearbyChunkTasks.Add(mainChunkTask);
+            nearbyChunkTasks.Add(mainChunkTask);
 
-			for (int i = chunkCoordinate.x - 1; i <= chunkCoordinate.x + 1; i++)
-			{
-				for (int j = chunkCoordinate.y - 1; j <= chunkCoordinate.y + 1; j++)
-				{
-					for (int k = chunkCoordinate.z - 1; k <= chunkCoordinate.z + 1; k++)
-					{
-						Vector3Int nearbyChunkCoordinate = new Vector3Int(i, j, k);
+            for (int i = chunkCoordinate.x - 1; i <= chunkCoordinate.x + 1; i++)
+            {
+                for (int j = chunkCoordinate.y - 1; j <= chunkCoordinate.y + 1; j++)
+                {
+                    for (int k = chunkCoordinate.z - 1; k <= chunkCoordinate.z + 1; k++)
+                    {
+                        Vector3Int nearbyChunkCoordinate = new Vector3Int(i, j, k);
 
-						if (nearbyChunkCoordinate == chunkCoordinate)
-							continue;
+                        if (nearbyChunkCoordinate == chunkCoordinate)
+                            continue;
 
-						Task<CaveChunk> chunkTask = GenerateAndAddChunkAsync(nearbyChunkCoordinate);
-						_ = chunkTask.ContinueWith(ChunkGenerationExceptionHandler, TaskContinuationOptions.OnlyOnFaulted);
+                        Task<CaveChunk> chunkTask = GenerateAndAddChunkAsync(nearbyChunkCoordinate);
+                        _ = chunkTask.ContinueWith(ChunkGenerationExceptionHandler, TaskContinuationOptions.OnlyOnFaulted);
 
-						nearbyChunkTasks.Add(chunkTask);
-					}
-				}
-			}
+                        nearbyChunkTasks.Add(chunkTask);
+                    }
+                }
+            }
 
-			await Task.WhenAll(nearbyChunkTasks);
+            await Task.WhenAll(nearbyChunkTasks);
 
-			CaveChunk chunk = mainChunkTask.Result;
+            CaveChunk chunk = mainChunkTask.Result;
 
-			Task finalizationTask = FinalizeChunkAsync(chunk);
-			_ = finalizationTask.ContinueWith(ChunkFinalizationExceptionHandler, TaskContinuationOptions.OnlyOnFaulted);
-			await finalizationTask;
+            Task finalizationTask = FinalizeChunkAsync(chunk);
+            _ = finalizationTask.ContinueWith(ChunkFinalizationExceptionHandler, TaskContinuationOptions.OnlyOnFaulted);
+            await finalizationTask;
 
-			return chunk;
-		}
+            return chunk;
+        }
 
-		private void ChunkGenerationExceptionHandler(Task<CaveChunk> task)
-		{
-			if (task?.Exception?.InnerException != null)
-				throw task.Exception.InnerException;
-		}
+        private void ChunkGenerationExceptionHandler(Task<CaveChunk> task)
+        {
+            if (task?.Exception?.InnerException != null)
+                throw task.Exception.InnerException;
+        }
 
-		private void ChunkFinalizationExceptionHandler(Task task)
-		{
-			if (task?.Exception?.InnerException != null)
-				Debug.LogException(task.Exception.InnerException);
-		}
+        private void ChunkFinalizationExceptionHandler(Task task)
+        {
+            if (task?.Exception?.InnerException != null)
+                Debug.LogException(task.Exception.InnerException);
+        }
 
-		private async Task<CaveChunk> GenerateAndAddChunkAsync(Vector3Int chunkCoordinate)
-		{
-			Task<CaveChunk> newChunkTask;
-			bool isTaskInQueue;
+        private async Task<CaveChunk> GenerateAndAddChunkAsync(Vector3Int chunkCoordinate)
+        {
+            Task<CaveChunk> newChunkTask;
+            bool isTaskInQueue;
 
-			lock (GeneratedChunks)
-			{
-				if (GeneratedChunks.TryGetValue(chunkCoordinate, out CaveChunk generatedChunk))
-					return generatedChunk;
+            lock (GeneratedChunks)
+            {
+                if (GeneratedChunks.TryGetValue(chunkCoordinate, out CaveChunk generatedChunk))
+                    return generatedChunk;
 
-				isTaskInQueue = _chunkGenerationQueue.TryGetValue(chunkCoordinate, out newChunkTask);
+                isTaskInQueue = _chunkGenerationQueue.TryGetValue(chunkCoordinate, out newChunkTask);
 
-				if (!isTaskInQueue)
-				{
-					newChunkTask = GenerateChunkAsync(chunkCoordinate);
-					_chunkGenerationQueue.Add(chunkCoordinate, newChunkTask);
-				}
-			}
+                if (!isTaskInQueue)
+                {
+                    newChunkTask = GenerateChunkAsync(chunkCoordinate);
+                    _chunkGenerationQueue.Add(chunkCoordinate, newChunkTask);
+                }
+            }
 
-			if (!isTaskInQueue)
-			{
-				CaveChunk chunk = await newChunkTask;
+            if (!isTaskInQueue)
+            {
+                CaveChunk chunk = await newChunkTask;
 
-				lock (GeneratedChunks)
-				{
-					GeneratedChunks.Add(chunkCoordinate, chunk);
-					_chunkGenerationQueue.Remove(chunkCoordinate);
-				}
-			}
+                lock (GeneratedChunks)
+                {
+                    GeneratedChunks.Add(chunkCoordinate, chunk);
+                    _chunkGenerationQueue.Remove(chunkCoordinate);
+                }
+            }
 
-			return await newChunkTask;
-		}
+            return await newChunkTask;
+        }
 
-		private async Task<CaveChunk> GenerateChunkAsync(Vector3Int chunkCoordinate)
-		{
-			ChunkCellData cellData = new ChunkCellData(GeneratorSettings, this, chunkCoordinate);
-			CaveChunk chunk = CreateChunk(cellData.ChunkCoordinate.ToString());
+        private async Task<CaveChunk> GenerateChunkAsync(Vector3Int chunkCoordinate)
+        {
+            ChunkCellData cellData = new ChunkCellData(GeneratorSettings, this, chunkCoordinate);
+            CaveChunk chunk = CreateChunk(cellData.ChunkCoordinate.ToString());
 
-			await chunk.Generate(cellData, this);
+            await chunk.Generate(cellData, this);
 
-			return chunk;
-		}
+            return chunk;
+        }
 
-		private CaveChunk CreateChunk(string chunkName)
-		{
-			GameObject newChunkObject = Instantiate(ChunkPrefab.gameObject, ChunkHolder.transform);
-			newChunkObject.name = chunkName;
-			newChunkObject.SetActive(false);
+        private CaveChunk CreateChunk(string chunkName)
+        {
+            GameObject newChunkObject = Instantiate(ChunkPrefab.gameObject, ChunkHolder.transform);
+            newChunkObject.name = chunkName;
+            newChunkObject.SetActive(false);
 
-			CaveChunk newChunk = newChunkObject.GetComponent<CaveChunk>();
+            CaveChunk newChunk = newChunkObject.GetComponent<CaveChunk>();
 
-			return newChunk;
-		}
+            return newChunk;
+        }
 
-		private async Task FinalizeChunkAsync(CaveChunk chunk)
-		{
-			//Debug.Log($"Finalizing chunk: {chunk.ChunkCoordinate}");
+        private async Task FinalizeChunkAsync(CaveChunk chunk)
+        {
+            //Debug.Log($"Finalizing chunk: {chunk.ChunkCoordinate}");
 
-			await chunk.FinalizeGenerationAsync();
-		}
+            await chunk.FinalizeGenerationAsync();
+        }
 
-		public Vector3 GetChunkWorldPosition(Vector3Int chunkCoordinate)
-		{
-			return new Vector3(chunkCoordinate.x * _chunkSize.x, chunkCoordinate.y * _chunkSize.y, chunkCoordinate.z * _chunkSize.z);
-		}
+        public Vector3 GetChunkWorldPosition(Vector3Int chunkCoordinate)
+        {
+            return new Vector3(chunkCoordinate.x * _chunkSize.x, chunkCoordinate.y * _chunkSize.y, chunkCoordinate.z * _chunkSize.z);
+        }
 
-		public Vector3Int GetChunkCoordinate(Vector3 worldPosition)
-		{
-			Vector3 localPosition = worldPosition - ChunkHolder.transform.position;
+        public Vector3Int GetChunkCoordinate(Vector3 worldPosition)
+        {
+            Vector3 localPosition = worldPosition - ChunkHolder.transform.position;
 
-			Vector3Int chunkCoordinate = new Vector3Int((int)(localPosition.z / _chunkSize.y), (int)(localPosition.x / _chunkSize.x), (int)(localPosition.y / _chunkSize.z));
+            Vector3Int chunkCoordinate = new Vector3Int((int)(localPosition.z / _chunkSize.y), (int)(localPosition.x / _chunkSize.x), (int)(localPosition.y / _chunkSize.z));
 
-			if (localPosition.x < 0)
-				chunkCoordinate.y -= 1;
+            if (localPosition.x < 0)
+                chunkCoordinate.y -= 1;
 
-			if (localPosition.z < 0)
-				chunkCoordinate.x -= 1;
+            if (localPosition.z < 0)
+                chunkCoordinate.x -= 1;
 
-			if (localPosition.y < 0)
-				chunkCoordinate.z -= 1;
+            if (localPosition.y < 0)
+                chunkCoordinate.z -= 1;
 
-			return chunkCoordinate;
-		}
+            return chunkCoordinate;
+        }
 
-		public CellType GetCellFromAllChunks(Vector3Int globalCellCoordinate)
-		{
-			Vector3Int chunkCoordinate = GetChunkCoordinate(globalCellCoordinate);
+        public CellType GetCellFromAllChunks(Vector3Int globalCellCoordinate)
+        {
+            Vector3Int chunkCoordinate = GetChunkCoordinate(globalCellCoordinate);
 
-			if (GeneratedChunks.TryGetValue(chunkCoordinate, out CaveChunk chunk))
-			{
-				return chunk.GetCell(globalCellCoordinate);
-			}
+            if (GeneratedChunks.TryGetValue(chunkCoordinate, out CaveChunk chunk))
+            {
+                return chunk.GetCell(globalCellCoordinate);
+            }
 
-			throw new MissingChunkException(chunkCoordinate);
-		}
+            throw new MissingChunkException(chunkCoordinate);
+        }
 
-		public Vector3Int GetChunkCoordinate(Vector3Int globalCellCoordinate)
-		{
-			Vector3Int offset = new Vector3Int();
+        public Vector3Int GetChunkCoordinate(Vector3Int globalCellCoordinate)
+        {
+            Vector3Int offset = new Vector3Int();
 
-			if (globalCellCoordinate.x < 0)
-				offset.x = 1;
+            if (globalCellCoordinate.x < 0)
+                offset.x = 1;
 
-			if (globalCellCoordinate.y < 0)
-				offset.y = 1;
+            if (globalCellCoordinate.y < 0)
+                offset.y = 1;
 
-			if (globalCellCoordinate.z < 0)
-				offset.z = 1;
+            if (globalCellCoordinate.z < 0)
+                offset.z = 1;
 
-			globalCellCoordinate += offset;
+            globalCellCoordinate += offset;
 
-			Vector3Int chunkCoordinate = new Vector3Int(
-				(int)(globalCellCoordinate.x / GeneratorSettings.ChunkCubicSize.x),
-				(int)(globalCellCoordinate.y / GeneratorSettings.ChunkCubicSize.y),
-				(int)(globalCellCoordinate.z / GeneratorSettings.ChunkCubicSize.z));
+            Vector3Int chunkCoordinate = new Vector3Int(
+                (int)(globalCellCoordinate.x / GeneratorSettings.ChunkCubicSize.x),
+                (int)(globalCellCoordinate.y / GeneratorSettings.ChunkCubicSize.y),
+                (int)(globalCellCoordinate.z / GeneratorSettings.ChunkCubicSize.z));
 
-			return chunkCoordinate - offset;
-		}
-	}
+            return chunkCoordinate - offset;
+        }
+    }
 }

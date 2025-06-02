@@ -60,7 +60,7 @@ namespace Invector.vCharacterController
 
         internal Animator animator;
         internal Rigidbody _rigidbody;                                                      // access the Rigidbody component
-        internal PhysicMaterial frictionPhysics, maxFrictionPhysics, slippyPhysics;         // create PhysicMaterial for the Rigidbody
+        internal PhysicsMaterial frictionPhysics, maxFrictionPhysics, slippyPhysics;         // create PhysicMaterial for the Rigidbody
         internal CapsuleCollider _capsuleCollider;                                          // access CapsuleCollider information
 
         #endregion
@@ -108,28 +108,28 @@ namespace Invector.vCharacterController
         public void Init()
         {
             animator = GetComponent<Animator>();
-            animator.updateMode = AnimatorUpdateMode.AnimatePhysics;
+            animator.updateMode = AnimatorUpdateMode.Fixed;
 
             // slides the character through walls and edges
-            frictionPhysics = new PhysicMaterial();
+            frictionPhysics = new PhysicsMaterial();
             frictionPhysics.name = "frictionPhysics";
             frictionPhysics.staticFriction = .25f;
             frictionPhysics.dynamicFriction = .25f;
-            frictionPhysics.frictionCombine = PhysicMaterialCombine.Multiply;
+            frictionPhysics.frictionCombine = PhysicsMaterialCombine.Multiply;
 
             // prevents the collider from slipping on ramps
-            maxFrictionPhysics = new PhysicMaterial();
+            maxFrictionPhysics = new PhysicsMaterial();
             maxFrictionPhysics.name = "maxFrictionPhysics";
             maxFrictionPhysics.staticFriction = 1f;
             maxFrictionPhysics.dynamicFriction = 1f;
-            maxFrictionPhysics.frictionCombine = PhysicMaterialCombine.Maximum;
+            maxFrictionPhysics.frictionCombine = PhysicsMaterialCombine.Maximum;
 
             // air physics 
-            slippyPhysics = new PhysicMaterial();
+            slippyPhysics = new PhysicsMaterial();
             slippyPhysics.name = "slippyPhysics";
             slippyPhysics.staticFriction = 0f;
             slippyPhysics.dynamicFriction = 0f;
-            slippyPhysics.frictionCombine = PhysicMaterialCombine.Minimum;
+            slippyPhysics.frictionCombine = PhysicsMaterialCombine.Minimum;
 
             // rigidbody info
             _rigidbody = GetComponent<Rigidbody>();

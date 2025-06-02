@@ -1,6 +1,6 @@
 ﻿namespace MeshGenerators.MarchingCubes
 {
-	public class MeshGeneratorNode
-	{
-	}
+    public class MeshGeneratorNode
+    {
+    }
 }
