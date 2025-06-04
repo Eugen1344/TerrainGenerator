@@ -1,3 +1,18 @@
 [submodule "Assets/Submodules/SimplexNoise"]
 	path = Assets/Submodules/SimplexNoise
 url=https://github.com/Eugen1344/SimplexNoise.git
+[submodule "Assets/Submodules/GlobalServices"]
+	path = Assets/Submodules/GlobalServices
+	url = https://github.com/MidnightCampfireGames/GlobalServices.git
+[submodule "Assets/Submodules/SmallEditorTools"]
+	path = Assets/Submodules/SmallEditorTools
+	url = https://github.com/MidnightCampfireGames/SmallEditorTools.git
+[submodule "Assets/Submodules/OdinInspector"]
+	path = Assets/Submodules/OdinInspector
+	url = https://github.com/MidnightCampfireGames/OdinInspector.git
+[submodule "Assets/Submodules/GenericPanels"]
+	path = Assets/Submodules/GenericPanels
+	url = https://github.com/MidnightCampfireGames/GenericPanels.git
+[submodule "Assets/Submodules/CommandBar"]
+	path = Assets/Submodules/CommandBar
+	url = https://github.com/MidnightCampfireGames/CommandBar.git
