@@ -181,8 +181,8 @@ namespace Invector.vCharacterController
             Vector3 targetVelocity = (targetPosition - transform.position) / Time.deltaTime;
 
             bool useVerticalVelocity = true;
-            if (useVerticalVelocity) targetVelocity.y = _rigidbody.velocity.y;
-            _rigidbody.velocity = targetVelocity;
+            if (useVerticalVelocity) targetVelocity.y = _rigidbody.linearVelocity.y;
+            _rigidbody.linearVelocity = targetVelocity;
         }
 
         public virtual void CheckSlopeLimit()
@@ -246,9 +246,9 @@ namespace Invector.vCharacterController
                 isJumping = false;
             }
             // apply extra force to the jump height   
-            var vel = _rigidbody.velocity;
+            var vel = _rigidbody.linearVelocity;
             vel.y = jumpHeight;
-            _rigidbody.velocity = vel;
+            _rigidbody.linearVelocity = vel;
         }
 
         public virtual void AirControl()
@@ -270,8 +270,8 @@ namespace Invector.vCharacterController
             Vector3 targetPosition = _rigidbody.position + (moveDirection * airSpeed) * Time.deltaTime;
             Vector3 targetVelocity = (targetPosition - transform.position) / Time.deltaTime;
 
-            targetVelocity.y = _rigidbody.velocity.y;
-            _rigidbody.velocity = Vector3.Lerp(_rigidbody.velocity, targetVelocity, airSmooth * Time.deltaTime);
+            targetVelocity.y = _rigidbody.linearVelocity.y;
+            _rigidbody.linearVelocity = Vector3.Lerp(_rigidbody.linearVelocity, targetVelocity, airSmooth * Time.deltaTime);
         }
 
         protected virtual bool jumpFwdCondition
@@ -308,7 +308,7 @@ namespace Invector.vCharacterController
                     // set IsGrounded to false 
                     isGrounded = false;
                     // check vertical velocity
-                    verticalVelocity = _rigidbody.velocity.y;
+                    verticalVelocity = _rigidbody.linearVelocity.y;
                     // apply extra gravity when falling
                     if (!isJumping)
                     {

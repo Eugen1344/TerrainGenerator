@@ -19,7 +19,7 @@ namespace Develop
 
         private void InitCommandBar()
         {
-            Commands.AddCheckbox("NoClip", () => NoClip, val => NoClip = val);
+            //Commands.AddCheckbox("NoClip", () => NoClip, val => NoClip = val);
         }
     }
 }

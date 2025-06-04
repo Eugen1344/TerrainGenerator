@@ -164,7 +164,7 @@ namespace Develop
 
                 Vector3 targetPosition = _rigidbody.position + deltaPosition * (currentSpeed * _currentIncrease);
                 Vector3 targetVelocity = targetPosition - transform.position;
-                _rigidbody.velocity = targetVelocity;
+                _rigidbody.linearVelocity = targetVelocity;
             }
 
             // Rotation

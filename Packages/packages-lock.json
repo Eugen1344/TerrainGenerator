@@ -106,11 +106,11 @@
       }
     },
     "com.unity.render-pipelines.high-definition-config": {
-      "version": "file:../LocalPackages/com.unity.render-pipelines.high-definition-config",
-      "depth": 0,
-      "source": "local",
+      "version": "17.1.0",
+      "depth": 1,
+      "source": "builtin",
       "dependencies": {
-        "com.unity.render-pipelines.core": "10.3.2"
+        "com.unity.render-pipelines.core": "17.1.0"
       }
     },
     "com.unity.rendering.light-transport": {
