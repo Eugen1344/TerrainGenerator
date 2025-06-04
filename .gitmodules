@@ -1,9 +1,3 @@
-[submodule "Assets/Submodules/command_bar"]
-	path = Assets/Submodules/command_bar
-	url = https://git.universinet.org/bristar/command_bar.git
 [submodule "Assets/Submodules/SimplexNoise"]
 	path = Assets/Submodules/SimplexNoise
 url=https://github.com/Eugen1344/SimplexNoise.git
-[submodule "Assets/Submodules/odin_inspector"]
-	path = Assets/Submodules/odin_inspector
-	url = https://git.universinet.org/bristar/odin_inspector.git
