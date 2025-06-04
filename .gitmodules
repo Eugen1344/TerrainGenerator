@@ -16,3 +16,6 @@ url=https://github.com/Eugen1344/SimplexNoise.git
 [submodule "Assets/Submodules/CommandBar"]
 	path = Assets/Submodules/CommandBar
 	url = https://github.com/MidnightCampfireGames/CommandBar.git
+[submodule "Assets/Submodules/Extensions"]
+	path = Assets/Submodules/Extensions
+	url = https://github.com/MidnightCampfireGames/Extensions.git
