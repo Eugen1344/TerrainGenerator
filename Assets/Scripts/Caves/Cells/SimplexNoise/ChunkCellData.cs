@@ -20,9 +20,9 @@ namespace Caves.Cells.SimplexNoise
         public List<WallGroup> Walls;
         public List<Tunnel> Tunnels;
 
-        public bool IsFinalized = false;
+        public bool IsFinalized;
 
-        private Noise _noiseGenerator;
+        private readonly Noise _noiseGenerator;
 
         public ChunkCellData(CellSettings settings, CaveChunkManager chunkManager, Vector3Int chunkCoordinate)
         {
@@ -54,15 +54,15 @@ namespace Caves.Cells.SimplexNoise
 
         private float[,,] GetNoise()
         {
-            float[,,] noise = new float[Settings.ChunkCubicSize.x, Settings.ChunkCubicSize.y, Settings.ChunkCubicSize.z];
+            float[,,] noise = new float[Settings.ChunkGridSize.x, Settings.ChunkGridSize.y, Settings.ChunkGridSize.z];
 
-            Vector3Int offset = Settings.ChunkCubicSize * ChunkCoordinate;
+            Vector3Int offset = Settings.ChunkGridSize * ChunkCoordinate;
 
-            for (int i = 0; i < Settings.ChunkCubicSize.x; i++)
+            for (int i = 0; i < Settings.ChunkGridSize.x; i++)
             {
-                for (int j = 0; j < Settings.ChunkCubicSize.y; j++)
+                for (int j = 0; j < Settings.ChunkGridSize.y; j++)
                 {
-                    for (int k = 0; k < Settings.ChunkCubicSize.z; k++)
+                    for (int k = 0; k < Settings.ChunkGridSize.z; k++)
                     {
                         Vector3Int noisePixelPosition = new Vector3Int(i + offset.x, j + offset.y, k + offset.z);
 
@@ -116,7 +116,7 @@ namespace Caves.Cells.SimplexNoise
 
             CellType[,,] cells = new CellType[length, width, height];
 
-            Vector3Int offset = Settings.ChunkCubicSize * ChunkCoordinate;
+            Vector3Int offset = Settings.ChunkGridSize * ChunkCoordinate;
 
             for (int i = 0; i < length; i++)
             {

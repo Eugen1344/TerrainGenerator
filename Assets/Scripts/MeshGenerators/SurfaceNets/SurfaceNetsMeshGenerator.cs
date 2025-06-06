@@ -50,7 +50,7 @@ namespace MeshGenerators.SurfaceNets
 
         private bool IsOnChunkEdge(Vector3Int coordinate)
         {
-            Vector3Int chunkSize = Wall.Chunk.Settings.ChunkCubicSize;
+            Vector3Int chunkSize = Wall.Chunk.Settings.ChunkGridSize;
 
             return coordinate.x == 0 || coordinate.y == 0 || coordinate.z == 0 ||
                    coordinate.x == chunkSize.x - 1 || coordinate.y == chunkSize.y - 1 || coordinate.z == chunkSize.z - 1;

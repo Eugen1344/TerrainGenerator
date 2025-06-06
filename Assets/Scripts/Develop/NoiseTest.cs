@@ -14,11 +14,11 @@ namespace Develop
         [ContextMenu("Generate noise png")]
         public void GenerateNoisePng()
         {
-            Texture2D noiseTexture = new Texture2D(Settings.ChunkCubicSize.x, Settings.ChunkCubicSize.y);
+            Texture2D noiseTexture = new Texture2D(Settings.ChunkGridSize.x, Settings.ChunkGridSize.y);
 
             Noise noiseGenerator = new Noise(Settings.Seed);
 
-            float[,] noise = noiseGenerator.Calc2D(Settings.ChunkCubicSize.x, Settings.ChunkCubicSize.y, Settings.NoiseScale);
+            float[,] noise = noiseGenerator.Calc2D(Settings.ChunkGridSize.x, Settings.ChunkGridSize.y, Settings.NoiseScale);
 
             //float[,] noise = new float[Settings.ChunkCubicSize.x, Settings.ChunkCubicSize.y];
 
@@ -30,9 +30,9 @@ namespace Develop
                 }
             }*/
 
-            for (int i = 0; i < Settings.ChunkCubicSize.x; i++)
+            for (int i = 0; i < Settings.ChunkGridSize.x; i++)
             {
-                for (int j = 0; j < Settings.ChunkCubicSize.y; j++)
+                for (int j = 0; j < Settings.ChunkGridSize.y; j++)
                 {
                     float normalizedNoise = (noise[i, j] + 1f) / 2f;
                     Color color = new Color(normalizedNoise, normalizedNoise, normalizedNoise, 1f);
@@ -45,11 +45,11 @@ namespace Develop
             string filename = "Assets/noise.png";
             File.WriteAllBytes(filename, bytes);
 
-            Texture2D resultTexture = new Texture2D(Settings.ChunkCubicSize.x, Settings.ChunkCubicSize.y);
+            Texture2D resultTexture = new Texture2D(Settings.ChunkGridSize.x, Settings.ChunkGridSize.y);
 
-            for (int i = 0; i < Settings.ChunkCubicSize.x; i++)
+            for (int i = 0; i < Settings.ChunkGridSize.x; i++)
             {
-                for (int j = 0; j < Settings.ChunkCubicSize.y; j++)
+                for (int j = 0; j < Settings.ChunkGridSize.y; j++)
                 {
                     float normalizedNoise = (noise[i, j] + 1f) / 2f;
 

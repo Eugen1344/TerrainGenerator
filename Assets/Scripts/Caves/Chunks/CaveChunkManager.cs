@@ -27,7 +27,7 @@ namespace Caves.Chunks
             if (RandomSeed)
                 GeneratorSettings.Seed = Environment.TickCount;
 
-            _chunkSize = Vector3.Scale(MeshSettings.GridSize, GeneratorSettings.ChunkCubicSize);
+            _chunkSize = Vector3.Scale(MeshSettings.GridSize, GeneratorSettings.ChunkGridSize);
         }
 
         public async Task<CaveChunk> CreateChunkAsync(Vector3Int chunkCoordinate)
@@ -193,9 +193,9 @@ namespace Caves.Chunks
             globalCellCoordinate += offset;
 
             Vector3Int chunkCoordinate = new Vector3Int(
-                (int)(globalCellCoordinate.x / GeneratorSettings.ChunkCubicSize.x),
-                (int)(globalCellCoordinate.y / GeneratorSettings.ChunkCubicSize.y),
-                (int)(globalCellCoordinate.z / GeneratorSettings.ChunkCubicSize.z));
+                (int)(globalCellCoordinate.x / GeneratorSettings.ChunkGridSize.x),
+                (int)(globalCellCoordinate.y / GeneratorSettings.ChunkGridSize.y),
+                (int)(globalCellCoordinate.z / GeneratorSettings.ChunkGridSize.z));
 
             return chunkCoordinate - offset;
         }

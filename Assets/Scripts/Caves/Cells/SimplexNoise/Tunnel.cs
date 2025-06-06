@@ -59,11 +59,11 @@ namespace Caves.Cells.SimplexNoise
             int secondZ = Mathf.Max(firstPoint.z, secondPoint.z);
 
             firstX = Mathf.Max(firstX - settings.TunnelRadius, 0);
-            secondX = Mathf.Min(secondX + settings.TunnelRadius, settings.ChunkCubicSize.x - 1);
+            secondX = Mathf.Min(secondX + settings.TunnelRadius, settings.ChunkGridSize.x - 1);
             firstY = Mathf.Max(firstY - settings.TunnelRadius, 0);
-            secondY = Mathf.Min(secondY + settings.TunnelRadius, settings.ChunkCubicSize.y - 1);
+            secondY = Mathf.Min(secondY + settings.TunnelRadius, settings.ChunkGridSize.y - 1);
             firstZ = Mathf.Max(firstZ - settings.TunnelRadius, 0);
-            secondZ = Mathf.Min(secondZ + settings.TunnelRadius, settings.ChunkCubicSize.z - 1);
+            secondZ = Mathf.Min(secondZ + settings.TunnelRadius, settings.ChunkGridSize.z - 1);
 
             List<Vector3Int> tunnelCells = new List<Vector3Int>();
 
