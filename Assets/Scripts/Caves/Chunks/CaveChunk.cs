@@ -1,126 +1,110 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using Caves.CaveMesh;
+﻿#nullable enable
+using System.Collections.Generic;
+using Caves.CaveMeshes;
 using Caves.Cells;
 using Caves.Cells.SimplexNoise;
+using Cysharp.Threading.Tasks;
+using MeshGenerators;
 using UnityEngine;
 
 namespace Caves.Chunks
 {
     public class CaveChunk : Chunk
     {
-        public ChunkCellData CellData;
-        public CaveChunkManager ChunkManager;
-        public CaveWall WallPrefab;
-        public CellSettings Settings;
-        public Vector3Int ChunkCoordinate;
-        public int ChunkSeed;
-        public bool IsFinalized;
+        public ChunkCellData CellData { get; private set; }
 
-        private List<CaveWall> _walls = new List<CaveWall>();
-        private Task _finalizationTask;
+        [SerializeField] private CaveMesh _caveMeshPrefab;
+
+        private BaseGeneratorSettings _baseSettings;
+        private CavesGeneratorSettings _cavesSettings;
+
+        private bool _isFinalized;
+        private List<CaveMesh> _caveMeshes = new List<CaveMesh>();
+        private AsyncLazy? _finalizationTask;
 
         private void Start()
         {
-            gameObject.transform.localPosition = ChunkManager.GetChunkWorldPosition(CellData.ChunkCoordinate);
-
-            foreach (CaveWall wall in _walls)
-            {
-                wall.gameObject.SetActive(true);
-            }
+            foreach (CaveMesh caveMesh in _caveMeshes)
+                caveMesh.gameObject.SetActive(true);
         }
 
-        public async Task Generate(ChunkCellData data, CaveChunkManager chunkManager)
+        public async UniTask Generate(ChunkCellData data, BaseGeneratorSettings baseSettings, CavesGeneratorSettings cavesSettings)
         {
-            Settings = chunkManager.GeneratorSettings;
-            ChunkManager = chunkManager;
+            _baseSettings = baseSettings;
+            _cavesSettings = cavesSettings;
             CellData = data;
-            ChunkCoordinate = data.ChunkCoordinate;
-            ChunkSeed = Settings.GenerateSeed(Settings.Seed, ChunkCoordinate);
 
-            await data.Generate();
+            gameObject.transform.position = GetWorldPosition();
+
+            await data.GenerateAsync(destroyCancellationToken);
         }
 
-        public async Task FinalizeGenerationAsync()
+        public async UniTask FinalizeGenerationAsync()
         {
-            if (IsFinalized)
+            if (_isFinalized)
                 return;
 
-            IsFinalized = true;
+            _isFinalized = true;
 
-            _finalizationTask ??= GenerateMeshesAsync();
-
+            _finalizationTask ??= GenerateMeshesAsync().ToAsyncLazy();
             await _finalizationTask;
         }
 
-        private async Task GenerateMeshesAsync()
+        private async UniTask GenerateMeshesAsync()
         {
-            CellData.FinalizeGeneration();
-            _walls = InstantiateWalls();
+            _caveMeshes = InstantiateMeshes();
 
-            await GenerateWallMeshesAsync(_walls);
+            await GenerateMeshesAsync(_caveMeshes);
 
             gameObject.SetActive(true);
         }
 
-        private List<CaveWall> InstantiateWalls()
+        private List<CaveMesh> InstantiateMeshes()
         {
-            List<CaveWall> walls = new List<CaveWall>();
+            List<CaveMesh> caveMeshes = new List<CaveMesh>();
 
             for (int i = 0; i < CellData.Walls.Count; i++)
-                walls.Add(InstantiateWall(i));
+                caveMeshes.Add(InstantiateMesh(i));
 
-            return walls;
+            return caveMeshes;
         }
 
-        private async Task GenerateWallMeshesAsync(List<CaveWall> walls)
+        private CaveMesh InstantiateMesh(int index)
         {
-            List<Task> wallGenerationTasks = new List<Task>();
-
-            for (int i = 0; i < CellData.Walls.Count; i++)
-            {
-                wallGenerationTasks.Add(GenerateWallMeshAsync(walls[i], CellData.Walls[i]));
-            }
-
-            await Task.WhenAll(wallGenerationTasks);
-        }
-
-        private CaveWall InstantiateWall(int index)
-        {
-            GameObject wallObject = Instantiate(WallPrefab.gameObject, transform);
+            GameObject wallObject = Instantiate(_caveMeshPrefab.gameObject, transform);
             wallObject.SetActive(false);
             wallObject.name = index.ToString();
 
-            return wallObject.GetComponent<CaveWall>();
+            return wallObject.GetComponent<CaveMesh>();
         }
 
-        private async Task GenerateWallMeshAsync(CaveWall wall, WallGroup wallCells)
+        private async UniTask GenerateMeshesAsync(List<CaveMesh> caveMeshes)
         {
-            await Task.Run(() => wall.Generate(wallCells, this));
+            List<UniTask> meshGenerationTasks = new List<UniTask>();
+
+            for (int i = 0; i < CellData.Walls.Count; i++)
+                meshGenerationTasks.Add(GenerateMeshAsync(caveMeshes[i], CellData.Walls[i]));
+
+            await UniTask.WhenAll(meshGenerationTasks);
+        }
+
+        private async UniTask GenerateMeshAsync(CaveMesh caveMesh, WallGroup wallCells)
+        {
+            await UniTask.RunOnThreadPool(() => caveMesh.Generate(wallCells, this, _baseSettings));
         }
 
         public Vector3 GetWorldPosition(Vector3Int cellCoordinate)
         {
-            Vector3 localPosition = new Vector3(cellCoordinate.x * ChunkManager.MeshSettings.GridSize.x, cellCoordinate.y * ChunkManager.MeshSettings.GridSize.y, cellCoordinate.z * ChunkManager.MeshSettings.GridSize.z);
+            Vector3 localPosition = new Vector3(cellCoordinate.x * _baseSettings.ChunkSize.x, cellCoordinate.y * _baseSettings.ChunkSize.y, cellCoordinate.z * _baseSettings.ChunkSize.z);
+
             return transform.TransformPoint(localPosition); //TODO spacing
-        }
-
-        public CellType GetCellFromAllChunks(Vector3Int localCellCoordinate)
-        {
-            if (IsInsideChunk(localCellCoordinate))
-            {
-                return CellData.Cells[localCellCoordinate.x, localCellCoordinate.y, localCellCoordinate.z];
-            }
-
-            Vector3Int globalCellCoordinate = GetGlobalCoordinate(localCellCoordinate);
-            return ChunkManager.GetCellFromAllChunks(globalCellCoordinate);
         }
 
         public bool IsInsideChunk(Vector3Int localCellCoordinate)
         {
-            return localCellCoordinate.x >= 0 && localCellCoordinate.x < Settings.ChunkGridSize.x &&
-                   localCellCoordinate.y >= 0 && localCellCoordinate.y < Settings.ChunkGridSize.y &&
-                   localCellCoordinate.z >= 0 && localCellCoordinate.z < Settings.ChunkGridSize.z;
+            return localCellCoordinate.x >= 0 && localCellCoordinate.x < _baseSettings.ChunkSize.x &&
+                   localCellCoordinate.y >= 0 && localCellCoordinate.y < _baseSettings.ChunkSize.y &&
+                   localCellCoordinate.z >= 0 && localCellCoordinate.z < _baseSettings.ChunkSize.z;
         }
 
         public CellType GetCell(Vector3Int globalCoordinate)
@@ -130,43 +114,37 @@ namespace Caves.Chunks
             return CellData.Cells[localCoordinate.x, localCoordinate.y, localCoordinate.z];
         }
 
+        public Vector3 GetWorldPosition()
+        {
+            return new Vector3(CellData.ChunkCoordinate.x * _baseSettings.ChunkSize.x, CellData.ChunkCoordinate.y * _baseSettings.ChunkSize.y, CellData.ChunkCoordinate.z * _baseSettings.ChunkSize.z);
+        }
+
         public Vector3Int GetLocalCoordinate(Vector3Int globalCoordinate)
         {
+            Vector3Int chunkSize = _baseSettings.ChunkSize;
             Vector3Int localCoordinate = new Vector3Int(0, 0, 0);
 
             if (globalCoordinate.x < 0)
-            {
-                localCoordinate.x = Settings.ChunkGridSize.x - Mathf.Abs(globalCoordinate.x + 1) % Settings.ChunkGridSize.x - 1;
-            }
+                localCoordinate.x = chunkSize.x - Mathf.Abs(globalCoordinate.x + 1) % chunkSize.x - 1;
             else
-            {
-                localCoordinate.x = globalCoordinate.x % Settings.ChunkGridSize.x;
-            }
+                localCoordinate.x = globalCoordinate.x % chunkSize.x;
 
             if (globalCoordinate.y < 0)
-            {
-                localCoordinate.y = Settings.ChunkGridSize.y - Mathf.Abs(globalCoordinate.y + 1) % Settings.ChunkGridSize.y - 1;
-            }
+                localCoordinate.y = chunkSize.y - Mathf.Abs(globalCoordinate.y + 1) % chunkSize.y - 1;
             else
-            {
-                localCoordinate.y = globalCoordinate.y % Settings.ChunkGridSize.y;
-            }
+                localCoordinate.y = globalCoordinate.y % chunkSize.y;
 
             if (globalCoordinate.z < 0)
-            {
-                localCoordinate.z = Settings.ChunkGridSize.z - Mathf.Abs(globalCoordinate.z + 1) % Settings.ChunkGridSize.z - 1;
-            }
+                localCoordinate.z = chunkSize.z - Mathf.Abs(globalCoordinate.z + 1) % chunkSize.z - 1;
             else
-            {
-                localCoordinate.z = globalCoordinate.z % Settings.ChunkGridSize.z;
-            }
+                localCoordinate.z = globalCoordinate.z % chunkSize.z;
 
             return localCoordinate;
         }
 
         public Vector3Int GetGlobalCoordinate(Vector3Int localCoordinate)
         {
-            return new Vector3Int(localCoordinate.x + Settings.ChunkGridSize.x * ChunkCoordinate.x, localCoordinate.y + Settings.ChunkGridSize.y * ChunkCoordinate.y, localCoordinate.z + Settings.ChunkGridSize.z * ChunkCoordinate.z);
+            return new Vector3Int(localCoordinate.x + _baseSettings.ChunkSize.x * CellData.ChunkCoordinate.x, localCoordinate.y + _baseSettings.ChunkSize.y * CellData.ChunkCoordinate.y, localCoordinate.z + _baseSettings.ChunkSize.z * CellData.ChunkCoordinate.z);
         }
     }
 }

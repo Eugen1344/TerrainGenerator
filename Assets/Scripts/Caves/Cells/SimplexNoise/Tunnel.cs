@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using MeshGenerators;
 using UnityEngine;
 using Random = System.Random;
 
@@ -21,7 +22,7 @@ namespace Caves.Cells.SimplexNoise
             SecondCaveConnectionPoint = secondCaveConnectionPoint;
         }
 
-        public static List<Tunnel> CreateTunnelsAndConnectCaves(ref CellType[,,] cells, List<HollowGroup> hollows, CellSettings settings)
+        public static List<Tunnel> CreateTunnelsAndConnectCaves(ref CellType[,,] cells, List<HollowGroup> hollows, BaseGeneratorSettings baseSettings, CavesGeneratorSettings cavesSettings)
         {
             List<HollowGroup> alreadyConnectedCaves = new List<HollowGroup>();
             List<Tunnel> tunnels = new List<Tunnel>();
@@ -38,7 +39,7 @@ namespace Caves.Cells.SimplexNoise
                 if (secondHollow == null)
                     continue;
 
-                List<Vector3Int> tunnelCells = GetTunnelCellsAndConnectCaves(ref cells, settings, firstPoint, secondPoint);
+                List<Vector3Int> tunnelCells = GetTunnelCellsAndConnectCaves(ref cells, baseSettings, cavesSettings, firstPoint, secondPoint);
 
                 Tunnel tunnel = new Tunnel(tunnelCells, firstHollow, secondHollow, firstPoint, secondPoint);
                 tunnels.Add(tunnel);
@@ -49,7 +50,7 @@ namespace Caves.Cells.SimplexNoise
             return tunnels;
         }
 
-        private static List<Vector3Int> GetTunnelCellsAndConnectCaves(ref CellType[,,] cells, CellSettings settings, Vector3Int firstPoint, Vector3Int secondPoint)
+        private static List<Vector3Int> GetTunnelCellsAndConnectCaves(ref CellType[,,] cells, BaseGeneratorSettings baseSettings, CavesGeneratorSettings cavesSettings, Vector3Int firstPoint, Vector3Int secondPoint)
         {
             int firstX = Mathf.Min(firstPoint.x, secondPoint.x);
             int secondX = Mathf.Max(firstPoint.x, secondPoint.x);
@@ -58,12 +59,12 @@ namespace Caves.Cells.SimplexNoise
             int firstZ = Mathf.Min(firstPoint.z, secondPoint.z);
             int secondZ = Mathf.Max(firstPoint.z, secondPoint.z);
 
-            firstX = Mathf.Max(firstX - settings.TunnelRadius, 0);
-            secondX = Mathf.Min(secondX + settings.TunnelRadius, settings.ChunkGridSize.x - 1);
-            firstY = Mathf.Max(firstY - settings.TunnelRadius, 0);
-            secondY = Mathf.Min(secondY + settings.TunnelRadius, settings.ChunkGridSize.y - 1);
-            firstZ = Mathf.Max(firstZ - settings.TunnelRadius, 0);
-            secondZ = Mathf.Min(secondZ + settings.TunnelRadius, settings.ChunkGridSize.z - 1);
+            firstX = Mathf.Max(firstX - cavesSettings.TunnelRadius, 0);
+            secondX = Mathf.Min(secondX + cavesSettings.TunnelRadius, baseSettings.ChunkSize.x - 1);
+            firstY = Mathf.Max(firstY - cavesSettings.TunnelRadius, 0);
+            secondY = Mathf.Min(secondY + cavesSettings.TunnelRadius, baseSettings.ChunkSize.y - 1);
+            firstZ = Mathf.Max(firstZ - cavesSettings.TunnelRadius, 0);
+            secondZ = Mathf.Min(secondZ + cavesSettings.TunnelRadius, baseSettings.ChunkSize.z - 1);
 
             List<Vector3Int> tunnelCells = new List<Vector3Int>();
 
@@ -75,7 +76,7 @@ namespace Caves.Cells.SimplexNoise
                     {
                         float distance = DistanceFromPointToLine(new Vector3Int(x, y, z), firstPoint, secondPoint);
 
-                        if (distance > settings.TunnelRadius)
+                        if (distance > cavesSettings.TunnelRadius)
                             continue;
 
                         cells[x, y, z] = CellType.Hollow;

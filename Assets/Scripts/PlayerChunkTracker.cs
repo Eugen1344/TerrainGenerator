@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.Threading.Tasks;
 using Caves.Chunks;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 public class PlayerChunkTracker : MonoBehaviour
@@ -9,9 +9,9 @@ public class PlayerChunkTracker : MonoBehaviour
     public CaveChunkManager ChunkManager;
     public Vector3Int CurrentChunkCoordinate;
 
-    private async void Start()
+    private void Start()
     {
-        await GenerateNearbyChunksAsync(CurrentChunkCoordinate);
+        GenerateNearbyChunksAsync(CurrentChunkCoordinate).Forget();
     }
 
     private void Update()
@@ -25,9 +25,9 @@ public class PlayerChunkTracker : MonoBehaviour
         _ = GenerateNearbyChunksAsync(CurrentChunkCoordinate);
     }
 
-    private async Task GenerateNearbyChunksAsync(Vector3Int chunkCoordinate)
+    private async UniTask GenerateNearbyChunksAsync(Vector3Int chunkCoordinate)
     {
-        List<Task<CaveChunk>> chunkTasks = new List<Task<CaveChunk>>(9);
+        List<UniTask<CaveChunk>> chunkTasks = new List<UniTask<CaveChunk>>(9);
 
         for (int i = chunkCoordinate.x - ChunkGenerationRadius + 1; i < chunkCoordinate.x + ChunkGenerationRadius; i++)
         {
@@ -42,6 +42,6 @@ public class PlayerChunkTracker : MonoBehaviour
             }
         }
 
-        await Task.WhenAll(chunkTasks);
+        await UniTask.WhenAll(chunkTasks);
     }
 }

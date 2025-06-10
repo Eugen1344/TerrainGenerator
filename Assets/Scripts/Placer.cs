@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using System.Threading.Tasks;
 using Caves.Cells;
 using Caves.Chunks;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 public class Placer : MonoBehaviour
@@ -10,7 +10,7 @@ public class Placer : MonoBehaviour
     public Vector3Int DestinationChunkCoordinate;
     public int ChunkGenerationRadius; //TODO merge with PlayerChunkTracker
 
-    public async Task PlaceInRandomCave()
+    public async UniTask PlaceInRandomCave()
     {
         await GenerateNearbyChunksAsync(DestinationChunkCoordinate);
         CaveChunk destinationChunk = await ChunkManager.CreateChunkAsync(DestinationChunkCoordinate);
@@ -20,7 +20,7 @@ public class Placer : MonoBehaviour
         await PlaceInCave(destinationChunk.CellData.Hollows[randomCaveIndex]);
     }
 
-    public async Task PlaceInCave(int caveIndex)
+    public async UniTask PlaceInCave(int caveIndex)
     {
         await GenerateNearbyChunksAsync(DestinationChunkCoordinate);
         CaveChunk destinationChunk = await ChunkManager.CreateChunkAsync(DestinationChunkCoordinate);
@@ -28,21 +28,21 @@ public class Placer : MonoBehaviour
         await PlaceInCave(destinationChunk.CellData.Hollows[caveIndex]);
     }
 
-    public async Task PlaceInCave(HollowGroup cave) //TODO different placements
+    public async UniTask PlaceInCave(HollowGroup cave) //TODO different placements
     {
         Vector3Int lowestPointChunkPosition = cave.GetLowestPoint();
 
         await GenerateNearbyChunksAsync(DestinationChunkCoordinate);
         CaveChunk destinationChunk = await ChunkManager.CreateChunkAsync(DestinationChunkCoordinate);
 
-        Vector3 offsetPosition = (Vector3)ChunkManager.MeshSettings.GridSize / 2.0f;
+        Vector3 offsetPosition = (Vector3)ChunkManager.BaseGeneratorSettings.ChunkSize / 2.0f;
         Vector3 position = destinationChunk.GetWorldPosition(lowestPointChunkPosition) + offsetPosition;
         transform.position = position;
     }
 
-    private async Task GenerateNearbyChunksAsync(Vector3Int chunkCoordinate)
+    private async UniTask GenerateNearbyChunksAsync(Vector3Int chunkCoordinate)
     {
-        List<Task<CaveChunk>> chunkTasks = new List<Task<CaveChunk>>(9);
+        List<UniTask<CaveChunk>> chunkTasks = new List<UniTask<CaveChunk>>(9);
 
         for (int i = chunkCoordinate.x - ChunkGenerationRadius + 1; i < chunkCoordinate.x + ChunkGenerationRadius; i++)
         {
@@ -57,6 +57,6 @@ public class Placer : MonoBehaviour
             }
         }
 
-        await Task.WhenAll(chunkTasks);
+        await UniTask.WhenAll(chunkTasks);
     }
 }

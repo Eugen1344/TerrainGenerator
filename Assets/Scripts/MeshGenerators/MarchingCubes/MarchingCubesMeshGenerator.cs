@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
-using Caves.CaveMesh;
+using Caves.CaveMeshes;
 using UnityEngine;
 
 namespace MeshGenerators.MarchingCubes
 {
     public class MarchingCubesMeshGenerator : MeshGenerator
     {
-        public MarchingCubesMeshGenerator(MeshGeneratorSettings settings, CaveWall wall) : base(settings, wall)
+        public MarchingCubesMeshGenerator(BaseGeneratorSettings settings, CaveMesh caveMesh) : base(settings, caveMesh)
         {
         }
 
@@ -30,7 +30,7 @@ namespace MeshGenerators.MarchingCubes
 
                         foreach (Vector3 vertex in MeshGeneratorData.GetVertices(nodeConfiguration))
                         {
-                            Vector3 vertexPosition = new Vector3((vertex.x + i - 1) * Settings.GridSize.x, (vertex.y + j - 1) * Settings.GridSize.y, (vertex.z + k - 1) * Settings.GridSize.z);
+                            Vector3 vertexPosition = new Vector3((vertex.x + i - 1) * _settings.ChunkSize.x, (vertex.y + j - 1) * _settings.ChunkSize.y, (vertex.z + k - 1) * _settings.ChunkSize.z);
                             vertices.Add(vertexPosition);
 
                             int triangleIndex = vertices.Count - 1;

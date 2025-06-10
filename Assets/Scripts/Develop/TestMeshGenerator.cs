@@ -7,7 +7,7 @@ namespace Develop
 {
     public class TestMeshGenerator : MonoBehaviour
     {
-        public MeshGeneratorSettings Settings;
+        public BaseGeneratorSettings Settings;
         public int SphereRadius;
 
         [ContextMenu("Marching cubes sphere")]

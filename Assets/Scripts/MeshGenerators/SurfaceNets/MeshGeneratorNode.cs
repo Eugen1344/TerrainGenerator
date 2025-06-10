@@ -7,6 +7,7 @@ namespace MeshGenerators.SurfaceNets
     {
         public Vector3 Position;
         public Vector3Int MatrixPosition;
+        public int TriangleIndex;
         public bool HaveCreatedTriangle = false;
         public bool IsStatic;
 
@@ -19,11 +20,12 @@ namespace MeshGenerators.SurfaceNets
         private readonly Vector3 _minPosition;
         private readonly Vector3 _maxPosition;
 
-        public MeshGeneratorNode(Vector3 position, Vector3Int matrixPosition, int[,,] pointsMatrix)
+        public MeshGeneratorNode(Vector3 position, Vector3Int matrixPosition, int[,,] pointsMatrix, int triangleIndex)
         {
             Position = position;
             MatrixPosition = matrixPosition;
             PointsMatrix = pointsMatrix;
+            TriangleIndex = triangleIndex;
 
             _minPosition = matrixPosition - new Vector3(0.5f, 0.5f, 0.5f);
             _maxPosition = matrixPosition + new Vector3(0.5f, 0.5f, 0.5f);
@@ -35,9 +37,9 @@ namespace MeshGenerators.SurfaceNets
             node.LinkedNodes.Add(this);
         }
 
-        public List<Vector3> GetAllTriangles()
+        public List<int> GetAllTriangles()
         {
-            List<Vector3> triangles = new List<Vector3>(TriangleCount * 3);
+            List<int> triangles = new List<int>(TriangleCount * 3);
 
             for (int i = 0; i < LinkedNodes.Count; i++)
             {
@@ -71,7 +73,7 @@ namespace MeshGenerators.SurfaceNets
                         if (firstCommonPoint == secondCommonPoint)
                             continue;
 
-                        triangles.Add(Position);
+                        triangles.Add(TriangleIndex);
 
                         Vector3Int normal = Cross(firstNode.MatrixPosition - MatrixPosition, secondNode.MatrixPosition - MatrixPosition);
 
@@ -79,26 +81,26 @@ namespace MeshGenerators.SurfaceNets
                         {
                             if (normal + minCoordinate == maxCoordinate)
                             {
-                                triangles.Add(firstNode.Position);
-                                triangles.Add(secondNode.Position);
+                                triangles.Add(firstNode.TriangleIndex);
+                                triangles.Add(secondNode.TriangleIndex);
                             }
                             else
                             {
-                                triangles.Add(secondNode.Position);
-                                triangles.Add(firstNode.Position);
+                                triangles.Add(secondNode.TriangleIndex);
+                                triangles.Add(firstNode.TriangleIndex);
                             }
                         }
                         else
                         {
                             if (normal + maxCoordinate == minCoordinate)
                             {
-                                triangles.Add(firstNode.Position);
-                                triangles.Add(secondNode.Position);
+                                triangles.Add(firstNode.TriangleIndex);
+                                triangles.Add(secondNode.TriangleIndex);
                             }
                             else
                             {
-                                triangles.Add(secondNode.Position);
-                                triangles.Add(firstNode.Position);
+                                triangles.Add(secondNode.TriangleIndex);
+                                triangles.Add(firstNode.TriangleIndex);
                             }
                         }
                     }
@@ -116,9 +118,7 @@ namespace MeshGenerators.SurfaceNets
             Vector3 equidistantPosition = Vector3.zero;
 
             foreach (MeshGeneratorNode linkedNode in LinkedNodes)
-            {
                 equidistantPosition += linkedNode.Position;
-            }
 
             Position = ConstraintPosition(equidistantPosition / LinkedNodes.Count);
         }

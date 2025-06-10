@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using Caves.Chunks;
+using System.Threading;
+using Cysharp.Threading.Tasks;
+using MeshGenerators;
 using SimplexNoise;
 using UnityEngine;
 
@@ -8,11 +9,7 @@ namespace Caves.Cells.SimplexNoise
 {
     public class ChunkCellData
     {
-        public readonly CellSettings Settings;
         public readonly Vector3Int ChunkCoordinate;
-        //public readonly int ChunkSeed;
-
-        protected CaveChunkManager _chunkManager;
 
         public CellType[,,] Cells;
 
@@ -20,70 +17,59 @@ namespace Caves.Cells.SimplexNoise
         public List<WallGroup> Walls;
         public List<Tunnel> Tunnels;
 
-        public bool IsFinalized;
+        private readonly BaseGeneratorSettings _baseSettings;
+        private readonly CavesGeneratorSettings _cavesSettings;
 
         private readonly Noise _noiseGenerator;
 
-        public ChunkCellData(CellSettings settings, CaveChunkManager chunkManager, Vector3Int chunkCoordinate)
+        public ChunkCellData(BaseGeneratorSettings baseSettings, CavesGeneratorSettings cavesSettings, Vector3Int chunkCoordinate, int baseSeed)
         {
-            _chunkManager = chunkManager;
-
-            Settings = settings;
+            _baseSettings = baseSettings;
+            _cavesSettings = cavesSettings;
             ChunkCoordinate = chunkCoordinate;
-            //ChunkSeed = Settings.GenerateSeed(Settings.Seed, chunkCoordinate);
 
-            _noiseGenerator = new Noise(Settings.Seed);
+            _noiseGenerator = new Noise(baseSeed);
         }
 
-        public async Task Generate()
+        public UniTask GenerateAsync(CancellationToken cancellationToken)
         {
-            float[,,] noise = await Task.Run(GetNoise);
-            Cells = await Task.Run(() => GetCellsFromNoise(noise));
-
-            Task<List<HollowGroup>> getHollowGroupTask = GetCellGroupsAsync<HollowGroup>(CellType.Hollow);
-            Hollows = await getHollowGroupTask;
-
-            Hollows = await Task.Run(() => RemoveSmallHollowGroups(Hollows, ref Cells, Settings.MinCaveSize));
-
-            Tunnels = Settings.GenerateTunnels ? Tunnel.CreateTunnelsAndConnectCaves(ref Cells, Hollows, Settings) : new List<Tunnel>();
-
-            Task<List<WallGroup>> getWallGroupTask = GetCellGroupsAsync<WallGroup>(CellType.Wall);
-
-            Walls = await getWallGroupTask;
+            return UniTask.RunOnThreadPool(GenerateDataAsync, cancellationToken: cancellationToken);
         }
 
-        private float[,,] GetNoise()
+        private void GenerateDataAsync()
         {
-            float[,,] noise = new float[Settings.ChunkGridSize.x, Settings.ChunkGridSize.y, Settings.ChunkGridSize.z];
+            Vector3Int gridSize = _baseSettings.GridSize;
+            Vector3Int offset = gridSize * ChunkCoordinate;
+            float[,,] noise = SampleNoise(gridSize, offset);
 
-            Vector3Int offset = Settings.ChunkGridSize * ChunkCoordinate;
+            Cells = GetCellsFromNoise(noise);
 
-            for (int i = 0; i < Settings.ChunkGridSize.x; i++)
+            Hollows = GetCellGroups<HollowGroup>(CellType.Hollow);
+            Hollows = RemoveSmallHollowGroups(Hollows, ref Cells, _cavesSettings.MinCaveSize);
+
+            Tunnels = _cavesSettings.GenerateTunnels ? Tunnel.CreateTunnelsAndConnectCaves(ref Cells, Hollows, _baseSettings, _cavesSettings) : new List<Tunnel>();
+
+            Walls = GetCellGroups<WallGroup>(CellType.Wall);
+        }
+
+        private float[,,] SampleNoise(Vector3Int size, Vector3Int offset)
+        {
+            float[,,] noise = new float[size.x, size.y, size.z];
+
+            for (int i = 0; i < size.x; i++)
             {
-                for (int j = 0; j < Settings.ChunkGridSize.y; j++)
+                for (int j = 0; j < size.y; j++)
                 {
-                    for (int k = 0; k < Settings.ChunkGridSize.z; k++)
+                    for (int k = 0; k < size.z; k++)
                     {
                         Vector3Int noisePixelPosition = new Vector3Int(i + offset.x, j + offset.y, k + offset.z);
 
-                        noise[i, j, k] = _noiseGenerator.CalcPixel3D(noisePixelPosition.x, noisePixelPosition.y, noisePixelPosition.z, Settings.NoiseScale);
+                        noise[i, j, k] = _noiseGenerator.CalcPixel3D(noisePixelPosition.x, noisePixelPosition.y, noisePixelPosition.z, _baseSettings.NoiseScale);
                     }
                 }
             }
 
             return noise;
-        }
-
-        public float GetRandomHollowCellsPercent(Vector3Int globalPixelCoordinate)
-        {
-            int heightDiff = Mathf.Abs(globalPixelCoordinate.z - Settings.CentralDecreasePoint.z);
-
-            return Mathf.Clamp(Settings.RandomHollowCellsPercent - heightDiff * Settings.RandomHollowCellsPercentDecreasePerPixel, 0, Settings.RandomHollowCellsPercent);
-        }
-
-        public void FinalizeGeneration()
-        {
-            IsFinalized = true;
         }
 
         private List<HollowGroup> RemoveSmallHollowGroups(List<HollowGroup> hollows, ref CellType[,,] cells, int minCaveSize)
@@ -116,7 +102,7 @@ namespace Caves.Cells.SimplexNoise
 
             CellType[,,] cells = new CellType[length, width, height];
 
-            Vector3Int offset = Settings.ChunkGridSize * ChunkCoordinate;
+            Vector3Int offset = _baseSettings.GridSize * ChunkCoordinate;
 
             for (int i = 0; i < length; i++)
             {
@@ -138,9 +124,11 @@ namespace Caves.Cells.SimplexNoise
             return cells;
         }
 
-        private async Task<List<T>> GetCellGroupsAsync<T>(CellType searchedCellType) where T : CaveGroup
+        private float GetRandomHollowCellsPercent(Vector3Int globalPixelCoordinate)
         {
-            return await Task.Run(() => GetCellGroups<T>(searchedCellType));
+            int heightDiff = Mathf.Abs(globalPixelCoordinate.z - _cavesSettings.RandomHollowCellsPercentDecreaseStartingPoint);
+
+            return Mathf.Clamp(_cavesSettings.HollowCellThreshold - heightDiff * _cavesSettings.HollowCellThresholdDecreasePerHeight, 0, _cavesSettings.HollowCellThreshold);
         }
 
         private List<T> GetCellGroups<T>(CellType searchedCellType) where T : CaveGroup
