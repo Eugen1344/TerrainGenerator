@@ -1,7 +1,7 @@
 ﻿using System.IO;
-using Caves.Cells.SimplexNoise;
 using Caves.Chunks;
 using SimplexNoise;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Develop
@@ -13,11 +13,11 @@ namespace Develop
         [SerializeField] private CaveChunkManager _chunkManager;
         [SerializeField] private int _seed;
 
-        [ContextMenu("Generate noise png")]
-        public void GenerateNoisePng()
+        [Button]
+        public void GenerateNoiseImages()
         {
             Vector3Int gridSize = _chunkManager.BaseGeneratorSettings.GridSize;
-            
+
             Texture2D noiseTexture = new Texture2D(gridSize.x, gridSize.y);
 
             Noise noiseGenerator = new Noise(_seed);
@@ -29,7 +29,8 @@ namespace Develop
                 for (int j = 0; j < gridSize.y; j++)
                 {
                     float normalizedNoise = (noise[i, j] + 1f) / 2f;
-                    Color color = new Color(normalizedNoise, normalizedNoise, normalizedNoise, 1f);
+                    Vector3 colorVector = Vector3.Lerp((Vector4)_hollowColor, (Vector4)_caveColor, normalizedNoise);
+                    Color color = new Color(colorVector.x, colorVector.y, colorVector.z, 1);
 
                     noiseTexture.SetPixel(i, j, color);
                 }

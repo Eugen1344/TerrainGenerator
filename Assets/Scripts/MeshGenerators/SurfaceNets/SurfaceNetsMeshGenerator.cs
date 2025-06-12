@@ -25,7 +25,6 @@ namespace MeshGenerators.SurfaceNets
 
             foreach (MeshGeneratorNode node in surfaceNodes)
             {
-                //Vector3Int chunkPosition = node.MatrixPosition + _caveMesh.MinCoordinate;
                 Vector3 scaledVertex = Vector3.Scale(node.Position, _settings.GetChunkGridSizeMultiplier());
                 vertices.Add(scaledVertex);
 
@@ -48,9 +47,9 @@ namespace MeshGenerators.SurfaceNets
 
         private List<MeshGeneratorNode> GetSurfaceNodes(int[,,] matrix)
         {
-            int length = matrix.GetLength(0);
-            int width = matrix.GetLength(1);
-            int height = matrix.GetLength(2);
+            int length = matrix.GetLength(0) - 1;
+            int width = matrix.GetLength(1) - 1;
+            int height = matrix.GetLength(2) - 1;
 
             List<MeshGeneratorNode> nodes = new List<MeshGeneratorNode>();
             MeshGeneratorNode[,,] nodeMatrix = new MeshGeneratorNode[length, width, height];
@@ -61,8 +60,8 @@ namespace MeshGenerators.SurfaceNets
                 {
                     for (int k = 0; k < height; k++)
                     {
-                        //if (i == 0 || j == 0 || k == 0 || i == length - 1 || j == width - 1 || k == height - 1)
-                        //  continue;
+                        if (IsInternalNode(matrix, i, j, k))
+                            continue;
 
                         int triangleIndex = nodes.Count;
                         MeshGeneratorNode node = GetSurfaceNode(matrix, i, j, k, triangleIndex);
@@ -70,6 +69,9 @@ namespace MeshGenerators.SurfaceNets
 
                         if (node == null)
                             continue;
+
+                        if (i == 0 || j == 0 || k == 0 || i == length - 1 || j == width - 1 || k == height - 1)
+                            node.IsStatic = true;
 
                         if (i != 0)
                         {
@@ -132,24 +134,26 @@ namespace MeshGenerators.SurfaceNets
             return node;
         }*/
 
-        private MeshGeneratorNode GetSurfaceNode(int[,,] matrix, int i0, int j0, int k0, int triangleIndex)
+        private MeshGeneratorNode GetSurfaceNode(int[,,] matrix, int i, int j, int k, int triangleIndex)
         {
-            int node0 = matrix[i0, j0, k0];
-            int node1 = matrix[i0 + 1, j0, k0];
-            int node2 = matrix[i0 + 1, j0 + 1, k0];
-            int node3 = matrix[i0, j0 + 1, k0];
+            return new MeshGeneratorNode(new Vector3(i, j, k), new Vector3Int(i, j, k), matrix, triangleIndex);
+        }
 
-            int node4 = matrix[i0, j0, k0 + 1];
-            int node5 = matrix[i0 + 1, j0, k0 + 1];
-            int node6 = matrix[i0 + 1, j0 + 1, k0 + 1];
-            int node7 = matrix[i0, j0 + 1, k0 + 1];
+        private bool IsInternalNode(int[,,] matrix, int i, int j, int k)
+        {
+            int node0 = matrix[i, j, k];
+            int node1 = matrix[i + 1, j, k];
+            int node2 = matrix[i + 1, j + 1, k];
+            int node3 = matrix[i, j + 1, k];
+
+            int node4 = matrix[i, j, k + 1];
+            int node5 = matrix[i + 1, j, k + 1];
+            int node6 = matrix[i + 1, j + 1, k + 1];
+            int node7 = matrix[i, j + 1, k + 1];
 
             int nodeSum = node0 + node1 + node2 + node3 + node4 + node5 + node6 + node7;
 
-            if (nodeSum == 0 || nodeSum == 8)
-                return null;
-
-            return new MeshGeneratorNode(new Vector3(i0, j0, k0), new Vector3Int(i0, j0, k0), matrix, triangleIndex);
+            return nodeSum == 0 || nodeSum == 8;
         }
     }
 }

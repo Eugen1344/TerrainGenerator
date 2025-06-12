@@ -28,8 +28,8 @@ namespace MeshGenerators
 
             mesh.Optimize();
             mesh.RecalculateNormals();
-            mesh.RecalculateBounds();
             mesh.RecalculateTangents();
+            mesh.RecalculateBounds();
 
             return mesh;
         }

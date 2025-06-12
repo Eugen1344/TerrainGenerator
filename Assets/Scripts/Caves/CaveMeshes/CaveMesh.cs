@@ -16,6 +16,7 @@ namespace Caves.CaveMeshes
 
         private MeshGenerator _meshGenerator;
         private WallGroup _wall;
+        private CaveChunkManager _chunkManager;
         private BaseGeneratorSettings _settings;
         private MeshData _data;
         private Mesh _mesh;
@@ -29,10 +30,11 @@ namespace Caves.CaveMeshes
             _meshCollider.sharedMesh = _mesh;
         }
 
-        public void Generate(WallGroup wall, CaveChunk chunk, BaseGeneratorSettings settings)
+        public void Generate(WallGroup wall, CaveChunk chunk, CaveChunkManager chunkManager)
         {
             _wall = wall;
-            _settings = settings;
+            _chunkManager = chunkManager;
+            _settings = chunkManager.BaseGeneratorSettings;
             Chunk = chunk;
 
             SetMeshGenerator();
@@ -90,34 +92,23 @@ namespace Caves.CaveMeshes
                     maxCoordinate.z = cell.z;
             }
 
-            Vector3Int actualMatrixSize = maxCoordinate - minCoordinate;
-
+            Vector3Int actualMatrixSize = maxCoordinate - minCoordinate + new Vector3Int(2, 2, 2);
             int[,,] nodes = new int[actualMatrixSize.x, actualMatrixSize.y, actualMatrixSize.z];
 
-            /*Vector3Int actualMatrixSize = maxCoordinate + Vector3Int.one - minCoordinate + new Vector3Int(2, 2, 2);
-
-            int[,,] nodes = new int[actualMatrixSize.x, actualMatrixSize.y, actualMatrixSize.z];
-
-            for (int i = 0; i < actualMatrixSize.x; i++)
+            for (int i = 0; i <= 1; i++)
             {
-                for (int j = 0; j < actualMatrixSize.y; j++)
+                for (int j = 0; j <= 1; j++)
                 {
-                    for (int k = 0; k < actualMatrixSize.z; k++)
+                    for (int k = 0; k <= 1; k++)
                     {
-                        if (i == 0 || j == 0 || k == 0 ||
-                            i == actualMatrixSize.x - 1 || j == actualMatrixSize.y - 1 || k == actualMatrixSize.z - 1)
-                        {
-                            Vector3Int matrixCoordinate = new Vector3Int(i, j, k);
-                            Vector3Int chunkCoordinate = matrixCoordinate + minCoordinate - Vector3Int.one;
+                        Vector3Int nearbyChunkCoordinateOffset = new Vector3Int(i, j, k);
+                        if (nearbyChunkCoordinateOffset == Vector3Int.zero)
+                            continue;
 
-                            if (Chunk.IsInsideChunk(chunkCoordinate))
-                                continue;
-
-                            nodes[i, j, k] = Chunk.GetCellFromAllChunks(chunkCoordinate) == CellType.Wall ? 1 : 0;
-                        }
+                        FillEdgeFromNearbyChunk(ref nodes, nearbyChunkCoordinateOffset);
                     }
                 }
-            }*/
+            }
 
             foreach (Vector3Int coordinate in wall.CellChunkCoordinates)
             {
@@ -127,6 +118,32 @@ namespace Caves.CaveMeshes
             }
 
             return nodes;
+        }
+
+        private void FillEdgeFromNearbyChunk(ref int[,,] nodes, Vector3Int nearbyChunkCoordinateOffset)
+        {
+            Vector3Int nearbyChunkCoordinate = Chunk.ChunkCoordinate + nearbyChunkCoordinateOffset;
+            Vector3Int invertedNearbyChunkCoordinateOffset = Vector3Int.one - nearbyChunkCoordinateOffset;
+            CaveChunk nearbyChunk = _chunkManager.GetChunk(nearbyChunkCoordinate);
+
+            Vector3Int lastCoordinate = new Vector3Int(nodes.GetLength(0) - 1, nodes.GetLength(1) - 1, nodes.GetLength(2) - 1);
+            Vector3Int min = nearbyChunkCoordinateOffset * lastCoordinate;
+            Vector3Int max = lastCoordinate - invertedNearbyChunkCoordinateOffset;
+
+            for (int i = min.x; i <= max.x; i++)
+            {
+                for (int j = min.y; j <= max.y; j++)
+                {
+                    for (int k = min.z; k <= max.z; k++)
+                    {
+                        Vector3Int chunkCellCoordinate = new Vector3Int(i, j, k);
+                        Vector3Int nearbyChunkCellCoordinate = chunkCellCoordinate * invertedNearbyChunkCoordinateOffset;
+
+                        CellType cell = nearbyChunk.GetCell(nearbyChunkCellCoordinate);
+                        nodes[i, j, k] = cell == CellType.Wall ? 1 : 0;
+                    }
+                }
+            }
         }
 
         private void OnDestroy()

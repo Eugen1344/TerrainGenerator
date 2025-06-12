@@ -9,7 +9,7 @@ namespace Caves.Cells.SimplexNoise
         [field: SerializeField] public int MinCaveSize { get; private set; }
         [field: SerializeField] [Range(0, 1)] public float HollowCellThreshold { get; private set; }
         [field: SerializeField] public float HollowCellThresholdDecreasePerHeight { get; private set; }
-        [field: SerializeField] public int RandomHollowCellsPercentDecreaseStartingPoint { get; private set; }
+        [field: SerializeField] public int RandomHollowCellsPercentDecreaseStartingHeight { get; private set; }
 
         [field: SerializeField] public bool GenerateTunnels;
         [field: SerializeField] public int TunnelRadius;

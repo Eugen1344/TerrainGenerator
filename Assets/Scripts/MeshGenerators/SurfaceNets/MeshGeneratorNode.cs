@@ -8,7 +8,6 @@ namespace MeshGenerators.SurfaceNets
         public Vector3 Position;
         public Vector3Int MatrixPosition;
         public int TriangleIndex;
-        public bool HaveCreatedTriangle = false;
         public bool IsStatic;
 
         public List<MeshGeneratorNode> LinkedNodes = new List<MeshGeneratorNode>(NodeCount);
@@ -67,8 +66,6 @@ namespace MeshGenerators.SurfaceNets
 
                         int firstCommonPoint = PointsMatrix[minCoordinate.x, minCoordinate.y, minCoordinate.z];
                         int secondCommonPoint = PointsMatrix[maxCoordinate.x, maxCoordinate.y, maxCoordinate.z];
-
-                        //HaveCreatedTriangle = true; //TODO HACK, make better
 
                         if (firstCommonPoint == secondCommonPoint)
                             continue;

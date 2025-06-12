@@ -13,7 +13,7 @@ namespace MeshGenerators
 
         public readonly Vector3 GetChunkGridSizeMultiplier()
         {
-            return new Vector3((float)ChunkSize.x / GridSize.x, (float)ChunkSize.y / GridSize.y, (float)ChunkSize.z / GridSize.z);
+            return new Vector3((float)ChunkSize.x / (GridSize.x - 1), (float)ChunkSize.y / (GridSize.y - 1), (float)ChunkSize.z / (GridSize.z - 1));
         }
     }
 }

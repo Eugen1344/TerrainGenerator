@@ -17,7 +17,7 @@ namespace Caves.Cells
 
         public Vector3Int GetLowestPoint()
         {
-            return CellChunkCoordinates.OrderBy(coord => coord.z).First();
+            return CellChunkCoordinates.OrderBy(coord => coord.y).First();
         }
 
         public static CaveGroup GetCaveGroup(CellType cellType, List<Vector3Int> cellChunkCoordinates)

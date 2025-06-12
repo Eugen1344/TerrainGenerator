@@ -9,8 +9,6 @@ namespace Caves.Cells.SimplexNoise
 {
     public class ChunkCellData
     {
-        public readonly Vector3Int ChunkCoordinate;
-
         public CellType[,,] Cells;
 
         public List<HollowGroup> Hollows;
@@ -19,6 +17,7 @@ namespace Caves.Cells.SimplexNoise
 
         private readonly BaseGeneratorSettings _baseSettings;
         private readonly CavesGeneratorSettings _cavesSettings;
+        private readonly Vector3Int _chunkCoordinate;
 
         private readonly Noise _noiseGenerator;
 
@@ -26,7 +25,7 @@ namespace Caves.Cells.SimplexNoise
         {
             _baseSettings = baseSettings;
             _cavesSettings = cavesSettings;
-            ChunkCoordinate = chunkCoordinate;
+            _chunkCoordinate = chunkCoordinate;
 
             _noiseGenerator = new Noise(baseSeed);
         }
@@ -39,7 +38,7 @@ namespace Caves.Cells.SimplexNoise
         private void GenerateDataAsync()
         {
             Vector3Int gridSize = _baseSettings.GridSize;
-            Vector3Int offset = gridSize * ChunkCoordinate;
+            Vector3Int offset = gridSize * _chunkCoordinate;
             float[,,] noise = SampleNoise(gridSize, offset);
 
             Cells = GetCellsFromNoise(noise);
@@ -81,9 +80,7 @@ namespace Caves.Cells.SimplexNoise
                 if (hollow.CellCount < minCaveSize)
                 {
                     foreach (Vector3Int coordinate in hollow.CellChunkCoordinates)
-                    {
                         cells[coordinate.x, coordinate.y, coordinate.z] = CellType.Wall;
-                    }
                 }
                 else
                 {
@@ -102,7 +99,7 @@ namespace Caves.Cells.SimplexNoise
 
             CellType[,,] cells = new CellType[length, width, height];
 
-            Vector3Int offset = _baseSettings.GridSize * ChunkCoordinate;
+            Vector3Int offset = _baseSettings.GridSize * _chunkCoordinate;
 
             for (int i = 0; i < length; i++)
             {
@@ -126,7 +123,7 @@ namespace Caves.Cells.SimplexNoise
 
         private float GetRandomHollowCellsPercent(Vector3Int globalPixelCoordinate)
         {
-            int heightDiff = Mathf.Abs(globalPixelCoordinate.z - _cavesSettings.RandomHollowCellsPercentDecreaseStartingPoint);
+            int heightDiff = Mathf.Abs(globalPixelCoordinate.y - _cavesSettings.RandomHollowCellsPercentDecreaseStartingHeight);
 
             return Mathf.Clamp(_cavesSettings.HollowCellThreshold - heightDiff * _cavesSettings.HollowCellThresholdDecreasePerHeight, 0, _cavesSettings.HollowCellThreshold);
         }
@@ -199,16 +196,6 @@ namespace Caves.Cells.SimplexNoise
             }
 
             return result;
-        }
-
-        public static bool IsHollowCell(CellType cell)
-        {
-            return cell == CellType.Hollow;
-        }
-
-        public static bool IsWallCell(CellType cell)
-        {
-            return cell == CellType.Wall;
         }
     }
 }
