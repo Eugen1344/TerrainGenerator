@@ -5,29 +5,26 @@ namespace MeshGenerators.SurfaceNets
 {
     public class MeshGeneratorNode
     {
-        public Vector3 Position;
-        public Vector3Int MatrixPosition;
-        public int TriangleIndex;
-        public bool IsStatic;
-
-        public List<MeshGeneratorNode> LinkedNodes = new List<MeshGeneratorNode>(NodeCount);
-
         private const int NodeCount = 6;
         private const int TriangleCount = 12;
 
-        public readonly int[,,] PointsMatrix;
+        public Vector3 Position;
+        public Vector3Int MatrixPosition;
+        public int TriangleIndex;
+
         private readonly Vector3 _minPosition;
         private readonly Vector3 _maxPosition;
 
-        public MeshGeneratorNode(Vector3 position, Vector3Int matrixPosition, int[,,] pointsMatrix, int triangleIndex)
+        public readonly List<MeshGeneratorNode> LinkedNodes = new List<MeshGeneratorNode>(NodeCount);
+
+        public MeshGeneratorNode(Vector3 position, Vector3Int matrixPosition, int triangleIndex)
         {
             Position = position;
             MatrixPosition = matrixPosition;
-            PointsMatrix = pointsMatrix;
             TriangleIndex = triangleIndex;
 
-            _minPosition = matrixPosition - new Vector3(0.5f, 0.5f, 0.5f);
-            _maxPosition = matrixPosition + new Vector3(0.5f, 0.5f, 0.5f);
+            _minPosition = MatrixPosition - new Vector3(0.5f, 0.5f, 0.5f);
+            _maxPosition = MatrixPosition + new Vector3(0.5f, 0.5f, 0.5f);
         }
 
         public void CreateMutualLink(MeshGeneratorNode node)
@@ -36,7 +33,7 @@ namespace MeshGenerators.SurfaceNets
             node.LinkedNodes.Add(this);
         }
 
-        public List<int> GetAllTriangles()
+        public List<int> GetAllTriangles(int[,,] pointsMatrix)
         {
             List<int> triangles = new List<int>(TriangleCount * 3);
 
@@ -64,8 +61,8 @@ namespace MeshGenerators.SurfaceNets
                             Mathf.Max(MatrixPosition.y, firstNode.MatrixPosition.y, secondNode.MatrixPosition.y, oppositeMatrixPoint.y),
                             Mathf.Max(MatrixPosition.z, firstNode.MatrixPosition.z, secondNode.MatrixPosition.z, oppositeMatrixPoint.z));
 
-                        int firstCommonPoint = PointsMatrix[minCoordinate.x, minCoordinate.y, minCoordinate.z];
-                        int secondCommonPoint = PointsMatrix[maxCoordinate.x, maxCoordinate.y, maxCoordinate.z];
+                        int firstCommonPoint = pointsMatrix[minCoordinate.x, minCoordinate.y, minCoordinate.z];
+                        int secondCommonPoint = pointsMatrix[maxCoordinate.x, maxCoordinate.y, maxCoordinate.z];
 
                         if (firstCommonPoint == secondCommonPoint)
                             continue;
@@ -109,9 +106,6 @@ namespace MeshGenerators.SurfaceNets
 
         public void PlaceEquidistant()
         {
-            if (IsStatic)
-                return;
-
             Vector3 equidistantPosition = Vector3.zero;
 
             foreach (MeshGeneratorNode linkedNode in LinkedNodes)
