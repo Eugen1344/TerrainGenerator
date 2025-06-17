@@ -1,5 +1,4 @@
-﻿#nullable enable
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Caves.CaveMeshes;
 using Caves.Cells;
 using Caves.Cells.SimplexNoise;
@@ -16,20 +15,19 @@ namespace Caves.Chunks
 
         [SerializeField] private CaveMesh _caveMeshPrefab;
 
+        private SeamChunk[,,] _seamChunks;
         private BaseGeneratorSettings _baseSettings;
         private CavesGeneratorSettings _cavesSettings;
-        private CaveChunkManager _chunkManager;
 
         private bool _isFinalized;
         private List<CaveMesh> _caveMeshes = new List<CaveMesh>();
-        private AsyncLazy? _finalizationTask;
 
-        public void Setup(Vector3Int chunkCoordinate, CaveChunkManager chunkManager, int baseSeed)
+        public void Setup(Vector3Int chunkCoordinate, SeamChunk[,,] seamChunks, BaseGeneratorSettings baseSettings, CavesGeneratorSettings cavesSettings, int baseSeed)
         {
             ChunkCoordinate = chunkCoordinate;
-            _baseSettings = chunkManager.BaseGeneratorSettings;
-            _cavesSettings = chunkManager.CavesSettings;
-            _chunkManager = chunkManager;
+            _seamChunks = seamChunks;
+            _baseSettings = baseSettings;
+            _cavesSettings = cavesSettings;
 
             CellData = new ChunkCellData(_baseSettings, _cavesSettings, chunkCoordinate, baseSeed);
 
@@ -43,26 +41,20 @@ namespace Caves.Chunks
                 caveMesh.gameObject.SetActive(true);
         }
 
-        public async UniTask Generate()
+        public async UniTask GenerateData()
         {
             gameObject.transform.position = GetWorldPosition();
 
             await CellData.GenerateAsync(destroyCancellationToken);
         }
 
-        public async UniTask FinalizeGenerationAsync()
+        public async UniTask GenerateMeshes()
         {
             if (_isFinalized)
                 return;
 
             _isFinalized = true;
 
-            _finalizationTask ??= GenerateMeshesAsync().ToAsyncLazy();
-            await _finalizationTask;
-        }
-
-        private async UniTask GenerateMeshesAsync()
-        {
             _caveMeshes = InstantiateMeshes();
 
             await GenerateMeshesAsync(_caveMeshes);
@@ -101,7 +93,7 @@ namespace Caves.Chunks
 
         private async UniTask GenerateMeshAsync(CaveMesh caveMesh, WallGroup wallCells)
         {
-            await UniTask.RunOnThreadPool(() => caveMesh.Generate(wallCells, this, _chunkManager), cancellationToken: destroyCancellationToken);
+            await UniTask.RunOnThreadPool(() => caveMesh.Generate(wallCells, this, _baseSettings), cancellationToken: destroyCancellationToken);
         }
 
         public Vector3 GetWorldPosition(Vector3Int cellCoordinate)

@@ -13,12 +13,14 @@ namespace Caves.Chunks
         [SerializeField] private bool _randomSeed;
         [SerializeField] private int _baseSeed;
         [SerializeField] private GameObject _chunkRoot;
-        [SerializeField] private CaveChunk _chunkPrefab;
+        [SerializeField] private CaveChunk _caveChunkPrefab;
+        [SerializeField] private SeamChunk _seamChunkPrefab;
 
         [field: SerializeField] public BaseGeneratorSettings BaseGeneratorSettings { get; private set; }
         [field: SerializeField] public CavesGeneratorSettings CavesSettings { get; private set; }
 
-        private readonly Dictionary<Vector3Int, CaveChunk> _generatedChunks = new Dictionary<Vector3Int, CaveChunk>();
+        private readonly Dictionary<Vector3Int, CaveChunk> _generatedCaveChunks = new Dictionary<Vector3Int, CaveChunk>();
+        private readonly Dictionary<Vector3Int, SeamChunk> _generatedSeamChunks = new Dictionary<Vector3Int, SeamChunk>();
         private readonly Dictionary<Vector3Int, AsyncLazy<CaveChunk>> _chunkGenerationQueue = new Dictionary<Vector3Int, AsyncLazy<CaveChunk>>();
 
         private void Awake()
@@ -34,41 +36,7 @@ namespace Caves.Chunks
 
         public async UniTask<CaveChunk> CreateChunkAsync(Vector3Int chunkCoordinate)
         {
-            AsyncLazy<CaveChunk> mainChunkTask = GenerateAndAddChunkAsync(chunkCoordinate).ToAsyncLazy();
-
-            List<AsyncLazy<CaveChunk>> nearbyChunkTasks = new List<AsyncLazy<CaveChunk>>(9);
-
-            nearbyChunkTasks.Add(mainChunkTask);
-
-            for (int i = chunkCoordinate.x - 1; i <= chunkCoordinate.x + 1; i++)
-            {
-                for (int j = chunkCoordinate.y - 1; j <= chunkCoordinate.y + 1; j++)
-                {
-                    for (int k = chunkCoordinate.z - 1; k <= chunkCoordinate.z + 1; k++)
-                    {
-                        Vector3Int nearbyChunkCoordinate = new Vector3Int(i, j, k);
-
-                        if (nearbyChunkCoordinate == chunkCoordinate)
-                            continue;
-
-                        AsyncLazy<CaveChunk> chunkTask = GenerateAndAddChunkAsync(nearbyChunkCoordinate).ToAsyncLazy();
-                        nearbyChunkTasks.Add(chunkTask);
-                    }
-                }
-            }
-
-            await UniTask.WhenAll(nearbyChunkTasks.ConvertAll(lazyTask => lazyTask.Task));
-
-            CaveChunk chunk = await mainChunkTask;
-
-            await chunk.FinalizeGenerationAsync();
-
-            return chunk;
-        }
-
-        private async UniTask<CaveChunk> GenerateAndAddChunkAsync(Vector3Int chunkCoordinate)
-        {
-            if (_generatedChunks.TryGetValue(chunkCoordinate, out CaveChunk generatedChunk))
+            if (_generatedCaveChunks.TryGetValue(chunkCoordinate, out CaveChunk generatedChunk))
                 return generatedChunk;
 
             bool isTaskInQueue = _chunkGenerationQueue.TryGetValue(chunkCoordinate, out AsyncLazy<CaveChunk> newChunkTask);
@@ -76,11 +44,11 @@ namespace Caves.Chunks
                 return await newChunkTask;
 
             newChunkTask = GenerateChunkAsync(chunkCoordinate).ToAsyncLazy();
-            _chunkGenerationQueue.Add(chunkCoordinate, newChunkTask);
+            _chunkGenerationQueue[chunkCoordinate] = newChunkTask;
 
             CaveChunk chunk = await newChunkTask;
 
-            _generatedChunks.Add(chunkCoordinate, chunk);
+            _generatedCaveChunks[chunkCoordinate] = chunk;
             _chunkGenerationQueue.Remove(chunkCoordinate);
 
             return await newChunkTask;
@@ -88,23 +56,64 @@ namespace Caves.Chunks
 
         private async UniTask<CaveChunk> GenerateChunkAsync(Vector3Int chunkCoordinate)
         {
-            CaveChunk chunk = CreateChunk(chunkCoordinate);
-            await chunk.Generate();
+            SeamChunk[,,] seamChunks = GatherSeamChunks(chunkCoordinate);
+            CaveChunk chunk = CreateChunk(chunkCoordinate, seamChunks);
+
+            await chunk.GenerateData();
+            await chunk.GenerateMeshes();
 
             return chunk;
         }
 
-        private CaveChunk CreateChunk(Vector3Int chunkCoordinate)
+        private CaveChunk CreateChunk(Vector3Int chunkCoordinate, SeamChunk[,,] seamChunks)
         {
-            CaveChunk newChunk = Instantiate(_chunkPrefab, _chunkRoot.transform);
-            newChunk.Setup(chunkCoordinate, this, _baseSeed);
+            CaveChunk newChunk = Instantiate(_caveChunkPrefab, _chunkRoot.transform);
+            newChunk.Setup(chunkCoordinate, seamChunks, BaseGeneratorSettings, CavesSettings, _baseSeed);
+
+            return newChunk;
+        }
+
+        private SeamChunk[,,] GatherSeamChunks(Vector3Int chunkCoordinate)
+        {
+            SeamChunk[,,] nearbySeamChunks = new SeamChunk[3, 3, 3];
+
+            for (int i = 0; i < 2; i++)
+            {
+                for (int j = 0; j < 2; j++)
+                {
+                    for (int k = 0; k < 2; k++)
+                    {
+                        Vector3Int seamCoordinate = chunkCoordinate + new Vector3Int(i, j, k);
+                        nearbySeamChunks[i, j, k] = GetOrAddSeamChunk(seamCoordinate);
+                    }
+                }
+            }
+
+            return nearbySeamChunks;
+        }
+
+        private SeamChunk GetOrAddSeamChunk(Vector3Int seamCoordinate)
+        {
+            if (_generatedSeamChunks.TryGetValue(seamCoordinate, out SeamChunk seamChunk))
+                return seamChunk;
+
+            seamChunk = CreateSeamChunk(seamCoordinate);
+            _generatedSeamChunks[seamCoordinate] = seamChunk;
+
+            return seamChunk;
+        }
+
+        private SeamChunk CreateSeamChunk(Vector3Int seamCoordinate)
+        {
+            SeamChunk newChunk = Instantiate(_seamChunkPrefab, _chunkRoot.transform);
+            newChunk.Setup(seamCoordinate);
 
             return newChunk;
         }
 
         public CaveChunk GetChunk(Vector3Int chunkCoordinate)
         {
-            return _generatedChunks.GetValueOrDefault(chunkCoordinate);
+            return _generatedCaveChunks.GetValueOrDefault(chunkCoordinate);
         }
 
         public Vector3Int GetChunkCoordinate(Vector3 worldPosition)
@@ -129,9 +138,9 @@ namespace Caves.Chunks
         {
             Vector3Int chunkCoordinate = GetChunkCoordinate(globalCellCoordinate);
 
-            lock (_generatedChunks)
+            lock (_generatedCaveChunks)
             {
-                if (_generatedChunks.TryGetValue(chunkCoordinate, out CaveChunk chunk))
+                if (_generatedCaveChunks.TryGetValue(chunkCoordinate, out CaveChunk chunk))
                     return chunk.GetCell(globalCellCoordinate);
             }
 

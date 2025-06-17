@@ -16,7 +16,6 @@ namespace Caves.CaveMeshes
 
         private MeshGenerator _meshGenerator;
         private WallGroup _wall;
-        private CaveChunkManager _chunkManager;
         private BaseGeneratorSettings _settings;
         private MeshData _data;
         private Mesh _mesh;
@@ -30,22 +29,16 @@ namespace Caves.CaveMeshes
             _meshCollider.sharedMesh = _mesh;
         }
 
-        public void Generate(WallGroup wall, CaveChunk chunk, CaveChunkManager chunkManager)
+        public void Generate(WallGroup wall, CaveChunk chunk, BaseGeneratorSettings baseGeneratorSettings)
         {
             _wall = wall;
-            _chunkManager = chunkManager;
-            _settings = chunkManager.BaseGeneratorSettings;
+            _settings = baseGeneratorSettings;
             Chunk = chunk;
 
-            SetMeshGenerator();
+            _meshGenerator = new SurfaceNetsMeshGenerator(_settings, this);
 
             _data = GenerateMeshData(out Vector3Int minCoordinate);
             MinCoordinate = minCoordinate;
-        }
-
-        private void SetMeshGenerator() //TODO temp, move
-        {
-            _meshGenerator = new SurfaceNetsMeshGenerator(_settings, this);
         }
 
         private MeshData GenerateMeshData(out Vector3Int minCoordinate)

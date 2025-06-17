@@ -35,7 +35,7 @@ namespace MeshGenerators.SurfaceNets
 
         public List<int> GetAllTriangles(int[,,] pointsMatrix)
         {
-            List<int> triangles = new List<int>(TriangleCount * 3);
+            List<int> triangles = new List<int>(TriangleCount);
 
             for (int i = 0; i < LinkedNodes.Count; i++)
             {
@@ -44,9 +44,6 @@ namespace MeshGenerators.SurfaceNets
                 for (int j = i + 1; j < LinkedNodes.Count; j++)
                 {
                     MeshGeneratorNode secondNode = LinkedNodes[j];
-
-                    //if ((firstNode.HaveCreatedTriangle && !secondNode.HaveCreatedTriangle) || (!firstNode.HaveCreatedTriangle && secondNode.HaveCreatedTriangle))
-                    //continue;
 
                     if (firstNode.MatrixPosition.x == secondNode.MatrixPosition.x && firstNode.MatrixPosition.y != secondNode.MatrixPosition.y && firstNode.MatrixPosition.z != secondNode.MatrixPosition.z
                         || firstNode.MatrixPosition.y == secondNode.MatrixPosition.y && firstNode.MatrixPosition.x != secondNode.MatrixPosition.x && firstNode.MatrixPosition.z != secondNode.MatrixPosition.z
